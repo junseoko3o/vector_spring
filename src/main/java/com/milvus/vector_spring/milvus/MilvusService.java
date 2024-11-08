@@ -36,7 +36,7 @@ public class MilvusService {
         System.out.println("Connected to Milvus at: " + clusterEndpoint);
     }
 
-    public void createSchema() {
+    public void createSchema(String dbKey) {
         connect();
         CreateCollectionReq.CollectionSchema schema = client.createSchema();
 
@@ -58,19 +58,19 @@ public class MilvusService {
                 .dataType(DataType.VarChar)
                 .maxLength(128)
                 .build());
+        String collectionCustomName = String.format(collectionName, dbKey);
 
         List<IndexParam> indexParamList = createIndex();
 
         CreateCollectionReq createCollectionReq = CreateCollectionReq.builder()
-                .collectionName(collectionName)
+                .collectionName(collectionCustomName)
                 .collectionSchema(schema)
                 .indexParams(indexParamList)
                 .build();
 
         client.createCollection(createCollectionReq);
 
-
-        GetLoadStateReq getLoadStateReq = loadCollection(collectionName);
+        GetLoadStateReq getLoadStateReq = loadCollection(collectionCustomName);
         client.getLoadState(getLoadStateReq);
     }
 

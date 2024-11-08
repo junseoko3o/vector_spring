@@ -25,10 +25,4 @@ public class MIlvusController {
             return "Fail";
         }
     }
-
-    @GetMapping("/create")
-    public void create() {
-        milvusService.createSchema();
-        System.out.println("hi");
-    }
 }
