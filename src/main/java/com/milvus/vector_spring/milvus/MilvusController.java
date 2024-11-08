@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/milvus")
-public class MIlvusController {
+public class MilvusController {
 
     private final MilvusService milvusService;
 
     @Autowired()
-    public MIlvusController(MilvusService milvusService) {
+    public MilvusController(MilvusService milvusService) {
         this.milvusService = milvusService;
     }
 
