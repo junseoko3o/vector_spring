@@ -101,7 +101,7 @@ public class MilvusService implements MilvusInterface {
     }
 
     public void checkCollectionLoadState() throws IOException {
-        connect();
+        MilvusClientV2 client = milvusInterface.connect();
 
         GetLoadStateReq loadStateReq = GetLoadStateReq.builder()
                 .collectionName(collectionName)
