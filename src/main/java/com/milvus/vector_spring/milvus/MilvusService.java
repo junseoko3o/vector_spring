@@ -10,13 +10,13 @@ import io.milvus.v2.service.collection.request.GetLoadStateReq;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class MilvusService {
+public class MilvusService implements MilvusInterface {
 
     @Value("${cluster.endpoint}")
     private String clusterEndpoint;
@@ -26,20 +26,21 @@ public class MilvusService {
 
     private MilvusClientV2 client;
 
-    public void connect() {
+    @Override
+    public MilvusClientV2 connect() throws IOException {
         ConnectConfig connectConfig = ConnectConfig.builder()
                 .uri(clusterEndpoint)
                 .build();
 
         client = new MilvusClientV2(connectConfig);
-
         System.out.println("Connected to Milvus at: " + clusterEndpoint);
+        return client;
     }
 
-    public void createSchema(String dbKey) {
+    public void createSchema(Integer dbKey) throws IOException {
         connect();
-        CreateCollectionReq.CollectionSchema schema = client.createSchema();
 
+        CreateCollectionReq.CollectionSchema schema = client.createSchema();
         schema.addField(AddFieldReq.builder()
                 .fieldName("id")
                 .dataType(DataType.Int64)
@@ -58,8 +59,8 @@ public class MilvusService {
                 .dataType(DataType.VarChar)
                 .maxLength(128)
                 .build());
-        String collectionCustomName = String.format(collectionName, dbKey);
 
+        String collectionCustomName = String.format(collectionName, dbKey);
         List<IndexParam> indexParamList = createIndex();
 
         CreateCollectionReq createCollectionReq = CreateCollectionReq.builder()
@@ -74,7 +75,7 @@ public class MilvusService {
         client.getLoadState(getLoadStateReq);
     }
 
-    public List<IndexParam> createIndex() {
+    private List<IndexParam> createIndex() {
         IndexParam indexParamForVectorField = IndexParam.builder()
                 .fieldName("vector")
                 .indexType(IndexParam.IndexType.HNSW)
@@ -87,19 +88,20 @@ public class MilvusService {
         return indexParamList;
     }
 
-    public GetLoadStateReq loadCollection(String collectionName) {
+    private GetLoadStateReq loadCollection(String collectionName) {
         return GetLoadStateReq.builder()
                 .collectionName(collectionName)
                 .build();
     }
 
-    public void checkCollectionLoadState() {
+    public void checkCollectionLoadState() throws IOException {
+        connect();
+
         GetLoadStateReq loadStateReq = GetLoadStateReq.builder()
                 .collectionName(collectionName)
                 .build();
 
         Boolean res = client.getLoadState(loadStateReq);
-
         System.out.println("Collection load state: " + res);
     }
 }

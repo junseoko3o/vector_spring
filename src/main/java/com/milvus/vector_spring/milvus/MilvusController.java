@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/milvus")
 public class MilvusController {
@@ -24,5 +26,11 @@ public class MilvusController {
         } catch (Exception e) {
             return "Fail";
         }
+    }
+
+    @GetMapping("/create")
+    public String create() throws IOException {
+        milvusService.createSchema(1);
+        return "Success";
     }
 }
