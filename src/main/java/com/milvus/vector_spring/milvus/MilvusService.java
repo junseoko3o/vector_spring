@@ -37,8 +37,14 @@ public class MilvusService implements MilvusInterface {
         return client;
     }
 
+    private final MilvusInterface milvusInterface;
+
+    public MilvusService(MilvusInterface milvusInterface) {
+        this.milvusInterface = milvusInterface;
+    }
+
     public void createSchema(Integer dbKey) throws IOException {
-        connect();
+        MilvusClientV2 client = milvusInterface.connect();
 
         CreateCollectionReq.CollectionSchema schema = client.createSchema();
         schema.addField(AddFieldReq.builder()
