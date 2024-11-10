@@ -33,4 +33,9 @@ public class MilvusController {
         milvusService.createSchema(1);
         return "Success";
     }
+
+    @GetMapping("/check")
+    public boolean checkMilvus() throws IOException {
+        return milvusService.checkCollectionLoadState();
+    }
 }

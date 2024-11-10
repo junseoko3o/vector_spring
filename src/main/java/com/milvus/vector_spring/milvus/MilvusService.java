@@ -100,7 +100,7 @@ public class MilvusService implements MilvusInterface {
                 .build();
     }
 
-    public void checkCollectionLoadState() throws IOException {
+    public boolean checkCollectionLoadState() throws IOException {
         MilvusClientV2 client = milvusInterface.connect();
 
         GetLoadStateReq loadStateReq = GetLoadStateReq.builder()
@@ -109,5 +109,6 @@ public class MilvusService implements MilvusInterface {
 
         Boolean res = client.getLoadState(loadStateReq);
         System.out.println("Collection load state: " + res);
+        return res;
     }
 }
