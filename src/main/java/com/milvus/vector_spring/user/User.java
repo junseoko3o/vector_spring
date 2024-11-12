@@ -1,16 +1,17 @@
 package com.milvus.vector_spring.user;
 
+import com.milvus.vector_spring.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
@@ -26,7 +27,7 @@ public class User {
     private String password;
 
     @Column(name = "login_at")
-    private Date loginAt;
+    private LocalDateTime loginAt;
 
     @Builder
     public User(long id, String email, String userName, String password) {
@@ -34,10 +35,5 @@ public class User {
         this.email = email;
         this.userName = userName;
         this.password = password;
-    }
-
-    public User updateLoginAt(Date loginAt) {
-        this.loginAt = loginAt;
-        return this;
     }
 }
