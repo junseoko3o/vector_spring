@@ -37,14 +37,8 @@ public class MilvusService implements MilvusInterface {
         return client;
     }
 
-    private final MilvusInterface milvusInterface;
-
-    public MilvusService(MilvusInterface milvusInterface) {
-        this.milvusInterface = milvusInterface;
-    }
-
     public void createSchema(Integer dbKey) throws IOException {
-        MilvusClientV2 client = milvusInterface.connect();
+        MilvusClientV2 client = connect();
 
         CreateCollectionReq.CollectionSchema schema = client.createSchema();
         schema.addField(AddFieldReq.builder()
@@ -101,7 +95,7 @@ public class MilvusService implements MilvusInterface {
     }
 
     public boolean checkCollectionLoadState() throws IOException {
-        MilvusClientV2 client = milvusInterface.connect();
+        MilvusClientV2 client = connect();
 
         GetLoadStateReq loadStateReq = GetLoadStateReq.builder()
                 .collectionName(collectionName)

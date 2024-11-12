@@ -13,7 +13,6 @@ public class MilvusController {
 
     private final MilvusService milvusService;
 
-    @Autowired()
     public MilvusController(MilvusService milvusService) {
         this.milvusService = milvusService;
     }
