@@ -1,5 +1,7 @@
 package com.milvus.vector_spring.user;
 
+import com.milvus.vector_spring.exception.CustomException;
+import com.milvus.vector_spring.exception.ErrorCode;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,15 @@ public class UserService {
         return userRepository.findByUserId(id);
     }
 
+    private void duplicateEmailCheck(String email) {
+        Optional<User> user = userRepository.findByUserEmail(email);
+        if (user.isPresent()) {
+            throw new CustomException(ErrorCode.DUPLICATE_USER_EMAIL);
+        }
+    }
+
     public User signUpUser(UserSignUpRequestDto userSignUpRequestDto) {
+        duplicateEmailCheck(userSignUpRequestDto.getEmail());
         User user = User.builder()
                 .email(userSignUpRequestDto.getEmail())
                 .userName(userSignUpRequestDto.getUserName())
