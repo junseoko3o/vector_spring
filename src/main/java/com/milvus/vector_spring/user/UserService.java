@@ -29,7 +29,7 @@ public class UserService {
         }
     }
 
-    public User signUpUser(UserSignUpRequestDto userSignUpRequestDto) {
+    public User signUpUser(UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
         duplicateEmailCheck(userSignUpRequestDto.getEmail());
         User user = User.builder()
                 .email(userSignUpRequestDto.getEmail())

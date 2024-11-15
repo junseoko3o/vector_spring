@@ -1,5 +1,6 @@
 package com.milvus.vector_spring.user;
 
+import com.milvus.vector_spring.exception.CustomException;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<User> signUpUser(UserSignUpRequestDto userSignUpRequestDto) {
+    public ResponseEntity<User> signUpUser(UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
         User user = userService.signUpUser(userSignUpRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
