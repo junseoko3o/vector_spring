@@ -18,11 +18,12 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public void findOneUser(Long id) {
-        Optional<User> = userRepository.findByUserId(id);
+    public User findOneUser(Long id) {
+        Optional<User> user = userRepository.findByUserId(id);
         if (!userRepository.existsById(id)) {
             throw new CustomException(ErrorCode.NOT_FOUND_USER);
         }
+        return user.get();
     }
 
     private void duplicateEmailCheck(String email) {
@@ -42,11 +43,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
-//    public Optional<User> updateUser(Long id, UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
-////        User user = findOneUser(id);
-////        user.setUserName(userSignUpRequestDto.getUserName());
-////        user.setEmail(userSignUpRequestDto.getEmail());
-////        userRepository.save(user);
-////        return user;
-//    }
+    public User updateUser(Long id, UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
+        User user = findOneUser(id);
+        duplicateEmailCheck(userSignUpRequestDto.getEmail());
+        User updatedUser = User.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .userName(userSignUpRequestDto.getUserName())
+                .build();
+        userRepository.save(user);
+        return updatedUser;
+    }
 }
