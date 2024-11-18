@@ -2,6 +2,7 @@ package com.milvus.vector_spring.user;
 
 import com.milvus.vector_spring.exception.CustomException;
 import com.milvus.vector_spring.exception.ErrorCode;
+import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,8 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class UserService {
     private final UserRepository userRepository;
 
@@ -19,15 +20,15 @@ public class UserService {
     }
 
     public User findOneUser(Long id) {
-        Optional<User> user = userRepository.findByUserId(id);
-        if (!userRepository.existsById(id)) {
+        Optional<User> user = userRepository.findById(id);
+        if (!user.isPresent()) {
             throw new CustomException(ErrorCode.NOT_FOUND_USER);
         }
         return user.get();
     }
 
     private void duplicateEmailCheck(String email) {
-        Optional<User> user = userRepository.findByUserEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATE_USER_EMAIL);
         }
@@ -43,13 +44,13 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(Long id, UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
+    public User updateUser(Long id, UserUpdateRequestDto userUpdateRequestDto) throws CustomException {
         User user = findOneUser(id);
-        duplicateEmailCheck(userSignUpRequestDto.getEmail());
+        duplicateEmailCheck(userUpdateRequestDto.getEmail());
         User updatedUser = User.builder()
                 .id(user.getId())
                 .email(user.getEmail())
-                .userName(userSignUpRequestDto.getUserName())
+                .userName(userUpdateRequestDto.getUserName())
                 .build();
         userRepository.save(user);
         return updatedUser;

@@ -2,6 +2,7 @@ package com.milvus.vector_spring.user;
 
 import com.milvus.vector_spring.exception.CustomException;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
+import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +30,8 @@ public class UserController {
     }
 
     @PostMapping("/update/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable() Long id, @RequestBody UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
-        User user = userService.updateUser(id, userSignUpRequestDto);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<User> updateUser(@PathVariable() Long id, @RequestBody UserUpdateRequestDto userUpdateRequestDto) throws CustomException {
+        User user = userService.updateUser(id, userUpdateRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 }

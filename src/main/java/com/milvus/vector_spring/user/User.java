@@ -8,16 +8,14 @@ import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
-@Setter
 public class User extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "user_id")
+    @Column(name = "email")
     private String email;
 
     @Column(name = "user_name")
