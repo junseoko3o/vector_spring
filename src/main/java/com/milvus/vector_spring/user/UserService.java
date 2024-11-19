@@ -5,6 +5,7 @@ import com.milvus.vector_spring.exception.ErrorCode;
 import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,10 +37,11 @@ public class UserService {
 
     public User signUpUser(UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
         duplicateEmailCheck(userSignUpRequestDto.getEmail());
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         User user = User.builder()
                 .email(userSignUpRequestDto.getEmail())
                 .userName(userSignUpRequestDto.getUserName())
-                .password(userSignUpRequestDto.getPassword())
+                .password(encoder.encode(userSignUpRequestDto.getPassword()))
                 .build();
         return userRepository.save(user);
     }
