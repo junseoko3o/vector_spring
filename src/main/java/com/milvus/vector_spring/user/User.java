@@ -39,6 +39,11 @@ public class User extends BaseEntity implements UserDetails {
         this.password = password;
     }
 
+    public User updateLoginAt(LocalDateTime loginAt) {
+        this.loginAt = loginAt;
+        return this;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
