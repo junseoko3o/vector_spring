@@ -2,7 +2,6 @@ package com.milvus.vector_spring.user;
 
 import com.milvus.vector_spring.common.BaseEntity;
 import com.milvus.vector_spring.content.Content;
-import com.milvus.vector_spring.content.Title;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
