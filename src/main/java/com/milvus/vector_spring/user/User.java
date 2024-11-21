@@ -33,7 +33,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "login_at")
     private LocalDateTime loginAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // fetch = FetchType.EAGER (즉시로딩)
     private List<Title> titles = new ArrayList<>();
 
     @Builder
