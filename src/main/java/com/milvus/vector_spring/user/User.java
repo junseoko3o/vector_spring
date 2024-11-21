@@ -1,7 +1,8 @@
 package com.milvus.vector_spring.user;
 
 import com.milvus.vector_spring.common.BaseEntity;
-import com.milvus.vector_spring.title.Title;
+import com.milvus.vector_spring.content.Content;
+import com.milvus.vector_spring.content.Title;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,7 +35,7 @@ public class User extends BaseEntity implements UserDetails {
     private LocalDateTime loginAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // fetch = FetchType.EAGER (즉시로딩)
-    private List<Title> titles = new ArrayList<>();
+    private List<Content> contents= new ArrayList<>();
 
     @Builder
     public User(long id, String email, String userName, String password) {
@@ -59,15 +60,16 @@ public class User extends BaseEntity implements UserDetails {
         return email;
     }
 
-    public void addTitle(String titleText) {
-        Title title = Title.builder()
-                .title(titleText)
+    public void addContent(String title, String answer) {
+        Content content = Content.builder()
+                .title(title)
+                .answer(answer)
                 .user(this)
                 .build();
-        titles.add(title);
+        contents.add(content);
     }
 
-    public void removeTitle(Title title) {
-        titles.remove(title);
+    public void removeContent(Content content) {
+        contents.remove(content);
     }
 }

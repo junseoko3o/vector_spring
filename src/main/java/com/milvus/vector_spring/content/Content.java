@@ -1,4 +1,4 @@
-package com.milvus.vector_spring.title;
+package com.milvus.vector_spring.content;
 
 import com.milvus.vector_spring.common.BaseEntity;
 import com.milvus.vector_spring.user.User;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter
-public class Title extends BaseEntity {
+public class Content extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -19,13 +19,17 @@ public class Title extends BaseEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "answer", nullable = false)
+    private String answer;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Builder
-    public Title(String title, User user) {
+    public Content(String title, String answer, User user) {
         this.title = title;
+        this.answer = answer;
         this.user = user;
     }
 }
