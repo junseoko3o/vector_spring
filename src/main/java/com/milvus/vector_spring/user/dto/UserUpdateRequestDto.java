@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class UserUpdateRequestDto {
-    private String userName;
+    private String username;
 
     @Email(message = "이메일 형식 이어야 한다.")
     private String email;

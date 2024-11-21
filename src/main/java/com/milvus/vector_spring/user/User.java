@@ -3,8 +3,10 @@ package com.milvus.vector_spring.user;
 import com.milvus.vector_spring.common.BaseTimeEntity;
 import com.milvus.vector_spring.content.Content;
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -14,9 +16,9 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
-@EntityListeners(value = {AuditingEntityListener.class})
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(name = "user")
 public class User extends BaseTimeEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +29,7 @@ public class User extends BaseTimeEntity implements UserDetails {
     private String email;
 
     @Column(name = "user_name")
-    private String userName;
+    private String username;
 
     @Column(name = "password")
     private String password;
@@ -39,11 +41,12 @@ public class User extends BaseTimeEntity implements UserDetails {
     private List<Content> contents= new ArrayList<>();
 
     @Builder
-    public User(long id, String email, String userName, String password) {
+    public User(long id, String email, String username, String password, LocalDateTime loginAt) {
         this.id = id;
         this.email = email;
-        this.userName = userName;
+        this.username = username;
         this.password = password;
+        this.loginAt = loginAt;
     }
 
     public User updateLoginAt(LocalDateTime loginAt) {

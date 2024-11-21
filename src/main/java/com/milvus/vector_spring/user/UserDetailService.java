@@ -1,7 +1,7 @@
 package com.milvus.vector_spring.user;
 
-import com.milvus.vector_spring.exception.CustomException;
-import com.milvus.vector_spring.exception.ErrorCode;
+import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
+import com.milvus.vector_spring.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,6 @@ public class UserDetailService implements UserDetailsService {
     @Override
     public User loadUserByUsername(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new CustomException(ErrorStatus._INTERNAL_SERVER_ERROR));
     }
 }

@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public class UserSignUpRequestDto {
     @NotBlank
-    private String userName;
+    private String username;
 
     @NotBlank
     @Email(message = "이메일 형식 이어야 한다.")

@@ -1,7 +1,7 @@
 package com.milvus.vector_spring.openai;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.milvus.vector_spring.config.ObjectMapperConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.milvus.vector_spring.config.WebClientConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +21,6 @@ public class OpenAiService {
     private String openAiKey;
 
     private final WebClientConfig webClientConfig;
-    private final ObjectMapperConfig objectMapperConfig;
 
     private WebClient connect() {
         return webClientConfig.webClientBuilder()
@@ -33,6 +32,7 @@ public class OpenAiService {
 
     public String chat(ChatRequestDto chatRequestDto) {
         System.out.println(chatRequestDto);
+        ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestBody = Map.of(
                 "model", "gpt-4o",
                 "messages", List.of(chatRequestDto)
@@ -46,7 +46,7 @@ public class OpenAiService {
                     .bodyToMono(String.class)
                     .block();
 
-            JsonNode rootNode = objectMapperConfig.objectMapper().readTree(res);
+            JsonNode rootNode = objectMapper.readTree(res);
             JsonNode contentNode = rootNode.path("choices").get(0).path("message").path("content");
 
             return contentNode.asText();

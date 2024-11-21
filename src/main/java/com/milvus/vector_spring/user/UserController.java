@@ -1,10 +1,11 @@
 package com.milvus.vector_spring.user;
 
-import com.milvus.vector_spring.exception.CustomException;
+import com.milvus.vector_spring.common.apipayload.ApiResponse;
+import com.milvus.vector_spring.common.exception.CustomException;
+import com.milvus.vector_spring.user.dto.UserResponseDto;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,14 +25,16 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<User> signUpUser(UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
+    public ApiResponse<UserResponseDto> signUpUser(@Validated @RequestBody UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
         User user = userService.signUpUser(userSignUpRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        UserResponseDto response = UserResponseDto.of(user);
+        return ApiResponse.ok(response);
     }
 
     @PostMapping("/update/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable() Long id, @RequestBody UserUpdateRequestDto userUpdateRequestDto) throws CustomException {
+    public ApiResponse<UserResponseDto> updateUser(@PathVariable() Long id, @Validated @RequestBody UserUpdateRequestDto userUpdateRequestDto) throws CustomException {
         User user = userService.updateUser(id, userUpdateRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        UserResponseDto response = UserResponseDto.of(user);
+        return ApiResponse.ok(response);
     }
 }
