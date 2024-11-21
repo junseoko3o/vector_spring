@@ -1,9 +1,10 @@
 package com.milvus.vector_spring.user;
 
-import com.milvus.vector_spring.common.BaseEntity;
+import com.milvus.vector_spring.common.BaseTimeEntity;
 import com.milvus.vector_spring.content.Content;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -14,8 +15,9 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor
+@EntityListeners(value = {AuditingEntityListener.class})
 @Getter
-public class User extends BaseEntity implements UserDetails {
+public class User extends BaseTimeEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

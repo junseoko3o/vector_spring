@@ -1,6 +1,6 @@
 package com.milvus.vector_spring.content;
 
-import com.milvus.vector_spring.common.BaseEntity;
+import com.milvus.vector_spring.common.BaseTimeEntity;
 import com.milvus.vector_spring.user.User;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Getter
-public class Content extends BaseEntity {
+public class Content extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
