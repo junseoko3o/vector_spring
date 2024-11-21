@@ -58,17 +58,4 @@ public class User extends BaseEntity implements UserDetails {
     public String getUsername() {
         return email;
     }
-
-    public void addContent(String title, String answer) {
-        Content content = Content.builder()
-                .title(title)
-                .answer(answer)
-                .user(this)
-                .build();
-        contents.add(content);
-    }
-
-    public void removeContent(Content content) {
-        contents.remove(content);
-    }
 }
