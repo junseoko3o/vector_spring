@@ -1,4 +1,4 @@
-CREATE TABLE user (
+CREATE TABLE IF NOT EXISTS user (
                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
                        email VARCHAR(255),
                        user_name VARCHAR(255),
@@ -8,7 +8,7 @@ CREATE TABLE user (
                        updated_at TIMESTAMP
 );
 
-CREATE TABLE content (
+CREATE TABLE IF NOT EXISTS content (
                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
                          title VARCHAR(255) NOT NULL,
                          answer TEXT NOT NULL,
