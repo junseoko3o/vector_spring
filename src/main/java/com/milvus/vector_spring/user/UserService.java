@@ -22,7 +22,7 @@ public class UserService {
 
     public User findOneUser(Long id) {
         Optional<User> user = userRepository.findById(id);
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             throw new CustomException(ErrorCode.NOT_FOUND_USER);
         }
         return user.get();

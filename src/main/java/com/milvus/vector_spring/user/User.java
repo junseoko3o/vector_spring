@@ -1,12 +1,14 @@
 package com.milvus.vector_spring.user;
 
 import com.milvus.vector_spring.common.BaseEntity;
+import com.milvus.vector_spring.title.Title;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -31,6 +33,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "login_at")
     private LocalDateTime loginAt;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Title> titles = new ArrayList<>();
+
     @Builder
     public User(long id, String email, String userName, String password) {
         this.id = id;
@@ -52,5 +57,17 @@ public class User extends BaseEntity implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    public void addTitle(String titleText) {
+        Title title = Title.builder()
+                .title(titleText)
+                .user(this)
+                .build();
+        titles.add(title);
+    }
+
+    public void removeTitle(Title title) {
+        titles.remove(title);
     }
 }

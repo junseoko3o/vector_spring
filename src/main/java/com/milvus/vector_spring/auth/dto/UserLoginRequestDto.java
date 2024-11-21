@@ -17,7 +17,5 @@ public class UserLoginRequestDto {
             regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$",
             message = "비밀번호는 숫자, 문자, 특수문자 1개 이상 ")
     private String password;
-
-    @NotBlank
     private LocalDateTime loginAt = LocalDateTime.now();
 }
