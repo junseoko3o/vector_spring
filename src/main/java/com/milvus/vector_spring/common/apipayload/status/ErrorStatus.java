@@ -1,7 +1,7 @@
 package com.milvus.vector_spring.common.apipayload.status;
 
 import com.milvus.vector_spring.common.apipayload.BaseCode;
-import com.milvus.vector_spring.common.apipayload.dto.ReasonDto;
+import com.milvus.vector_spring.common.apipayload.dto.ResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -27,8 +27,8 @@ public enum ErrorStatus implements BaseCode {
     }
 
     @Override
-    public ReasonDto getReasonHttpStatus() {
-        return ReasonDto.builder()
+    public ResponseDto getReasonHttpStatus() {
+        return ResponseDto.builder()
                 .statusCode(statusCode)
                 .message(message)
                 .httpStatus(httpStatus)
