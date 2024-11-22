@@ -60,6 +60,12 @@ public class MilvusService implements MilvusInterface {
                 .maxLength(128)
                 .build());
 
+        schema.addField(AddFieldReq.builder()
+                .fieldName("answer")
+                .dataType(DataType.VarChar)
+                .maxLength(2048)
+                .build());
+
         String collectionCustomName = String.format(collectionName, dbKey);
         List<IndexParam> indexParamList = createIndex();
 
