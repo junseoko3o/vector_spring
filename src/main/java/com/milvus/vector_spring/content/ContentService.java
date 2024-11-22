@@ -15,9 +15,8 @@ public class ContentService {
     private final UserService userService;
 
     @Transactional
-    public Content createContent(ContentCreateRequestDto contentCreateRequestDto) {
-        User user = userService.findOneUser(contentCreateRequestDto.getUserId());
-
+    public Content createContent(long userId, ContentCreateRequestDto contentCreateRequestDto) {
+        User user = userService.findOneUser(userId);
         Content content = Content.builder()
                 .title(contentCreateRequestDto.getTitle())
                 .answer(contentCreateRequestDto.getAnswer())

@@ -5,10 +5,9 @@ import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
 import com.milvus.vector_spring.content.dto.ContentCreateResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import static com.milvus.vector_spring.common.Const.USER_ID;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,8 +17,11 @@ public class ContentController {
     private final ContentService contentService;
 
     @PostMapping("/create")
-    public ApiResponse<ContentCreateResponseDto> createContent(@Validated @RequestBody ContentCreateRequestDto contentCreateRequestDto) {
-        Content content = contentService.createContent(contentCreateRequestDto);
+    public ApiResponse<ContentCreateResponseDto> createContent(
+            @RequestHeader(USER_ID) long userId,
+            @Validated @RequestBody ContentCreateRequestDto contentCreateRequestDto
+            ) {
+        Content content = contentService.createContent(userId, contentCreateRequestDto);
         ContentCreateResponseDto response = ContentCreateResponseDto.of(content);
         return ApiResponse.ok(response);
     }
