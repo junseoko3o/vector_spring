@@ -1,6 +1,10 @@
 package com.milvus.vector_spring.content;
 
 import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
+import com.milvus.vector_spring.milvus.MilvusService;
+import com.milvus.vector_spring.openai.OpenAiService;
+import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
+import com.milvus.vector_spring.openai.dto.EmbedResponseDto;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +17,8 @@ public class ContentService {
 
     private final ContentRepository contentRepository;
     private final UserService userService;
+    private final OpenAiService openAiService;
+    private final MilvusService milvusService;
 
     @Transactional
     public Content createContent(long userId, ContentCreateRequestDto contentCreateRequestDto) {
@@ -22,6 +28,15 @@ public class ContentService {
                 .answer(contentCreateRequestDto.getAnswer())
                 .user(user)
                 .build();
-        return contentRepository.save(content);
+
+        String answer = contentCreateRequestDto.getAnswer();
+        EmbedRequestDto embedRequestDto = EmbedRequestDto.builder()
+                .embedText(answer)
+                .build();
+        EmbedResponseDto embedResponseDto = openAiService.embedding(embedRequestDto);
+
+        Content content1 = contentRepository.save(content);
+//        milvusService.upsertCollection(content1.getId(), embedResponseDto, contentCreateRequestDto);
+        return content1;
     }
 }

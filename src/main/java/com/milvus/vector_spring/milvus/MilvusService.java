@@ -1,5 +1,10 @@
 package com.milvus.vector_spring.milvus;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
+import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
+import com.milvus.vector_spring.openai.dto.EmbedResponseDto;
 import io.milvus.v2.client.ConnectConfig;
 import io.milvus.v2.client.MilvusClientV2;
 import io.milvus.v2.common.DataType;
@@ -7,11 +12,16 @@ import io.milvus.v2.common.IndexParam;
 import io.milvus.v2.service.collection.request.AddFieldReq;
 import io.milvus.v2.service.collection.request.CreateCollectionReq;
 import io.milvus.v2.service.collection.request.GetLoadStateReq;
+import io.milvus.v2.service.index.request.CreateIndexReq;
+import io.milvus.v2.service.vector.request.UpsertReq;
+import io.milvus.v2.service.vector.response.UpsertResp;
+import kong.unirest.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -67,21 +77,19 @@ public class MilvusService implements MilvusInterface {
                 .build());
 
         String collectionCustomName = String.format(collectionName, dbKey);
-        List<IndexParam> indexParamList = createIndex();
-
+        List<IndexParam> indexParamList = createIndex(collectionName);
         CreateCollectionReq createCollectionReq = CreateCollectionReq.builder()
                 .collectionName(collectionCustomName)
                 .collectionSchema(schema)
                 .indexParams(indexParamList)
                 .build();
-
         client.createCollection(createCollectionReq);
 
         GetLoadStateReq getLoadStateReq = loadCollection(collectionCustomName);
         client.getLoadState(getLoadStateReq);
     }
 
-    private List<IndexParam> createIndex() {
+    private List<IndexParam> createIndex(String collectionName) {
         IndexParam indexParamForVectorField = IndexParam.builder()
                 .fieldName("vector")
                 .indexType(IndexParam.IndexType.HNSW)
@@ -91,6 +99,11 @@ public class MilvusService implements MilvusInterface {
 
         List<IndexParam> indexParamList = new ArrayList<>();
         indexParamList.add(indexParamForVectorField);
+
+        CreateIndexReq.builder()
+                .collectionName(collectionName)
+                .indexParams(indexParamList)
+                .build();
         return indexParamList;
     }
 
@@ -111,4 +124,27 @@ public class MilvusService implements MilvusInterface {
         System.out.println("Collection load state: " + res);
         return res;
     }
+
+//    public UpsertResp upsertCollection(long id, EmbedResponseDto embedResponseDto, ContentCreateRequestDto contentCreateRequestDto) {
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        JsonNode embeddingNode = embedResponseDto.getEmbedding();
+//        List<Float> embedding = objectMapper.convertValue(embeddingNode, List.class);
+//        List<JsonObject> data = Arrays.asList(
+//                new JSONObject(Map.of(
+//                        "id", id,
+//                        "vector", embedding,
+//                        "title", contentCreateRequestDto.getTitle(),
+//                        "answer", contentCreateRequestDto.getAnswer()
+//                ))
+//        );
+//
+//        UpsertReq upsertReq = UpsertReq.builder()
+//                .collectionName(collectionName)
+//                .data(data)
+//                .build();
+//
+//        UpsertResp upsertResp = client.upsert(upsertReq);
+//        System.out.println(JSONObject.wrap(upsertResp));
+//        return upsertResp;
+//    }
 }
