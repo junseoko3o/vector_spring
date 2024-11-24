@@ -1,7 +1,7 @@
 package com.milvus.vector_spring.milvus;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
 import com.milvus.vector_spring.openai.dto.EmbedResponseDto;
@@ -14,14 +14,12 @@ import io.milvus.v2.service.collection.request.CreateCollectionReq;
 import io.milvus.v2.service.collection.request.GetLoadStateReq;
 import io.milvus.v2.service.index.request.CreateIndexReq;
 import io.milvus.v2.service.vector.request.UpsertReq;
-import io.milvus.v2.service.vector.response.UpsertResp;
-import kong.unirest.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -125,26 +123,19 @@ public class MilvusService implements MilvusInterface {
         return res;
     }
 
-//    public UpsertResp upsertCollection(long id, EmbedResponseDto embedResponseDto, ContentCreateRequestDto contentCreateRequestDto) {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        JsonNode embeddingNode = embedResponseDto.getEmbedding();
-//        List<Float> embedding = objectMapper.convertValue(embeddingNode, List.class);
-//        List<JsonObject> data = Arrays.asList(
-//                new JSONObject(Map.of(
-//                        "id", id,
-//                        "vector", embedding,
-//                        "title", contentCreateRequestDto.getTitle(),
-//                        "answer", contentCreateRequestDto.getAnswer()
-//                ))
-//        );
-//
-//        UpsertReq upsertReq = UpsertReq.builder()
-//                .collectionName(collectionName)
-//                .data(data)
-//                .build();
-//
-//        UpsertResp upsertResp = client.upsert(upsertReq);
-//        System.out.println(JSONObject.wrap(upsertResp));
-//        return upsertResp;
-//    }
+    public UpsertReq upsertCollection(long id, EmbedResponseDto embedResponseDto, ContentCreateRequestDto contentCreateRequestDto) {
+        Gson gson = new Gson();
+        JsonNode embeddingNode = embedResponseDto.getEmbedding();
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("id", id);
+        jsonObject.add("vector", gson.toJsonTree(embeddingNode));
+        jsonObject.addProperty("title", contentCreateRequestDto.getTitle());
+        jsonObject.addProperty("answer", contentCreateRequestDto.getAnswer());
+        UpsertReq upsertReq = UpsertReq.builder()
+                .collectionName(collectionName)
+                .data(Collections.singletonList(jsonObject))
+                .build();
+        return upsertReq;
+    }
 }
