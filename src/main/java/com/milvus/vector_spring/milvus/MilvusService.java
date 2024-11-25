@@ -125,11 +125,9 @@ public class MilvusService implements MilvusInterface {
 
     public UpsertReq upsertCollection(long id, EmbedResponseDto embedResponseDto, ContentCreateRequestDto contentCreateRequestDto) {
         Gson gson = new Gson();
-        JsonNode embeddingNode = embedResponseDto.getEmbedding();
-
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", id);
-        jsonObject.add("vector", gson.toJsonTree(embeddingNode));
+        jsonObject.add("vector", gson.toJsonTree(embedResponseDto.getEmbedding()));
         jsonObject.addProperty("title", contentCreateRequestDto.getTitle());
         jsonObject.addProperty("answer", contentCreateRequestDto.getAnswer());
         UpsertReq upsertReq = UpsertReq.builder()
