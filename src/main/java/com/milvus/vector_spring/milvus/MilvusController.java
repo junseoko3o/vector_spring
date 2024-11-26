@@ -36,14 +36,4 @@ public class MilvusController {
     public boolean checkMilvus() throws IOException {
         return milvusService.checkCollectionLoadState();
     }
-
-    @PostMapping("/upsert")
-    public UpsertResp upsertCollection(
-            @RequestParam long id,
-            @RequestBody EmbedResponseDto embedResponseDto,
-            @RequestBody ContentCreateRequestDto contentCreateRequestDto) throws IOException {
-
-        return milvusService.upsertCollection(id, embedResponseDto, contentCreateRequestDto);
-    }
-
 }

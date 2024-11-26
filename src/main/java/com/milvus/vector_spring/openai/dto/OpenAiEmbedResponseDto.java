@@ -5,8 +5,13 @@ import lombok.Getter;
 
 import java.util.List;
 @Getter
-@Builder
 public class OpenAiEmbedResponseDto {
     private List<Float> embedding;
     private OpenAiUsageResponseDto usage;
+
+    @Builder
+    public OpenAiEmbedResponseDto(List<Float> embedding, OpenAiUsageResponseDto usage) {
+        this.embedding = embedding;
+        this.usage = usage;
+    }
 }

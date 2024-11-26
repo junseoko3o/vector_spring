@@ -2,6 +2,8 @@ package com.milvus.vector_spring.openai;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
+import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.config.WebClientConfig;
 import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +36,7 @@ public class OpenAiService {
                 .build();
     }
 
-    public JsonNode chat(ChatRequestDto chatRequestDto) {
+    public JsonNode chat(ChatRequestDto chatRequestDto) throws CustomException{
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestBody = Map.of(
                 "model", "gpt-4o",
@@ -50,15 +52,15 @@ public class OpenAiService {
 
             return objectMapper.readTree(res);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to send request", e);
+            throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
         }
     }
 
-    public JsonNode embedding(EmbedRequestDto embedRequestDto) {
+    public JsonNode embedding(EmbedRequestDto embedRequestDto) throws CustomException {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestBody = Map.of(
                 "model", "text-embedding-3-large",
-                "dimension", 3092,
+                "dimension", 3072,
                 "input", embedRequestDto.getEmbedText()
         );
         try {
@@ -70,7 +72,7 @@ public class OpenAiService {
                     .block();
             return objectMapper.readTree(res);
         } catch (Exception e) {
-            throw new RuntimeException("", e);
+            throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
         }
 
     }

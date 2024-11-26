@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 import static com.milvus.vector_spring.common.Const.USER_ID;
 
 @RestController
@@ -20,7 +22,7 @@ public class ContentController {
     public ApiResponse<ContentCreateResponseDto> createContent(
             @RequestHeader(USER_ID) long userId,
             @Validated @RequestBody ContentCreateRequestDto contentCreateRequestDto
-            ) {
+            ) throws IOException {
         Content content = contentService.createContent(userId, contentCreateRequestDto);
         ContentCreateResponseDto response = ContentCreateResponseDto.of(content);
         return ApiResponse.ok(response);

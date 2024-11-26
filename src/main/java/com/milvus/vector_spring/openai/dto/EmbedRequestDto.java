@@ -8,4 +8,9 @@ import lombok.Getter;
 public class EmbedRequestDto {
     @NotNull
     private String embedText;
+
+    @Builder
+    public EmbedRequestDto(String embedText) {
+        this.embedText = embedText;
+    }
 }

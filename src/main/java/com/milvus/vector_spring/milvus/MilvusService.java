@@ -1,10 +1,7 @@
 package com.milvus.vector_spring.milvus;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
 import com.milvus.vector_spring.milvus.dto.InsertRequestDto;
 import io.milvus.v2.client.ConnectConfig;
 import io.milvus.v2.client.MilvusClientV2;
@@ -19,8 +16,6 @@ import io.milvus.v2.service.vector.request.DeleteReq;
 import io.milvus.v2.service.vector.request.UpsertReq;
 import io.milvus.v2.service.vector.response.DeleteResp;
 import io.milvus.v2.service.vector.response.UpsertResp;
-import org.apache.avro.data.Json;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -63,11 +58,11 @@ public class MilvusService implements MilvusInterface {
         schema.addField(AddFieldReq.builder()
                 .fieldName("vector")
                 .dataType(DataType.FloatVector)
-                .dimension(3092)
+                .dimension(3072)
                 .build());
 
         schema.addField(AddFieldReq.builder()
-                .fieldName("name")
+                .fieldName("title")
                 .dataType(DataType.VarChar)
                 .maxLength(128)
                 .build());
@@ -75,7 +70,7 @@ public class MilvusService implements MilvusInterface {
         schema.addField(AddFieldReq.builder()
                 .fieldName("answer")
                 .dataType(DataType.VarChar)
-                .maxLength(2048)
+                .maxLength(3092)
                 .build());
 
         String collectionCustomName = String.format(collectionName, dbKey);
