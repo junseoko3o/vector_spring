@@ -1,7 +1,6 @@
 package com.milvus.vector_spring.milvus;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
 import com.milvus.vector_spring.openai.dto.EmbedResponseDto;
@@ -12,16 +11,18 @@ import io.milvus.v2.common.IndexParam;
 import io.milvus.v2.service.collection.request.AddFieldReq;
 import io.milvus.v2.service.collection.request.CreateCollectionReq;
 import io.milvus.v2.service.collection.request.GetLoadStateReq;
+import io.milvus.v2.service.collection.request.HasCollectionReq;
 import io.milvus.v2.service.index.request.CreateIndexReq;
+import io.milvus.v2.service.vector.request.DeleteReq;
 import io.milvus.v2.service.vector.request.UpsertReq;
+import io.milvus.v2.service.vector.response.DeleteResp;
+import io.milvus.v2.service.vector.response.UpsertResp;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class MilvusService implements MilvusInterface {
@@ -123,17 +124,39 @@ public class MilvusService implements MilvusInterface {
         return res;
     }
 
-    public UpsertReq upsertCollection(long id, EmbedResponseDto embedResponseDto, ContentCreateRequestDto contentCreateRequestDto) {
-        Gson gson = new Gson();
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("id", id);
-        jsonObject.add("vector", gson.toJsonTree(embedResponseDto.getEmbedding()));
-        jsonObject.addProperty("title", contentCreateRequestDto.getTitle());
-        jsonObject.addProperty("answer", contentCreateRequestDto.getAnswer());
+    public UpsertResp upsertCollection(long id, EmbedResponseDto embedResponseDto, ContentCreateRequestDto contentCreateRequestDto) throws IOException {
+        MilvusClientV2 client = connect();
+        JsonArray embeddingArray = new JsonArray();
+        embedResponseDto.getEmbedding().forEach(embeddingArray::add);
+
+        JsonObject jsonData = new JsonObject();
+        jsonData.addProperty("id", id);
+        jsonData.add("vector", embeddingArray);
+        jsonData.addProperty("title", contentCreateRequestDto.getTitle());
+        jsonData.addProperty("answer", contentCreateRequestDto.getAnswer());
+
+        List<JsonObject> data = Arrays.asList(jsonData);
         UpsertReq upsertReq = UpsertReq.builder()
                 .collectionName(collectionName)
-                .data(Collections.singletonList(jsonObject))
+                .data(data)
                 .build();
-        return upsertReq;
+        return client.upsert(upsertReq);
+    }
+
+    public DeleteResp deleteCollection(long id) throws IOException {
+        MilvusClientV2 client = connect();
+        DeleteReq deleteReq = DeleteReq.builder()
+                .collectionName(collectionName)
+                .filter("id in [" + id + "]")
+                .build();
+        return client.delete(deleteReq);
+    }
+
+    public Boolean hasCollection() throws IOException {
+        MilvusClientV2 client = connect();
+        HasCollectionReq hasCollectionReq = HasCollectionReq.builder()
+                .collectionName(collectionName)
+                .build();
+        return client.hasCollection(hasCollectionReq);
     }
 }
