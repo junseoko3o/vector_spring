@@ -60,4 +60,12 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiResponse<>(false, "500", errorCode, null));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<String>> handleGenericException(Exception ex) {
+        String errorMessage = ex.getMessage() != null ? ex.getMessage() : "An unexpected server error occurred";
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiResponse<>(false, "500", errorMessage, null));
+    }
 }

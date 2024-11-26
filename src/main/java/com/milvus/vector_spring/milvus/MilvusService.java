@@ -2,6 +2,7 @@ package com.milvus.vector_spring.milvus;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.milvus.dto.InsertRequestDto;
 import io.milvus.v2.client.ConnectConfig;
 import io.milvus.v2.client.MilvusClientV2;
@@ -13,14 +14,21 @@ import io.milvus.v2.service.collection.request.GetLoadStateReq;
 import io.milvus.v2.service.collection.request.HasCollectionReq;
 import io.milvus.v2.service.index.request.CreateIndexReq;
 import io.milvus.v2.service.vector.request.DeleteReq;
+import io.milvus.v2.service.vector.request.SearchReq;
 import io.milvus.v2.service.vector.request.UpsertReq;
+import io.milvus.v2.service.vector.request.data.BaseVector;
 import io.milvus.v2.service.vector.response.DeleteResp;
+import io.milvus.v2.service.vector.response.SearchResp;
 import io.milvus.v2.service.vector.response.UpsertResp;
+import io.milvus.v2.service.vector.request.data.FloatVec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static io.milvus.v2.common.DataType.FloatVector;
 
 @Service
 public class MilvusService implements MilvusInterface {
@@ -34,17 +42,16 @@ public class MilvusService implements MilvusInterface {
     private MilvusClientV2 client;
 
     @Override
-    public MilvusClientV2 connect() throws IOException {
+    public MilvusClientV2 connect() throws CustomException {
         ConnectConfig connectConfig = ConnectConfig.builder()
                 .uri(clusterEndpoint)
                 .build();
-
         client = new MilvusClientV2(connectConfig);
         System.out.println("Connected to Milvus at: " + clusterEndpoint);
         return client;
     }
 
-    public void createSchema(Integer dbKey) throws IOException {
+    public void createSchema(Integer dbKey) {
         MilvusClientV2 client = connect();
 
         CreateCollectionReq.CollectionSchema schema = client.createSchema();
@@ -57,7 +64,7 @@ public class MilvusService implements MilvusInterface {
 
         schema.addField(AddFieldReq.builder()
                 .fieldName("vector")
-                .dataType(DataType.FloatVector)
+                .dataType(FloatVector)
                 .dimension(3072)
                 .build());
 
@@ -110,7 +117,7 @@ public class MilvusService implements MilvusInterface {
                 .build();
     }
 
-    public boolean checkCollectionLoadState() throws IOException {
+    public boolean checkCollectionLoadState() {
         MilvusClientV2 client = connect();
 
         GetLoadStateReq loadStateReq = GetLoadStateReq.builder()
@@ -122,7 +129,7 @@ public class MilvusService implements MilvusInterface {
         return res;
     }
 
-    public UpsertResp upsertCollection(long id, InsertRequestDto insertRequestDto) throws IOException {
+    public UpsertResp upsertCollection(long id, InsertRequestDto insertRequestDto) {
         MilvusClientV2 client = connect();
         JsonObject dataObject = new JsonObject();
         JsonArray vectorArray = new JsonArray();
@@ -142,7 +149,7 @@ public class MilvusService implements MilvusInterface {
         return client.upsert(upsertReq);
     }
 
-    public DeleteResp deleteCollection(long id) throws IOException {
+    public DeleteResp deleteCollection(long id) {
         MilvusClientV2 client = connect();
         DeleteReq deleteReq = DeleteReq.builder()
                 .collectionName(collectionName)
@@ -151,11 +158,28 @@ public class MilvusService implements MilvusInterface {
         return client.delete(deleteReq);
     }
 
-    public Boolean hasCollection() throws IOException {
+    public Boolean hasCollection() {
         MilvusClientV2 client = connect();
         HasCollectionReq hasCollectionReq = HasCollectionReq.builder()
                 .collectionName(collectionName)
                 .build();
         return client.hasCollection(hasCollectionReq);
+    }
+
+    public SearchResp vectorSearch(List<Float> vectorData) {
+        MilvusClientV2 client = connect();
+        List<BaseVector> baseVectors = new ArrayList<>();
+        if (vectorData != null) {
+            List<Float> floatList = new ArrayList<>(vectorData);
+            baseVectors.add(new FloatVec(floatList));
+        }
+        SearchReq searchReq = SearchReq.builder()
+                .collectionName(collectionName)
+                .data(baseVectors)
+                .topK(5)
+                .searchParams(Map.of("metric_type", "COSINE", "efConstruction", 100, "M", 16))
+                .build();
+
+        return client.search(searchReq);
     }
 }

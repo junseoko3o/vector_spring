@@ -16,16 +16,6 @@ public class MilvusController {
         this.milvusService = milvusService;
     }
 
-    @GetMapping()
-    public String connect() {
-        try {
-            milvusService.connect();
-            return "Success";
-        } catch (Exception e) {
-            return "Fail";
-        }
-    }
-
     @GetMapping("/create")
     public String create() throws IOException {
         milvusService.createSchema(1);
