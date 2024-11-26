@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.milvus.vector_spring.config.WebClientConfig;
 import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
-import com.milvus.vector_spring.openai.dto.EmbedResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -35,13 +34,12 @@ public class OpenAiService {
                 .build();
     }
 
-    public String chat(ChatRequestDto chatRequestDto) {
+    public JsonNode chat(ChatRequestDto chatRequestDto) {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestBody = Map.of(
                 "model", "gpt-4o",
                 "messages", List.of(chatRequestDto)
         );
-
         try {
             String res = connect(openAiKey).post()
                     .uri(openAiUrl)
@@ -50,24 +48,19 @@ public class OpenAiService {
                     .bodyToMono(String.class)
                     .block();
 
-            JsonNode rootNode = objectMapper.readTree(res);
-            JsonNode contentNode = rootNode.path("choices").get(0).path("message").path("content");
-
-            return contentNode.asText();
-
+            return objectMapper.readTree(res);
         } catch (Exception e) {
             throw new RuntimeException("Failed to send request", e);
         }
     }
 
-    public EmbedResponseDto embedding(EmbedRequestDto embedRequestDto) {
+    public JsonNode embedding(EmbedRequestDto embedRequestDto) {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestBody = Map.of(
                 "model", "text-embedding-3-large",
                 "dimension", 3092,
                 "input", embedRequestDto.getEmbedText()
         );
-
         try {
             String res = connect(embedUrl).post()
                     .uri(embedUrl)
@@ -75,13 +68,8 @@ public class OpenAiService {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-            System.out.println(res);
-            JsonNode rootNode = objectMapper.readTree(res);
-            JsonNode embedding = rootNode.path("data").get(0).path("embedding");
-            JsonNode usage = rootNode.path("usage");
-            return new EmbedResponseDto(embedding, usage);
+            return objectMapper.readTree(res);
         } catch (Exception e) {
-            System.out.println(e);
             throw new RuntimeException("", e);
         }
 

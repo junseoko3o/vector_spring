@@ -1,7 +1,7 @@
 package com.milvus.vector_spring.openai;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
-import com.milvus.vector_spring.openai.dto.EmbedResponseDto;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,12 +19,12 @@ public class OpenAiController {
     }
 
     @PostMapping("/test")
-    public String test(@RequestBody ChatRequestDto chatRequestDto) {
+    public JsonNode test(@RequestBody ChatRequestDto chatRequestDto) {
         return openAiService.chat(chatRequestDto);
     }
 
     @PostMapping("/embed")
-    public EmbedResponseDto test(@RequestBody EmbedRequestDto embedRequestDto) {
+    public JsonNode test(@RequestBody EmbedRequestDto embedRequestDto) {
         return openAiService.embedding(embedRequestDto);
     }
 }

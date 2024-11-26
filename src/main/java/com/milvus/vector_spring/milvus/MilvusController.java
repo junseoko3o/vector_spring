@@ -1,9 +1,7 @@
 package com.milvus.vector_spring.milvus;
 
 import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
-import com.milvus.vector_spring.openai.dto.EmbedResponseDto;
-import io.milvus.v2.service.vector.request.UpsertReq;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.milvus.v2.service.vector.response.UpsertResp;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -40,10 +38,10 @@ public class MilvusController {
     }
 
     @PostMapping("/upsert")
-    public UpsertReq upsertCollection(
+    public UpsertResp upsertCollection(
             @RequestParam long id,
             @RequestBody EmbedResponseDto embedResponseDto,
-            @RequestBody ContentCreateRequestDto contentCreateRequestDto) {
+            @RequestBody ContentCreateRequestDto contentCreateRequestDto) throws IOException {
 
         return milvusService.upsertCollection(id, embedResponseDto, contentCreateRequestDto);
     }

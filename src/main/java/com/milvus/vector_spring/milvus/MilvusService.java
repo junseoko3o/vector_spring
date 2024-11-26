@@ -1,9 +1,11 @@
 package com.milvus.vector_spring.milvus;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
-import com.milvus.vector_spring.openai.dto.EmbedResponseDto;
+import com.milvus.vector_spring.milvus.dto.InsertRequestDto;
 import io.milvus.v2.client.ConnectConfig;
 import io.milvus.v2.client.MilvusClientV2;
 import io.milvus.v2.common.DataType;
@@ -17,6 +19,7 @@ import io.milvus.v2.service.vector.request.DeleteReq;
 import io.milvus.v2.service.vector.request.UpsertReq;
 import io.milvus.v2.service.vector.response.DeleteResp;
 import io.milvus.v2.service.vector.response.UpsertResp;
+import org.apache.avro.data.Json;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -124,18 +127,19 @@ public class MilvusService implements MilvusInterface {
         return res;
     }
 
-    public UpsertResp upsertCollection(long id, EmbedResponseDto embedResponseDto, ContentCreateRequestDto contentCreateRequestDto) throws IOException {
+    public UpsertResp upsertCollection(long id, InsertRequestDto insertRequestDto) throws IOException {
         MilvusClientV2 client = connect();
-        JsonArray embeddingArray = new JsonArray();
-        embedResponseDto.getEmbedding().forEach(embeddingArray::add);
+        JsonObject dataObject = new JsonObject();
+        JsonArray vectorArray = new JsonArray();
+        for (Float v : insertRequestDto.getVector()) {
+            vectorArray.add(v);
+        }
+        dataObject.addProperty("id", id);
+        dataObject.add("vector", vectorArray);
+        dataObject.addProperty("title", insertRequestDto.getTitle());
+        dataObject.addProperty("answer", insertRequestDto.getAnswer());
 
-        JsonObject jsonData = new JsonObject();
-        jsonData.addProperty("id", id);
-        jsonData.add("vector", embeddingArray);
-        jsonData.addProperty("title", contentCreateRequestDto.getTitle());
-        jsonData.addProperty("answer", contentCreateRequestDto.getAnswer());
-
-        List<JsonObject> data = Arrays.asList(jsonData);
+        List<JsonObject> data = Arrays.asList(dataObject);
         UpsertReq upsertReq = UpsertReq.builder()
                 .collectionName(collectionName)
                 .data(data)

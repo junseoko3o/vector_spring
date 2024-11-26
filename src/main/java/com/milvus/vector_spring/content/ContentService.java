@@ -3,8 +3,6 @@ package com.milvus.vector_spring.content;
 import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
 import com.milvus.vector_spring.milvus.MilvusService;
 import com.milvus.vector_spring.openai.OpenAiService;
-import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
-import com.milvus.vector_spring.openai.dto.EmbedResponseDto;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -30,13 +28,7 @@ public class ContentService {
                 .build();
 
         String answer = contentCreateRequestDto.getAnswer();
-        EmbedRequestDto embedRequestDto = EmbedRequestDto.builder()
-                .embedText(answer)
-                .build();
-        EmbedResponseDto embedResponseDto = openAiService.embedding(embedRequestDto);
-
-        Content content1 = contentRepository.save(content);
 //        milvusService.upsertCollection(content1.getId(), embedResponseDto, contentCreateRequestDto);
-        return content1;
+        return content;
     }
 }
