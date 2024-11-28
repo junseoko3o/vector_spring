@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.milvus.vector_spring.common.Const.USER_ID;
 
@@ -17,6 +18,12 @@ import static com.milvus.vector_spring.common.Const.USER_ID;
 public class ContentController {
 
     private final ContentService contentService;
+
+    @GetMapping()
+    public ApiResponse<List<Content>> findAllContent() {
+        List<Content> contentList = contentService.findAllContent();
+        return ApiResponse.ok(contentList);
+    }
 
     @PostMapping("/create")
     public ApiResponse<ContentCreateResponseDto> createContent(

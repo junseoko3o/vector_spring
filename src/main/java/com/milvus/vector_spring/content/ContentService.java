@@ -29,6 +29,10 @@ public class ContentService {
     private final OpenAiService openAiService;
     private final MilvusService milvusService;
 
+    public List<Content> findAllContent() {
+        return contentRepository.findAll();
+    }
+
     @Transactional
     public Content createContent(long userId, ContentCreateRequestDto contentCreateRequestDto) throws CustomException {
         User user = userService.findOneUser(userId);
