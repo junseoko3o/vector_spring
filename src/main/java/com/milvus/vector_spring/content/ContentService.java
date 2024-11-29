@@ -33,6 +33,12 @@ public class ContentService {
         return contentRepository.findAll();
     }
 
+    public Content findOneContById(Long id) throws CustomException{
+        return contentRepository.findById(id).orElseThrow(
+                () -> new CustomException(ErrorStatus._NOT_FOUND_CONTENT)
+        );
+    }
+    
     @Transactional
     public Content createContent(long userId, ContentCreateRequestDto contentCreateRequestDto) throws CustomException {
         User user = userService.findOneUser(userId);

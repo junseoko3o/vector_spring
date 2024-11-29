@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
+import static com.milvus.vector_spring.common.Const.CONTENT_ID;
 import static com.milvus.vector_spring.common.Const.USER_ID;
 
 @RestController
@@ -25,11 +26,17 @@ public class ContentController {
         return ApiResponse.ok(contentList);
     }
 
+    @GetMapping("/{id}")
+    public ApiResponse<Content> findOneContentById(@RequestHeader(CONTENT_ID) long id) {
+        Content content = contentService.findOneContById(id);
+        return ApiResponse.ok(content);
+    }
+
     @PostMapping("/create")
     public ApiResponse<ContentCreateResponseDto> createContent(
             @RequestHeader(USER_ID) long userId,
             @Validated @RequestBody ContentCreateRequestDto contentCreateRequestDto
-            ) throws IOException {
+            ) {
         Content content = contentService.createContent(userId, contentCreateRequestDto);
         ContentCreateResponseDto response = ContentCreateResponseDto.of(content);
         return ApiResponse.ok(response);

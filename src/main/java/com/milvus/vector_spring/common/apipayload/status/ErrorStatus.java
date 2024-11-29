@@ -19,6 +19,7 @@ public enum ErrorStatus implements BaseCode {
     _SQL_ERROR(HttpStatus.BAD_REQUEST, "400", "SQL 오류"),
     _MILVUS_DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "Milvus 오류"),
     _OPEN_AI_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "Open AI 에러"),
+    _NOT_FOUND_CONTENT(HttpStatus.NOT_FOUND, "400", "컨텐츠 없음"),
     ;
 
 
