@@ -38,7 +38,7 @@ public class ContentService {
                 () -> new CustomException(ErrorStatus._NOT_FOUND_CONTENT)
         );
     }
-    
+
     @Transactional
     public Content createContent(long userId, ContentCreateRequestDto contentCreateRequestDto) throws CustomException {
         User user = userService.findOneUser(userId);
