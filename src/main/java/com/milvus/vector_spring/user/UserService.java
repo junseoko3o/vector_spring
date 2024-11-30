@@ -2,6 +2,7 @@ package com.milvus.vector_spring.user;
 
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
+import com.milvus.vector_spring.user.dto.UserContentsResponseDto;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,19 @@ public class UserService {
         userRepository.findByEmail(email).ifPresent(user -> {
             throw new CustomException(ErrorStatus._DUPLICATE_USER_EMAIL);
         });
+    }
+
+    public UserContentsResponseDto findOneUserWithContents(Long id) {
+        User user = userRepository.findOneUserWithContents(id);
+        return new UserContentsResponseDto(
+                user.getId(),
+                user.getEmail(),
+                user.getUsername(),
+                user.getLoginAt(),
+                user.getCreatedAt(),
+                user.getUpdatedAt(),
+                user.getContents()
+        );
     }
 
     public User signUpUser(UserSignUpRequestDto userSignUpRequestDto) {
