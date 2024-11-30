@@ -6,6 +6,7 @@ import com.milvus.vector_spring.user.dto.UserContentsResponseDto;
 import com.milvus.vector_spring.user.dto.UserResponseDto;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,8 +41,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<UserContentsResponseDto> getUser(@PathVariable() Long id) throws CustomException {
+    public ResponseEntity<UserContentsResponseDto> getUser(@PathVariable() Long id) throws CustomException {
         UserContentsResponseDto user = userService.findOneUserWithContents(id);
-        return ApiResponse.ok(user);
+        return ResponseEntity.ok(user);
     }
 }

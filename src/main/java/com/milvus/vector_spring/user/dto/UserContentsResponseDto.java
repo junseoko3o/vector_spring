@@ -1,6 +1,7 @@
 package com.milvus.vector_spring.user.dto;
 
-import com.milvus.vector_spring.content.Content;
+import com.milvus.vector_spring.content.dto.ContentResponseDto;
+import com.milvus.vector_spring.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,19 +17,17 @@ public class UserContentsResponseDto {
     private LocalDateTime loginAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<Content> contents;
+    private List<ContentResponseDto> contents;
 
-    public UserContentsResponseDto(
-            Long id, String email, String username,
-            LocalDateTime loginAt, LocalDateTime createdAt,
-            LocalDateTime updatedAt, List<Content> contents
-    ) {
-        this.id = id;
-        this.email = email;
-        this.username = username;
-        this.loginAt = loginAt;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.contents = contents;
+    public UserContentsResponseDto(User user) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.username = user.getUsername();
+        this.loginAt = user.getLoginAt();
+        this.createdAt = user.getCreatedAt();
+        this.updatedAt = user.getUpdatedAt();
+        this.contents = user.getContents().stream()
+                .map(ContentResponseDto::of)
+                .toList();
     }
 }

@@ -2,12 +2,11 @@ package com.milvus.vector_spring.content;
 
 import com.milvus.vector_spring.common.apipayload.ApiResponse;
 import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
-import com.milvus.vector_spring.content.dto.ContentCreateResponseDto;
+import com.milvus.vector_spring.content.dto.ContentResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 import static com.milvus.vector_spring.common.Const.CONTENT_ID;
@@ -33,12 +32,12 @@ public class ContentController {
     }
 
     @PostMapping("/create")
-    public ApiResponse<ContentCreateResponseDto> createContent(
+    public ApiResponse<ContentResponseDto> createContent(
             @RequestHeader(USER_ID) long userId,
             @Validated @RequestBody ContentCreateRequestDto contentCreateRequestDto
             ) {
         Content content = contentService.createContent(userId, contentCreateRequestDto);
-        ContentCreateResponseDto response = ContentCreateResponseDto.of(content);
+        ContentResponseDto response = ContentResponseDto.of(content);
         return ApiResponse.ok(response);
     }
 }

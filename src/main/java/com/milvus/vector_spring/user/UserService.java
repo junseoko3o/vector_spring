@@ -33,15 +33,7 @@ public class UserService {
 
     public UserContentsResponseDto findOneUserWithContents(Long id) {
         User user = userRepository.findOneUserWithContents(id);
-        return new UserContentsResponseDto(
-                user.getId(),
-                user.getEmail(),
-                user.getUsername(),
-                user.getLoginAt(),
-                user.getCreatedAt(),
-                user.getUpdatedAt(),
-                user.getContents()
-        );
+        return new UserContentsResponseDto(user);
     }
 
     public User signUpUser(UserSignUpRequestDto userSignUpRequestDto) {
