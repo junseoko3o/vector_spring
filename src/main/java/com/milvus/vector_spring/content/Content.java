@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
 
 import java.time.LocalDateTime;
 
@@ -28,6 +30,16 @@ public class Content extends BaseEntity {
     @ManyToOne()
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
+
+    @CreatedBy
+    @ManyToOne
+    @JoinColumn(name = "created_user_id", nullable = false)
+    protected User createdBy;
+
+    @LastModifiedBy
+    @ManyToOne
+    @JoinColumn(name = "updated_user_id")
+    protected User updatedBy;
 
     @Builder
     public Content(Long id, String title, String answer, Project projects, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {

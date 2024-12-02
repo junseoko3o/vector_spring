@@ -2,9 +2,12 @@ package com.milvus.vector_spring.project;
 
 import com.milvus.vector_spring.common.BaseEntity;
 import com.milvus.vector_spring.content.Content;
+import com.milvus.vector_spring.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,4 +27,15 @@ public class Project extends BaseEntity {
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Content> contents= new ArrayList<>();
+
+    @CreatedBy
+    @ManyToOne
+    @JoinColumn(name = "created_user_id", nullable = false)
+    protected User createdBy;
+
+    @LastModifiedBy
+    @ManyToOne
+    @JoinColumn(name = "updated_user_id")
+    protected User updatedBy;
+
 }
