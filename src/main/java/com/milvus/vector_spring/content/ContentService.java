@@ -54,29 +54,22 @@ public class ContentService {
     public Content updateContent(long id, ContentUpdateRequestDto contentUpdateRequestDto) {
         User user = userService.findOneUser(contentUpdateRequestDto.getUpdatedUserId());
         Content content = findOneContById(id);
-        if (!content.getAnswer().equals(contentUpdateRequestDto.getAnswer())) {
-            Content updateContent = Content.builder()
-                    .id(content.getId())
-                    .title(content.getTitle())
-                    .answer(contentUpdateRequestDto.getAnswer())
-                    .createdContentUser(content.getCreatedContentUser())
-                    .createdAt(content.getCreatedAt())
-                    .updatedContentUser(user)
-                    .build();
+        Content updateContent = Content.builder()
+                .id(content.getId())
+                .title(contentUpdateRequestDto.getTitle())
+                .answer(contentUpdateRequestDto.getAnswer())
+                .createdContentUser(content.getCreatedContentUser())
+                .createdAt(content.getCreatedAt())
+                .updatedContentUser(user)
+                .build();
 
+        if(!content.getAnswer().equals(contentUpdateRequestDto.getAnswer())) {
             OpenAiEmbedResponseDto embedResponseDto = fetchEmbedding(updateContent.getAnswer());
             insertIntoMilvus(updateContent, embedResponseDto);
             return contentRepository.save(updateContent);
-        } else {
-            return Content.builder()
-                    .id(content.getId())
-                    .title(contentUpdateRequestDto.getTitle())
-                    .answer(content.getAnswer())
-                    .createdContentUser(content.getCreatedContentUser())
-                    .createdAt(content.getCreatedAt())
-                    .updatedContentUser(user)
-                    .build();
         }
+
+        return contentRepository.save(updateContent);
     }
 
     private Content buildContent(ContentCreateRequestDto contentCreateRequestDto, User user) {
