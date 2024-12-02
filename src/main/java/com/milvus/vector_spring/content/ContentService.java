@@ -58,9 +58,9 @@ public class ContentService {
                 .id(content.getId())
                 .title(contentUpdateRequestDto.getTitle())
                 .answer(contentUpdateRequestDto.getAnswer())
-                .createdContentUser(content.getCreatedContentUser())
+                .createdBy(content.getCreatedBy())
                 .createdAt(content.getCreatedAt())
-                .updatedContentUser(user)
+                .updatedBy(user)
                 .build();
 
         if(!content.getAnswer().equals(contentUpdateRequestDto.getAnswer())) {
@@ -76,8 +76,8 @@ public class ContentService {
         return Content.builder()
                 .title(contentCreateRequestDto.getTitle())
                 .answer(contentCreateRequestDto.getAnswer())
-                .createdContentUser(user)
-                .updatedContentUser(user)
+                .createdBy(user)
+                .updatedBy(user)
                 .build();
     }
 

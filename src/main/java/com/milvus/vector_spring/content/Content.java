@@ -1,21 +1,19 @@
 package com.milvus.vector_spring.content;
 
-import com.milvus.vector_spring.common.BaseTimeEntity;
+import com.milvus.vector_spring.common.BaseEntity;
+import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.user.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
-import com.milvus.vector_spring.project.Project;
 
 import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
 @Getter
-public class Content extends BaseTimeEntity {
+public class Content extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -31,24 +29,15 @@ public class Content extends BaseTimeEntity {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    @CreatedBy
-    @ManyToOne()
-    @JoinColumn(name = "created_user_id", nullable = false)
-    private User createdContentUser;
-
-    @LastModifiedBy
-    @ManyToOne()
-    @JoinColumn(name = "updated_user_id", nullable = true)
-    private User updatedContentUser;
-
     @Builder
-    public Content(Long id, String title, String answer, Project projects, User createdContentUser, User updatedContentUser, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Content(Long id, String title, String answer, Project projects, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
+        super();
         this.id = id;
         this.title = title;
         this.answer = answer;
         this.project = projects;
-        this.createdContentUser = createdContentUser;
-        this.updatedContentUser = updatedContentUser;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

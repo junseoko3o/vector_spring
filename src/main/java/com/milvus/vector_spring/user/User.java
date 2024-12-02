@@ -1,7 +1,8 @@
 package com.milvus.vector_spring.user;
 
-import com.milvus.vector_spring.common.BaseTimeEntity;
+import com.milvus.vector_spring.common.BaseEntity;
 import com.milvus.vector_spring.content.Content;
+import com.milvus.vector_spring.project.Project;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -9,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.milvus.vector_spring.project.Project;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "user")
-public class User extends BaseTimeEntity implements UserDetails {
+public class User extends BaseEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -38,20 +38,20 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(name = "login_at")
     private LocalDateTime loginAt;
 
-    @OneToMany(mappedBy = "createdContentUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Content> createdContentUser = new ArrayList<>();
 
-    @OneToMany(mappedBy = "updatedContentUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Content> updatedContentUser= new ArrayList<>();
+    @OneToMany(mappedBy = "updatedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Content> updatedContentUser = new ArrayList<>();
 
-    @OneToMany(mappedBy = "createdProjectUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Project> createdProjectUser = new ArrayList<>();
 
-    @OneToMany(mappedBy = "updatedProjectUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Project> updatedProjectUser= new ArrayList<>();
+    @OneToMany(mappedBy = "updatedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Project> updatedProjectUser = new ArrayList<>();
 
     @Builder
-    public User(long id, String email, String username, String password, LocalDateTime loginAt) {
+    public User(long id, String email, String username, String password, LocalDateTime loginAt, User createdBy) {
         this.id = id;
         this.email = email;
         this.username = username;
