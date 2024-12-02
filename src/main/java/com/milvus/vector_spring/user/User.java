@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.milvus.vector_spring.project.Project;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,11 +38,17 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(name = "login_at")
     private LocalDateTime loginAt;
 
-    @OneToMany(mappedBy = "createdUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Content> createdUser = new ArrayList<>();
+    @OneToMany(mappedBy = "createdContentUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Content> createdContentUser = new ArrayList<>();
 
-    @OneToMany(mappedBy = "updatedUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Content> updatedUser= new ArrayList<>();
+    @OneToMany(mappedBy = "updatedContentUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Content> updatedContentUser= new ArrayList<>();
+
+    @OneToMany(mappedBy = "createdProjectUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Project> createdProjectUser = new ArrayList<>();
+
+    @OneToMany(mappedBy = "updatedProjectUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Project> updatedProjectUser= new ArrayList<>();
 
     @Builder
     public User(long id, String email, String username, String password, LocalDateTime loginAt) {

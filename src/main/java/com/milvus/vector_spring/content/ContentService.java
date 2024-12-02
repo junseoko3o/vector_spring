@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,9 +59,9 @@ public class ContentService {
                     .id(content.getId())
                     .title(content.getTitle())
                     .answer(contentUpdateRequestDto.getAnswer())
-                    .createdUser(content.getCreatedUser())
+                    .createdContentUser(content.getCreatedContentUser())
                     .createdAt(content.getCreatedAt())
-                    .updatedUser(user)
+                    .updatedContentUser(user)
                     .build();
 
             OpenAiEmbedResponseDto embedResponseDto = fetchEmbedding(updateContent.getAnswer());
@@ -73,9 +72,9 @@ public class ContentService {
                     .id(content.getId())
                     .title(contentUpdateRequestDto.getTitle())
                     .answer(content.getAnswer())
-                    .createdUser(content.getCreatedUser())
+                    .createdContentUser(content.getCreatedContentUser())
                     .createdAt(content.getCreatedAt())
-                    .updatedUser(user)
+                    .updatedContentUser(user)
                     .build();
         }
     }
@@ -84,8 +83,8 @@ public class ContentService {
         return Content.builder()
                 .title(contentCreateRequestDto.getTitle())
                 .answer(contentCreateRequestDto.getAnswer())
-                .createdUser(user)
-                .updatedUser(user)
+                .createdContentUser(user)
+                .updatedContentUser(user)
                 .build();
     }
 

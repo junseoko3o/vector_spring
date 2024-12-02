@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
+import com.milvus.vector_spring.project.Project;
 
 import java.time.LocalDateTime;
 
@@ -26,23 +27,28 @@ public class Content extends BaseTimeEntity {
     @Column(name = "answer", nullable = false)
     private String answer;
 
+    @ManyToOne()
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
+
     @CreatedBy
     @ManyToOne()
     @JoinColumn(name = "created_user_id", nullable = false)
-    private User createdUser;
+    private User createdContentUser;
 
     @LastModifiedBy
     @ManyToOne()
     @JoinColumn(name = "updated_user_id", nullable = true)
-    private User updatedUser;
+    private User updatedContentUser;
 
     @Builder
-    public Content(Long id, String title, String answer, User createdUser, User updatedUser, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Content(Long id, String title, String answer, Project projects, User createdContentUser, User updatedContentUser, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
         this.answer = answer;
-        this.createdUser = createdUser;
-        this.updatedUser = updatedUser;
+        this.project = projects;
+        this.createdContentUser = createdContentUser;
+        this.updatedContentUser = updatedContentUser;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

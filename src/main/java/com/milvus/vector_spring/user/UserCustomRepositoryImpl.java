@@ -17,7 +17,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository{
         QContent content = QContent.content;
         return queryFactory
                 .selectFrom(user)
-                .leftJoin(user.createdUser, content).fetchJoin()
+                .leftJoin(user.createdContentUser, content).fetchJoin()
                 .where(user.id.eq(userId))
                 .fetchOne();
     }

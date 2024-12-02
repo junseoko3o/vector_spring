@@ -26,7 +26,7 @@ public class UserContentsResponseDto {
         this.loginAt = user.getLoginAt();
         this.createdAt = user.getCreatedAt();
         this.updatedAt = user.getUpdatedAt();
-        this.contents = user.getCreatedUser().stream()
+        this.contents = user.getCreatedContentUser().stream()
                 .map(ContentResponseDto::of)
                 .toList();
     }

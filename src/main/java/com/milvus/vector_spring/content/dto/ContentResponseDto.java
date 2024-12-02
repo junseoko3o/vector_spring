@@ -22,8 +22,8 @@ public class ContentResponseDto {
                 content.getId(),
                 content.getTitle(),
                 content.getAnswer(),
-                content.getCreatedUser().getId(),
-                content.getUpdatedUser().getId(),
+                content.getCreatedContentUser().getId(),
+                content.getUpdatedContentUser().getId(),
                 content.getCreatedAt(),
                 content.getUpdatedAt()
         );
