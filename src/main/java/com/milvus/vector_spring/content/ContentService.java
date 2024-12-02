@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,16 +57,24 @@ public class ContentService {
         Content content = findOneContById(id);
         if (!content.getAnswer().equals(contentUpdateRequestDto.getAnswer())) {
             Content updateContent = Content.builder()
+                    .id(content.getId())
+                    .title(content.getTitle())
                     .answer(contentUpdateRequestDto.getAnswer())
+                    .createdUser(content.getCreatedUser())
+                    .createdAt(content.getCreatedAt())
                     .updatedUser(user)
                     .build();
+
             OpenAiEmbedResponseDto embedResponseDto = fetchEmbedding(updateContent.getAnswer());
             insertIntoMilvus(updateContent, embedResponseDto);
             return contentRepository.save(updateContent);
         } else {
             return Content.builder()
+                    .id(content.getId())
                     .title(contentUpdateRequestDto.getTitle())
-                    .answer(contentUpdateRequestDto.getAnswer())
+                    .answer(content.getAnswer())
+                    .createdUser(content.getCreatedUser())
+                    .createdAt(content.getCreatedAt())
                     .updatedUser(user)
                     .build();
         }
@@ -119,7 +128,7 @@ public class ContentService {
                     .title(content.getTitle())
                     .answer(content.getAnswer())
                     .build();
-            milvusService.upsertCollection(1, insertRequestDto);
+            milvusService.upsertCollection(insertRequestDto.getId(), insertRequestDto);
         } catch (Exception e) {
             throw new CustomException(ErrorStatus._MILVUS_DATABASE_ERROR);
         }

@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 
+import java.time.LocalDateTime;
+
 @Entity
 @NoArgsConstructor
 @Getter
@@ -35,10 +37,13 @@ public class Content extends BaseTimeEntity {
     private User updatedUser;
 
     @Builder
-    public Content(String title, String answer, User createdUser, User updatedUser) {
+    public Content(Long id, String title, String answer, User createdUser, User updatedUser, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
         this.title = title;
         this.answer = answer;
         this.createdUser = createdUser;
         this.updatedUser = updatedUser;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }
