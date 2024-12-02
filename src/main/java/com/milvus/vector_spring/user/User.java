@@ -37,8 +37,11 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(name = "login_at")
     private LocalDateTime loginAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) // fetch = FetchType.EAGER (즉시로딩)
-    private List<Content> contents= new ArrayList<>();
+    @OneToMany(mappedBy = "createdUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Content> createdUser = new ArrayList<>();
+
+    @OneToMany(mappedBy = "updatedUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Content> updatedUser= new ArrayList<>();
 
     @Builder
     public User(long id, String email, String username, String password, LocalDateTime loginAt) {

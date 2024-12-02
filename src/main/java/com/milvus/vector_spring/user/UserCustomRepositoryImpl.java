@@ -11,17 +11,14 @@ public class UserCustomRepositoryImpl implements UserCustomRepository{
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-
     @Override
     public User findOneUserWithContents(Long userId) {
         QUser user = QUser.user;
         QContent content = QContent.content;
-
-        User fetchedUser = queryFactory
+        return queryFactory
                 .selectFrom(user)
-                .leftJoin(user.contents, content).fetchJoin()
+                .leftJoin(user.createdUser, content).fetchJoin()
                 .where(user.id.eq(userId))
                 .fetchOne();
-        return fetchedUser;
     }
 }

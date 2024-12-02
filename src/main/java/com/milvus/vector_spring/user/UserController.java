@@ -6,7 +6,6 @@ import com.milvus.vector_spring.user.dto.UserContentsResponseDto;
 import com.milvus.vector_spring.user.dto.UserResponseDto;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +21,9 @@ public class UserController {
     }
 
     @GetMapping()
-    public List<User> findAllUser() {
-        return userService.findAllUser();
+    public ApiResponse<List<User>> findAllUser() {
+        List<User> users = userService.findAllUser();
+        return ApiResponse.ok(users);
     }
 
     @PostMapping("/sign-up")
@@ -41,8 +41,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserContentsResponseDto> getUser(@PathVariable() Long id) throws CustomException {
+    public ApiResponse<UserContentsResponseDto> getUser(@PathVariable("id") Long id) throws CustomException {
         UserContentsResponseDto user = userService.findOneUserWithContents(id);
-        return ResponseEntity.ok(user);
+        return ApiResponse.ok(user);
     }
 }

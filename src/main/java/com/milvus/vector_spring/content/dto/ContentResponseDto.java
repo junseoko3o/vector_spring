@@ -12,7 +12,8 @@ public class ContentResponseDto {
     private final Long id;
     private final String title;
     private final String answer;
-    private final Long userId;
+    private final Long createdUser;
+    private final Long updatedUser;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
@@ -21,7 +22,8 @@ public class ContentResponseDto {
                 content.getId(),
                 content.getTitle(),
                 content.getAnswer(),
-                content.getUser().getId(),
+                content.getCreatedUser().getId(),
+                content.getUpdatedUser().getId(),
                 content.getCreatedAt(),
                 content.getUpdatedAt()
         );

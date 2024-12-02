@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
 
 @Entity
 @NoArgsConstructor
@@ -22,14 +24,21 @@ public class Content extends BaseTimeEntity {
     @Column(name = "answer", nullable = false)
     private String answer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @CreatedBy
+    @ManyToOne()
+    @JoinColumn(name = "created_user_id", nullable = false)
+    private User createdUser;
+
+    @LastModifiedBy
+    @ManyToOne()
+    @JoinColumn(name = "updated_user_id", nullable = true)
+    private User updatedUser;
 
     @Builder
-    public Content(String title, String answer, User user) {
+    public Content(String title, String answer, User createdUser, User updatedUser) {
         this.title = title;
         this.answer = answer;
-        this.user = user;
+        this.createdUser = createdUser;
+        this.updatedUser = updatedUser;
     }
 }

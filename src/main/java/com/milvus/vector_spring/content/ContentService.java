@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
+import com.milvus.vector_spring.content.dto.ContentUpdateRequestDto;
 import com.milvus.vector_spring.milvus.MilvusService;
 import com.milvus.vector_spring.milvus.dto.InsertRequestDto;
 import com.milvus.vector_spring.openai.OpenAiService;
@@ -49,11 +50,33 @@ public class ContentService {
         return savedContent;
     }
 
+    @Transactional
+    public Content updateContent(long id, ContentUpdateRequestDto contentUpdateRequestDto) {
+        User user = userService.findOneUser(contentUpdateRequestDto.getUpdatedUserId());
+        Content content = findOneContById(id);
+        if (!content.getAnswer().equals(contentUpdateRequestDto.getAnswer())) {
+            Content updateContent = Content.builder()
+                    .answer(contentUpdateRequestDto.getAnswer())
+                    .updatedUser(user)
+                    .build();
+            OpenAiEmbedResponseDto embedResponseDto = fetchEmbedding(updateContent.getAnswer());
+            insertIntoMilvus(updateContent, embedResponseDto);
+            return contentRepository.save(updateContent);
+        } else {
+            return Content.builder()
+                    .title(contentUpdateRequestDto.getTitle())
+                    .answer(contentUpdateRequestDto.getAnswer())
+                    .updatedUser(user)
+                    .build();
+        }
+    }
+
     private Content buildContent(ContentCreateRequestDto contentCreateRequestDto, User user) {
         return Content.builder()
                 .title(contentCreateRequestDto.getTitle())
                 .answer(contentCreateRequestDto.getAnswer())
-                .user(user)
+                .createdUser(user)
+                .updatedUser(user)
                 .build();
     }
 
