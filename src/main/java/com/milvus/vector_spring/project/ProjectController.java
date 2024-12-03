@@ -1,7 +1,9 @@
 package com.milvus.vector_spring.project;
 
 import com.milvus.vector_spring.common.apipayload.ApiResponse;
+import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.project.Project;
+import com.milvus.vector_spring.project.dto.ProjectContentsResponseDto;
 import com.milvus.vector_spring.project.dto.ProjectCreateRequestDto;
 import com.milvus.vector_spring.project.dto.ProjectResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,12 @@ public class ProjectController {
     @GetMapping()
     public ApiResponse<Project> findOneProjectByKey(@RequestParam String key) {
         Project project = projectService.findOneProjectByKey(key);
+        return ApiResponse.ok(project);
+    }
+
+    @GetMapping("/contents")
+    public ApiResponse<ProjectContentsResponseDto> findOneProjectWithContents(@RequestParam String key) {
+        ProjectContentsResponseDto project = projectService.findOneProjectWithContents(key);
         return ApiResponse.ok(project);
     }
 

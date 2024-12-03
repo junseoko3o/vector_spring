@@ -4,6 +4,7 @@ import com.milvus.vector_spring.common.EncryptionService;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.milvus.MilvusService;
+import com.milvus.vector_spring.project.dto.ProjectContentsResponseDto;
 import com.milvus.vector_spring.project.dto.ProjectCreateRequestDto;
 import com.milvus.vector_spring.project.dto.ProjectResponseDto;
 import com.milvus.vector_spring.user.User;
@@ -37,6 +38,12 @@ public class ProjectService {
         return projectRepository.findByProjectKey(key).orElseThrow(
                 () -> new CustomException(ErrorStatus._NOT_FOUND_PROJECT)
         );
+    }
+
+    public ProjectContentsResponseDto findOneProjectWithContents(String key) {
+        projectRepository.findByProjectKey(key);
+        Project project = projectRepository.findOneProjectWithContents(key);
+        return new ProjectContentsResponseDto(project);
     }
 
     public Project createProject(ProjectCreateRequestDto projectCreateRequestDto) {

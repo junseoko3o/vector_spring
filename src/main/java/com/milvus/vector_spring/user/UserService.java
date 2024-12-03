@@ -32,6 +32,7 @@ public class UserService {
     }
 
     public UserProjectsResponseDto fineOneUserWithProjects(Long id) {
+        userRepository.findById(id);
         User user = userRepository.fineOneUserWithProjects(id);
         return new UserProjectsResponseDto(user);
     }
