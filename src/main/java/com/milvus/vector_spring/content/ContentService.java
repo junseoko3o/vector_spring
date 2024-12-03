@@ -2,6 +2,7 @@ package com.milvus.vector_spring.content;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.milvus.vector_spring.common.EncryptionService;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
@@ -12,6 +13,8 @@ import com.milvus.vector_spring.openai.OpenAiService;
 import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
 import com.milvus.vector_spring.openai.dto.OpenAiEmbedResponseDto;
 import com.milvus.vector_spring.openai.dto.OpenAiUsageResponseDto;
+import com.milvus.vector_spring.project.Project;
+import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +30,10 @@ public class ContentService {
 
     private final ContentRepository contentRepository;
     private final UserService userService;
+    private final ProjectService projectService;
     private final OpenAiService openAiService;
     private final MilvusService milvusService;
+    private final EncryptionService encryptionService;
 
     public List<Content> findAllContent() {
         return contentRepository.findAll();
@@ -43,8 +48,13 @@ public class ContentService {
     @Transactional
     public Content createContent(long userId, ContentCreateRequestDto contentCreateRequestDto) throws CustomException {
         User user = userService.findOneUser(userId);
+        Project project = projectService.findOneProjectByKey(contentCreateRequestDto.getProjectKey());
+        if (project.getOpenAiKey().isEmpty()) {
+            throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
+        }
+        String key = encryptionService.decryptData(project.getOpenAiKey());
         Content content = buildContent(contentCreateRequestDto, user);
-        OpenAiEmbedResponseDto embedResponseDto = fetchEmbedding(content.getAnswer());
+        OpenAiEmbedResponseDto embedResponseDto = fetchEmbedding(key, content.getAnswer());
         Content savedContent = contentRepository.save(content);
         insertIntoMilvus(savedContent, embedResponseDto);
         return savedContent;
@@ -54,6 +64,7 @@ public class ContentService {
     public Content updateContent(long id, ContentUpdateRequestDto contentUpdateRequestDto) {
         User user = userService.findOneUser(contentUpdateRequestDto.getUpdatedUserId());
         Content content = findOneContById(id);
+        Project project = projectService.findOneProject(content.getProject().getId());
         Content updateContent = Content.builder()
                 .id(content.getId())
                 .title(contentUpdateRequestDto.getTitle())
@@ -62,9 +73,9 @@ public class ContentService {
                 .createdAt(content.getCreatedAt())
                 .updatedBy(user)
                 .build();
-
+        String key = encryptionService.decryptData(project.getOpenAiKey());
         if(!content.getAnswer().equals(contentUpdateRequestDto.getAnswer())) {
-            OpenAiEmbedResponseDto embedResponseDto = fetchEmbedding(updateContent.getAnswer());
+            OpenAiEmbedResponseDto embedResponseDto = fetchEmbedding(key, updateContent.getAnswer());
             insertIntoMilvus(updateContent, embedResponseDto);
             return contentRepository.save(updateContent);
         }
@@ -81,9 +92,9 @@ public class ContentService {
                 .build();
     }
 
-    private OpenAiEmbedResponseDto fetchEmbedding(String answer) throws CustomException {
+    private OpenAiEmbedResponseDto fetchEmbedding(String openAiKey, String answer) throws CustomException {
         EmbedRequestDto embedRequestDto = new EmbedRequestDto(answer);
-        JsonNode jsonNode = openAiService.embedding(embedRequestDto);
+        JsonNode jsonNode = openAiService.embedding(openAiKey, embedRequestDto);
         JsonNode embeddingNode = jsonNode.get("data").get(0).get("embedding");
         List<Float> embeddingList = parseEmbedding(embeddingNode);
 

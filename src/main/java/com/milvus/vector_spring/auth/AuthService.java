@@ -24,7 +24,7 @@ public class AuthService {
         return UserLoginResponseDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
-                .loginAt(user.getLoginAt())
+                .loginAt(LocalDateTime.now())
                 .build();
     }
 }

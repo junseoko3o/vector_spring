@@ -17,6 +17,6 @@ public class UserLoginResponseDto {
         this.id = id;
         this.email = email;
         this.username = username;
-        this.loginAt = LocalDateTime.now();
+        this.loginAt = loginAt;
     }
 }

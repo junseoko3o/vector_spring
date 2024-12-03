@@ -23,6 +23,7 @@ public enum ErrorStatus implements BaseCode {
     _NOT_FOUND_CONTENT(HttpStatus.NOT_FOUND, "400", "컨텐츠 없음"),
     _DECRYPTION_ERROR(HttpStatus.BAD_REQUEST, "400", "복호화 에러"),
     _ENCRYPTION_ERROR(HttpStatus.BAD_REQUEST, "400", "암호화 에러"),
+    _OPEN_AI_KEY_ERROR(HttpStatus.UNAUTHORIZED, "403", "OpenAI 키 에러"),
     ;
 
 

@@ -23,12 +23,9 @@ public class OpenAiService {
     @Value("${embed.url}")
     private String embedUrl;
 
-    @Value("${open.ai.key}")
-    private String openAiKey;
-
     private final WebClientConfig webClientConfig;
 
-    private WebClient connect(String url) {
+    private WebClient connect(String url, String openAiKey) {
         return webClientConfig.webClientBuilder()
                 .baseUrl(url)
                 .defaultHeader("Authorization", "Bearer " + openAiKey)
@@ -36,15 +33,14 @@ public class OpenAiService {
                 .build();
     }
 
-    public JsonNode chat(ChatRequestDto chatRequestDto) throws CustomException{
+    public JsonNode chat(String openAiKey, ChatRequestDto chatRequestDto) throws CustomException{
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestBody = Map.of(
                 "model", "gpt-4o",
                 "messages", List.of(chatRequestDto)
         );
         try {
-            String res = connect(openAiKey).post()
-                    .uri(openAiUrl)
+            String res = connect(openAiUrl, openAiKey).post()
                     .bodyValue(requestBody)
                     .retrieve()
                     .bodyToMono(String.class)
@@ -56,7 +52,7 @@ public class OpenAiService {
         }
     }
 
-    public JsonNode embedding(EmbedRequestDto embedRequestDto) throws CustomException {
+    public JsonNode embedding(String openAiKey, EmbedRequestDto embedRequestDto) throws CustomException {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestBody = Map.of(
                 "model", "text-embedding-3-large",
@@ -64,8 +60,7 @@ public class OpenAiService {
                 "input", embedRequestDto.getEmbedText()
         );
         try {
-            String res = connect(embedUrl).post()
-                    .uri(embedUrl)
+            String res = connect(embedUrl, openAiKey).post()
                     .bodyValue(requestBody)
                     .retrieve()
                     .bodyToMono(String.class)

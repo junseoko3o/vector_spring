@@ -1,5 +1,6 @@
 package com.milvus.vector_spring.project;
 
+import com.milvus.vector_spring.common.EncryptionService;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.milvus.MilvusService;
@@ -20,6 +21,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserService userService;
     private final MilvusService milvusService;
+    private final EncryptionService encryptionService;
 
     public List<Project> findAllProject() {
         return projectRepository.findAll();
@@ -42,6 +44,7 @@ public class ProjectService {
         Project project = Project.builder()
                 .name(projectCreateRequestDto.getName())
                 .key(String.valueOf(UUID.randomUUID()))
+                .openAiKey(encryptionService.encryptData(projectCreateRequestDto.getOpenAiKey()))
                 .createdBy(user)
                 .build();
         milvusService.createSchema(project.getId());

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 public class UserLoginRequestDto {
     @Email(message = "이메일 형식 이어야 한다.")
+    @NotBlank
     private String email;
 
     @NotBlank

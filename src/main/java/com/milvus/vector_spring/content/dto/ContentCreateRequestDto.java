@@ -5,4 +5,5 @@ import lombok.Getter;
 public class ContentCreateRequestDto {
     private String title;
     private String answer;
+    private String projectKey;
 }
