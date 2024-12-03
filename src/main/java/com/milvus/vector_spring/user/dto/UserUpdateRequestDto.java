@@ -9,4 +9,9 @@ public class UserUpdateRequestDto {
 
     @Email(message = "이메일 형식 이어야 한다.")
     private String email;
+
+    public UserUpdateRequestDto(String username, String email) {
+        this.username = username;
+        this.email = email;
+    }
 }

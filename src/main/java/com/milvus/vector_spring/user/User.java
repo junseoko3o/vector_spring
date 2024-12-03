@@ -55,7 +55,7 @@ public class User extends BaseEntity implements UserDetails {
     private List<Invite> invites = new ArrayList<>();
 
     @Builder
-    public User(long id, String email, String username, String password, LocalDateTime loginAt, User createdBy) {
+    public User(Long id, String email, String username, String password, LocalDateTime loginAt) {
         this.id = id;
         this.email = email;
         this.username = username;

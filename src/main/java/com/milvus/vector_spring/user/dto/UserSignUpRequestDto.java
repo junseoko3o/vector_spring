@@ -20,4 +20,9 @@ public class UserSignUpRequestDto {
         message = "비밀번호는 숫자, 문자, 특수문자 1개 이상 ")
     private String password;
 
+    public UserSignUpRequestDto(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 }
