@@ -7,10 +7,12 @@ import com.milvus.vector_spring.milvus.MilvusService;
 import com.milvus.vector_spring.project.dto.ProjectContentsResponseDto;
 import com.milvus.vector_spring.project.dto.ProjectCreateRequestDto;
 import com.milvus.vector_spring.project.dto.ProjectResponseDto;
+import com.milvus.vector_spring.project.dto.ProjectUpdateRequestDto;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -46,6 +48,7 @@ public class ProjectService {
         return new ProjectContentsResponseDto(project);
     }
 
+    @Transactional
     public Project createProject(ProjectCreateRequestDto projectCreateRequestDto) {
         User user = userService.findOneUser(projectCreateRequestDto.getCreateUserId());
         Project project = Project.builder()
@@ -56,5 +59,30 @@ public class ProjectService {
                 .build();
         milvusService.createSchema(project.getId());
         return projectRepository.save(project);
+    }
+
+    @Transactional
+    public Project updateProject(String key, ProjectUpdateRequestDto projectUpdateRequestDto) {
+        User user = userService.findOneUser(projectUpdateRequestDto.getUpdatedUserId());
+        Project project = findOneProjectByKey(key);
+        String secretKey = resolveOpenAiKey(project, projectUpdateRequestDto);
+        Project updateProject = Project.builder()
+                .id(project.getId())
+                .name(projectUpdateRequestDto.getName())
+                .openAiKey(secretKey)
+                .updatedBy(user)
+                .build();
+        return projectRepository.save(updateProject);
+    }
+
+    private String resolveOpenAiKey(Project project, ProjectUpdateRequestDto projectUpdateRequestDto) {
+        if (!project.getOpenAiKey().isEmpty()
+                && encryptionService.decryptData(project.getOpenAiKey()).equals(projectUpdateRequestDto.getOpenAiKey())) {
+            return project.getOpenAiKey();
+        } else if (project.getOpenAiKey().isEmpty()) {
+            return null;
+        } else {
+            return encryptionService.encryptData(projectUpdateRequestDto.getOpenAiKey());
+        }
     }
 }

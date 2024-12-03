@@ -6,11 +6,14 @@ import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.dto.ProjectContentsResponseDto;
 import com.milvus.vector_spring.project.dto.ProjectCreateRequestDto;
 import com.milvus.vector_spring.project.dto.ProjectResponseDto;
+import com.milvus.vector_spring.project.dto.ProjectUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.milvus.vector_spring.common.Const.PROJECT_ID;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,4 +50,11 @@ public class ProjectController {
         Project project = projectService.createProject(projectCreateRequestDto);
         return ApiResponse.ok(project);
     }
+
+    @PostMapping("/update")
+    public ApiResponse<Project> updateProject(@RequestParam() String key, ProjectUpdateRequestDto projectUpdateRequestDto) {
+        Project project = projectService.updateProject(key, projectUpdateRequestDto);
+        return ApiResponse.ok(project);
+    }
+
 }
