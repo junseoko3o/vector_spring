@@ -43,7 +43,6 @@ public class Content extends BaseEntity {
 
     @Builder
     public Content(Long id, String title, String answer, Project projects, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
-        super();
         this.id = id;
         this.title = title;
         this.answer = answer;

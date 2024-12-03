@@ -4,13 +4,16 @@ import com.milvus.vector_spring.common.BaseEntity;
 import com.milvus.vector_spring.content.Content;
 import com.milvus.vector_spring.user.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
@@ -25,6 +28,9 @@ public class Project extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "key", nullable = false)
+    private String key;
+
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Content> contents= new ArrayList<>();
 
@@ -38,4 +44,14 @@ public class Project extends BaseEntity {
     @JoinColumn(name = "updated_user_id")
     protected User updatedBy;
 
+    @Builder
+    public Project(Long id, String name, String key, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
+        this.id = id;
+        this.name = name;
+        this.key = key;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
+    }
 }

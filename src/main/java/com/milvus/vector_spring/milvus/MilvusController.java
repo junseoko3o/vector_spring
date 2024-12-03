@@ -16,12 +16,6 @@ public class MilvusController {
         this.milvusService = milvusService;
     }
 
-    @GetMapping("/create")
-    public String create() throws IOException {
-        milvusService.createSchema(1);
-        return "Success";
-    }
-
     @GetMapping("/check")
     public boolean checkMilvus() throws IOException {
         return milvusService.checkCollectionLoadState();

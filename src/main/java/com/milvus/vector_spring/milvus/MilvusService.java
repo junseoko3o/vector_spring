@@ -51,7 +51,7 @@ public class MilvusService implements MilvusInterface {
         return client;
     }
 
-    public void createSchema(Integer dbKey) {
+    public void createSchema(Long dbKey) {
         MilvusClientV2 client = connect();
 
         CreateCollectionReq.CollectionSchema schema = client.createSchema();
@@ -81,7 +81,7 @@ public class MilvusService implements MilvusInterface {
                 .build());
 
         String collectionCustomName = String.format(collectionName, dbKey);
-        List<IndexParam> indexParamList = createIndex(collectionName);
+        List<IndexParam> indexParamList = createIndex(collectionCustomName);
         CreateCollectionReq createCollectionReq = CreateCollectionReq.builder()
                 .collectionName(collectionCustomName)
                 .collectionSchema(schema)

@@ -2,7 +2,7 @@ package com.milvus.vector_spring.user;
 
 import com.milvus.vector_spring.common.apipayload.ApiResponse;
 import com.milvus.vector_spring.common.exception.CustomException;
-import com.milvus.vector_spring.user.dto.UserContentsResponseDto;
+import com.milvus.vector_spring.user.dto.UserProjectsResponseDto;
 import com.milvus.vector_spring.user.dto.UserResponseDto;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
@@ -40,9 +40,9 @@ public class UserController {
         return ApiResponse.ok(response);
     }
 
-    @GetMapping("/{id}")
-    public ApiResponse<UserContentsResponseDto> getUser(@PathVariable("id") Long id) throws CustomException {
-        UserContentsResponseDto user = userService.findOneUserWithContents(id);
+    @GetMapping("/project/{id}")
+    public ApiResponse<UserProjectsResponseDto> getUser(@PathVariable("id") Long id) throws CustomException {
+        UserProjectsResponseDto user = userService.fineOneUserWithProjects(id);
         return ApiResponse.ok(user);
     }
 }

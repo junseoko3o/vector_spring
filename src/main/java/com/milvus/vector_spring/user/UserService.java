@@ -2,7 +2,7 @@ package com.milvus.vector_spring.user;
 
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
-import com.milvus.vector_spring.user.dto.UserContentsResponseDto;
+import com.milvus.vector_spring.user.dto.UserProjectsResponseDto;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +31,9 @@ public class UserService {
         });
     }
 
-    public UserContentsResponseDto findOneUserWithContents(Long id) {
-        User user = userRepository.findOneUserWithContents(id);
-        return new UserContentsResponseDto(user);
+    public UserProjectsResponseDto fineOneUserWithProjects(Long id) {
+        User user = userRepository.fineOneUserWithProjects(id);
+        return new UserProjectsResponseDto(user);
     }
 
     public User signUpUser(UserSignUpRequestDto userSignUpRequestDto) {

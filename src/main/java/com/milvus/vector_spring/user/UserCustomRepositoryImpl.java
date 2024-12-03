@@ -1,6 +1,6 @@
 package com.milvus.vector_spring.user;
 
-import com.milvus.vector_spring.content.QContent;
+import com.milvus.vector_spring.project.QProject;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
@@ -12,12 +12,12 @@ public class UserCustomRepositoryImpl implements UserCustomRepository{
     }
 
     @Override
-    public User findOneUserWithContents(Long userId) {
+    public User fineOneUserWithProjects(Long userId) {
         QUser user = QUser.user;
-        QContent content = QContent.content;
+        QProject project = QProject.project;
         return queryFactory
                 .selectFrom(user)
-                .leftJoin(user.createdContentUser, content).fetchJoin()
+                .leftJoin(user.createdProjectUser, project).fetchJoin()
                 .where(user.id.eq(userId))
                 .fetchOne();
     }
