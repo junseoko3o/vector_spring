@@ -37,13 +37,13 @@ public class ProjectService {
     }
 
     public Project findOneProjectByKey(String key) {
-        return projectRepository.findByProjectKey(key).orElseThrow(
+        return projectRepository.findProjectByKey(key).orElseThrow(
                 () -> new CustomException(ErrorStatus._NOT_FOUND_PROJECT)
         );
     }
 
     public ProjectContentsResponseDto findOneProjectWithContents(String key) {
-        projectRepository.findByProjectKey(key);
+        projectRepository.findProjectByKey(key);
         Project project = projectRepository.findOneProjectWithContents(key);
         return new ProjectContentsResponseDto(project);
     }

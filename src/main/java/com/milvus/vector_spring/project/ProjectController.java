@@ -17,6 +17,7 @@ import static com.milvus.vector_spring.common.Const.PROJECT_ID;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("project")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -27,13 +28,13 @@ public class ProjectController {
         return ApiResponse.ok(projects);
     }
 
-    @GetMapping("/${id}")
+    @GetMapping("/{id}")
     public ApiResponse<Project> findOneProject(@PathVariable Long id) {
         Project project = projectService.findOneProject(id);
         return ApiResponse.ok(project);
     }
 
-    @GetMapping()
+    @GetMapping("/search")
     public ApiResponse<Project> findOneProjectByKey(@RequestParam String key) {
         Project project = projectService.findOneProjectByKey(key);
         return ApiResponse.ok(project);

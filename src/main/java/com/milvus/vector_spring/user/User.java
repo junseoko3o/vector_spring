@@ -2,6 +2,7 @@ package com.milvus.vector_spring.user;
 
 import com.milvus.vector_spring.common.BaseEntity;
 import com.milvus.vector_spring.content.Content;
+import com.milvus.vector_spring.invite.Invite;
 import com.milvus.vector_spring.project.Project;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -49,6 +50,9 @@ public class User extends BaseEntity implements UserDetails {
 
     @OneToMany(mappedBy = "updatedBy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Project> updatedProjectUser = new ArrayList<>();
+
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Invite> invites = new ArrayList<>();
 
     @Builder
     public User(long id, String email, String username, String password, LocalDateTime loginAt, User createdBy) {

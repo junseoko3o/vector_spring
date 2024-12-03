@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @Getter
+@Table(name = "content")
 public class Content extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,15 +32,13 @@ public class Content extends BaseEntity {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    @CreatedBy
     @ManyToOne
     @JoinColumn(name = "created_user_id", nullable = false)
-    protected User createdBy;
+    private User createdBy;
 
-    @LastModifiedBy
     @ManyToOne
-    @JoinColumn(name = "updated_user_id")
-    protected User updatedBy;
+    @JoinColumn(name = "updated_user_id", nullable = true)
+    private User updatedBy;
 
     @Builder
     public Content(Long id, String title, String answer, Project projects, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
