@@ -24,9 +24,7 @@ import io.milvus.v2.service.vector.request.data.FloatVec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static io.milvus.v2.common.DataType.FloatVector;
 

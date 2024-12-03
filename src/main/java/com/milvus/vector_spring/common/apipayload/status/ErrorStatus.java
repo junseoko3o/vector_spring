@@ -15,6 +15,7 @@ public enum ErrorStatus implements BaseCode {
     _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "요청에 실패하였습니다."),
     _DUPLICATE_USER_EMAIL(HttpStatus.BAD_REQUEST, "400", "중복된 이메일."),
     _NOT_FOUND_USER(HttpStatus.NOT_FOUND, "400", "유저 없음"),
+    _NOT_FOUND_PROJECT(HttpStatus.NOT_FOUND, "400", "프로젝트 없음"),
     _DATABASE_ERROR(HttpStatus.BAD_REQUEST, "400", "데이터베이스 오류"),
     _SQL_ERROR(HttpStatus.BAD_REQUEST, "400", "SQL 오류"),
     _MILVUS_DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "Milvus 오류"),
