@@ -44,7 +44,7 @@ class UserServiceTest {
 
         // When
         List<User> users = userService.findAllUser();
-        System.out.println(users);
+        
         // Then
         assertNotNull(users);
         assertEquals(1, users.size());
@@ -63,7 +63,7 @@ class UserServiceTest {
         // Then
         assertNotNull(createdUser);
         assertEquals("test@example.com", createdUser.getEmail());
-        assertEquals("test@example.com", createdUser.getUsername());
+        assertEquals("testuser", createdUser.getUsername());
         verify(userRepository, times(1)).save(any(User.class));
     }
 
@@ -78,7 +78,7 @@ class UserServiceTest {
 
         // Then
         assertNotNull(updatedUser);
-        assertEquals("test@example.com", updatedUser.getUsername());
+        assertEquals("updatedUser", updatedUser.getUsername());
         assertEquals("test@example.com", updatedUser.getEmail());
         verify(userRepository, times(1)).findById(1L);
         verify(userRepository, times(1)).save(any(User.class));
