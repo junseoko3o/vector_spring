@@ -8,6 +8,7 @@ import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class UserService {
         return new UserProjectsResponseDto(user);
     }
 
+    @Transactional
     public User signUpUser(UserSignUpRequestDto userSignUpRequestDto) {
         duplicateEmailCheck(userSignUpRequestDto.getEmail());
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -48,6 +50,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public User updateUser(Long id, UserUpdateRequestDto userUpdateRequestDto) {
         User user = findOneUser(id);
         duplicateEmailCheck(userUpdateRequestDto.getEmail());

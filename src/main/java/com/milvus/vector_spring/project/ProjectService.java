@@ -75,6 +75,14 @@ public class ProjectService {
         return projectRepository.save(updateProject);
     }
 
+    @Transactional
+    public String deleteProject(String key) {
+        Project project = findOneProjectByKey(key);
+        milvusService.deleteCollection(project.getId());
+        projectRepository.delete(project);
+        return "Deleted Success!";
+    }
+
     private String resolveOpenAiKey(Project project, ProjectUpdateRequestDto projectUpdateRequestDto) {
         if (!project.getOpenAiKey().isEmpty()
                 && encryptionService.decryptData(project.getOpenAiKey()).equals(projectUpdateRequestDto.getOpenAiKey())) {

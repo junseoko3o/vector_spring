@@ -57,4 +57,9 @@ public class ProjectController {
         return ApiResponse.ok(project);
     }
 
+    @DeleteMapping()
+    public ApiResponse<String> deleteProject(@RequestParam String key) {
+        String deleteProject = projectService.deleteProject(key);
+        return ApiResponse.ok(deleteProject);
+    }
 }
