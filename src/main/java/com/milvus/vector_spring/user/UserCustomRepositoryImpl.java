@@ -3,7 +3,9 @@ package com.milvus.vector_spring.user;
 import com.milvus.vector_spring.project.QProject;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class UserCustomRepositoryImpl implements UserCustomRepository{
     private final JPAQueryFactory queryFactory;
 

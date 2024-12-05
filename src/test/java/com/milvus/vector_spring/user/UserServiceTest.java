@@ -44,7 +44,7 @@ class UserServiceTest {
 
         // When
         List<User> users = userService.findAllUser();
-        
+
         // Then
         assertNotNull(users);
         assertEquals(1, users.size());
