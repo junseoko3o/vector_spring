@@ -58,10 +58,8 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(userSignUpRequestDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.email").value("test1@email.com"))
-                .andExpect(jsonPath("$.statusCode").value("200"))
-                .andExpect(jsonPath("$.success").value(true));
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.email").value("test1@email.com"));
 
         verify(userService, times(1)).signUpUser(any(UserSignUpRequestDto.class));
     }
