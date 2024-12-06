@@ -39,13 +39,10 @@ class UserServiceTest {
 
     @Test
     void findAllUser() {
-        // Given
         when(userRepository.findAll()).thenReturn(List.of(user));
 
-        // When
         List<User> users = userService.findAllUser();
 
-        // Then
         assertNotNull(users);
         assertEquals(1, users.size());
         assertEquals("test@example.com", users.get(0).getEmail());
@@ -54,13 +51,10 @@ class UserServiceTest {
 
     @Test
     void signUpUser() {
-        // Given
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        // When
         User createdUser = userService.signUpUser(signUpRequestDto);
 
-        // Then
         assertNotNull(createdUser);
         assertEquals("test@example.com", createdUser.getEmail());
         assertEquals("testuser", createdUser.getUsername());
@@ -69,14 +63,11 @@ class UserServiceTest {
 
     @Test
     void updateUser() {
-        // Given
         when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        // When
         User updatedUser = userService.updateUser(1L, updateRequestDto);
 
-        // Then
         assertNotNull(updatedUser);
         assertEquals("updatedUser", updatedUser.getUsername());
         assertEquals("test@example.com", updatedUser.getEmail());
@@ -86,10 +77,8 @@ class UserServiceTest {
 
     @Test
     void updateUser_ShouldThrowException_WhenUserNotFound() {
-        // Given
         when(userRepository.findById(1L)).thenReturn(java.util.Optional.empty());
 
-        // When & Then
         CustomException exception = assertThrows(CustomException.class, () -> userService.updateUser(1L, updateRequestDto));
         assertEquals(ErrorStatus._NOT_FOUND_USER, exception.getBaseCode());
         verify(userRepository, times(1)).findById(1L);
@@ -97,10 +86,8 @@ class UserServiceTest {
 
     @Test
     void signUpUser_ShouldThrowException_WhenEmailIsDuplicate() {
-        // Given
         when(userRepository.findByEmail(signUpRequestDto.getEmail())).thenReturn(java.util.Optional.of(user));
 
-        // When & Then
         CustomException exception = assertThrows(CustomException.class, () -> userService.signUpUser(signUpRequestDto));
         assertEquals(ErrorStatus._DUPLICATE_USER_EMAIL, exception.getBaseCode());
         verify(userRepository, times(1)).findByEmail(signUpRequestDto.getEmail());

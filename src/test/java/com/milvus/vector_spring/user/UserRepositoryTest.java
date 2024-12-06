@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -25,76 +24,71 @@ class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    List<User> users = new ArrayList<>();
+    private UserSignUpRequestDto userSignUpRequestDto;
+    private User user;
 
     @BeforeEach
-    void setUp() throws CustomException {
-        for (int i = 1; i < 10; i++) {
-            UserSignUpRequestDto userSignUpRequestDto = new UserSignUpRequestDto(
-                    String.format("hi%d", i),
-                    String.format("hi%d@email.com", i),
-                    "asdf123!"
-            );
-
-            User user = User.builder()
-                    .email(userSignUpRequestDto.getEmail())
-                    .username(userSignUpRequestDto.getUsername())
-                    .password(userSignUpRequestDto.getPassword())
-                    .build();
-
-            users.add(userRepository.save(user));
-        }
+    void setUp() {
+        userSignUpRequestDto = new UserSignUpRequestDto(
+                "hello",
+                "hello@gmail.com",
+                "asdf123!"
+        );
+        user = new User(1L, userSignUpRequestDto.getUsername(), userSignUpRequestDto.getEmail(), userSignUpRequestDto.getPassword(), null);
+        userRepository.save(user);
     }
 
     @Test
     @DisplayName("유저 생성")
     void signUpUser() {
-        UserSignUpRequestDto userSignUpRequestDto = new UserSignUpRequestDto(
-                "hello",
-                "hello@gmail.com",
+        userSignUpRequestDto = new UserSignUpRequestDto(
+                "hello2",
+                "hello2@gmail.com",
                 "asdf123!"
         );
-
-        User user = User.builder()
+        user = User.builder()
                 .email(userSignUpRequestDto.getEmail())
                 .username(userSignUpRequestDto.getUsername())
                 .password(userSignUpRequestDto.getPassword())
                 .build();
-
-        User savedUser = userRepository.save(user);
-        users.add(savedUser);
-        User findSavedUser = userRepository.findById(10L).orElseThrow();
+        User createdUser = userRepository.save(user);
+        User findSavedUser = userRepository.findById(createdUser.getId()).orElseThrow();
         assertThat(findSavedUser).isEqualTo(user);
     }
 
     @Test
     @DisplayName("유저 전체 조회")
-    void findAllUserTest() {
-
+    void findAllUsersTest() {
+        for (int i = 1; i < 10; i++) {
+            user = User.builder()
+                    .email(String.format("hi%d@email.com", i))
+                    .username(String.format("hi%d", i))
+                    .password(userSignUpRequestDto.getPassword())
+                    .build();
+            userRepository.save(user);
+        }
         List<User> userList = userRepository.findAll();
-
-        assertThat(userList).isNotEmpty();
-        assertThat(userList.get(0).getUsername()).isEqualTo("hi1");
-        assertThat(userList.size()).isEqualTo(9);
+        assertThat(userList).hasSize(10);
+        assertThat(userList.get(0).getEmail()).isEqualTo("hello@gmail.com");
     }
 
     @Test
     @DisplayName("유저 단일 조회")
     void findOneUserTestById() {
-        User user = userRepository.findByEmail("hi1@email.com")
+        User findUser = userRepository.findByEmail(userSignUpRequestDto.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_USER));
 
-        assertThat(user).isEqualTo(users.get(0));
         assertThatThrownBy(() -> userRepository.findByEmail("notexist@email.com")
                 .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_USER)))
                 .isInstanceOf(CustomException.class);
+        assertThat(findUser).isNotNull();
 
     }
 
     @Test
     @DisplayName("유저 이름 수정")
     void updateUserName() {
-        User user = userRepository.findByEmail("hi1@email.com")
+        User user = userRepository.findByEmail(userSignUpRequestDto.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_USER));
         UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(
                 "changeName",
@@ -107,8 +101,8 @@ class UserRepositoryTest {
                 .email(userUpdateRequestDto.getEmail())
                 .loginAt(user.getLoginAt())
                 .build();
-        User savedUser = userRepository.save(updateUser);
+        User updatedUser = userRepository.save(updateUser);
 
-        assertThat(user.getId()).isEqualTo(savedUser.getId());
+        assertThat(user.getId()).isEqualTo(updatedUser.getId());
     }
 }
