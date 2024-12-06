@@ -5,6 +5,7 @@ import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -38,6 +39,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("유저 전체 찾기")
     void findAllUser() {
         when(userRepository.findAll()).thenReturn(List.of(user));
 
@@ -50,6 +52,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("유저 회원 가입")
     void signUpUser() {
         when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -62,6 +65,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("유저 정보 수정")
     void updateUser() {
         when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -76,6 +80,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("유저 수정 시 없는 유저 수정 시도")
     void updateUser_ShouldThrowException_WhenUserNotFound() {
         when(userRepository.findById(1L)).thenReturn(java.util.Optional.empty());
 
@@ -85,6 +90,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("유저 회원가입 시 이미 존재하는 이메일로 가입 시도")
     void signUpUser_ShouldThrowException_WhenEmailIsDuplicate() {
         when(userRepository.findByEmail(signUpRequestDto.getEmail())).thenReturn(java.util.Optional.of(user));
 
