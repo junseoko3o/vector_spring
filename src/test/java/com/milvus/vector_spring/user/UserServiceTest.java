@@ -33,7 +33,7 @@ class UserServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        signUpRequestDto = new UserSignUpRequestDto("testuser","test@example.com", "password123!");
+        signUpRequestDto = new UserSignUpRequestDto("estuser","test@example.com", "password123!");
         updateRequestDto = new UserUpdateRequestDto("updatedUser", "test@example.com");
         user = new User(1L, "test@example.com", "testuser", "password123", null);
     }
