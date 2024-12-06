@@ -1,10 +1,10 @@
 package com.milvus.vector_spring.content;
 
-import com.milvus.vector_spring.common.apipayload.ApiResponse;
 import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
 import com.milvus.vector_spring.content.dto.ContentResponseDto;
 import com.milvus.vector_spring.content.dto.ContentUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,34 +21,34 @@ public class ContentController {
     private final ContentService contentService;
 
     @GetMapping()
-    public ApiResponse<List<Content>> findAllContent() {
+    public ResponseEntity<List<Content>> findAllContent() {
         List<Content> contentList = contentService.findAllContent();
-        return ApiResponse.ok(contentList);
+        return ResponseEntity.ok(contentList);
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Content> findOneContentById(@RequestHeader(CONTENT_ID) long id) {
+    public ResponseEntity<Content> findOneContentById(@RequestHeader(CONTENT_ID) long id) {
         Content content = contentService.findOneContById(id);
-        return ApiResponse.ok(content);
+        return ResponseEntity.ok(content);
     }
 
     @PostMapping("/create")
-    public ApiResponse<ContentResponseDto> createContent(
+    public ResponseEntity<ContentResponseDto> createContent(
             @RequestHeader(USER_ID) long userId,
             @Validated @RequestBody ContentCreateRequestDto contentCreateRequestDto
             ) {
         Content content = contentService.createContent(userId, contentCreateRequestDto);
         ContentResponseDto response = ContentResponseDto.of(content);
-        return ApiResponse.ok(response);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/update")
-    public ApiResponse<ContentResponseDto> updateContent(
+    public ResponseEntity<ContentResponseDto> updateContent(
             @RequestHeader(CONTENT_ID) long id,
             @Validated @RequestBody ContentUpdateRequestDto contentUpdateRequestDto
             ) {
         Content content = contentService.updateContent(id, contentUpdateRequestDto);
         ContentResponseDto response = ContentResponseDto.of(content);
-        return ApiResponse.ok(response);
+        return ResponseEntity.ok(response);
     }
 }

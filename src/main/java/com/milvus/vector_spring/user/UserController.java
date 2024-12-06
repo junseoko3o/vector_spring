@@ -1,6 +1,6 @@
 package com.milvus.vector_spring.user;
 
-import com.milvus.vector_spring.common.apipayload.ApiResponse;
+import org.springframework.http.ResponseEntity;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.user.dto.UserProjectsResponseDto;
 import com.milvus.vector_spring.user.dto.UserResponseDto;
@@ -21,28 +21,28 @@ public class UserController {
     }
 
     @GetMapping()
-    public ApiResponse<List<User>> findAllUser() {
+    public ResponseEntity<List<User>> findAllUser() {
         List<User> users = userService.findAllUser();
-        return ApiResponse.ok(users);
+        return ResponseEntity.ok(users);
     }
 
     @PostMapping("/sign-up")
-    public ApiResponse<UserResponseDto> signUpUser(@Validated @RequestBody UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
+    public ResponseEntity<UserResponseDto> signUpUser(@Validated @RequestBody UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
         User user = userService.signUpUser(userSignUpRequestDto);
         UserResponseDto response = UserResponseDto.of(user);
-        return ApiResponse.ok(response);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/update/{id}")
-    public ApiResponse<UserResponseDto> updateUser(@PathVariable() Long id, @Validated @RequestBody UserUpdateRequestDto userUpdateRequestDto) throws CustomException {
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable() Long id, @Validated @RequestBody UserUpdateRequestDto userUpdateRequestDto) throws CustomException {
         User user = userService.updateUser(id, userUpdateRequestDto);
         UserResponseDto response = UserResponseDto.of(user);
-        return ApiResponse.ok(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/project/{id}")
-    public ApiResponse<UserProjectsResponseDto> getUser(@PathVariable("id") Long id) throws CustomException {
+    public ResponseEntity<UserProjectsResponseDto> getUser(@PathVariable("id") Long id) throws CustomException {
         UserProjectsResponseDto user = userService.fineOneUserWithProjects(id);
-        return ApiResponse.ok(user);
+        return ResponseEntity.ok(user);
     }
 }
