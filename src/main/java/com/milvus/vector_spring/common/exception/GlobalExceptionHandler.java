@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
         String errorMessage = e.getMessage() != null ? e.getMessage() : "Runtime exception occurred";
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiResponse<>(false, "500", errorMessage, null));
+                .body(new ApiResponse<>("500", errorMessage, null));
     }
 
 
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ApiResponse<>(false, "400", errorCodes, null));
+                .body(new ApiResponse<>("400", errorCodes, null));
     }
 
     @ExceptionHandler(Exception.class)
@@ -51,7 +51,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiResponse<>(
-                        false,
                         "500",
                         errorMessage,
                         null

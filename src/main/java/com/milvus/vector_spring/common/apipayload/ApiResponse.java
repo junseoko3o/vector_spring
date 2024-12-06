@@ -13,28 +13,22 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({"success", "statusCode", "message", "data"})
+@JsonPropertyOrder({"statusCode", "message", "data"})
 public class ApiResponse<T> implements Serializable {
-
-    @JsonProperty("success")
-    private Boolean success;
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String statusCode;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String message;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
 
     public static <T> ApiResponse<T> ok(T data) {
-        return new ApiResponse<>(true, SuccessStatus._OK.getStatusCode(), SuccessStatus._OK.getMessage(), data);
-    }
-
-    public static <T> ApiResponse<T> created(T data) {
-        return new ApiResponse<>(true, SuccessStatus._CREATED.getStatusCode(), SuccessStatus._CREATED.getMessage(), data);
+        return new ApiResponse<>(null, null, data);
     }
 
     public static ApiResponse<String> fail(BaseCode errorCode) {
-        return new ApiResponse<>(false, errorCode.getReasonHttpStatus().getStatusCode(), errorCode.getReasonHttpStatus().getMessage(), null);
+        return new ApiResponse<>(errorCode.getReasonHttpStatus().getStatusCode(), errorCode.getReasonHttpStatus().getMessage(), null);
     }
 }
