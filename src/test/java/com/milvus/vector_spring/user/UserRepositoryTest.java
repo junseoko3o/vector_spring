@@ -4,6 +4,7 @@ import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.config.QueryDslConfig;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
+import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -88,5 +89,26 @@ class UserRepositoryTest {
                 .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_USER)))
                 .isInstanceOf(CustomException.class);
 
+    }
+
+    @Test
+    @DisplayName("유저 이름 수정")
+    void updateUserName() {
+        User user = userRepository.findByEmail("hi1@email.com")
+                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_USER));
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(
+                "changeName",
+                "change@email.com"
+        );
+        User updateUser = User.builder()
+                .id(user.getId())
+                .password(user.getPassword())
+                .username(userUpdateRequestDto.getUsername())
+                .email(userUpdateRequestDto.getEmail())
+                .loginAt(user.getLoginAt())
+                .build();
+        User savedUser = userRepository.save(updateUser);
+
+        assertThat(user.getId()).isEqualTo(savedUser.getId());
     }
 }
