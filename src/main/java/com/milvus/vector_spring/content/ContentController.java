@@ -4,7 +4,6 @@ import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
 import com.milvus.vector_spring.content.dto.ContentResponseDto;
 import com.milvus.vector_spring.content.dto.ContentUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,34 +20,34 @@ public class ContentController {
     private final ContentService contentService;
 
     @GetMapping()
-    public ResponseEntity<List<Content>> findAllContent() {
+    public List<ContentResponseDto> findAllContent() {
         List<Content> contentList = contentService.findAllContent();
-        return ResponseEntity.ok(contentList);
+        return contentList.stream()
+                .map(ContentResponseDto::of)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Content> findOneContentById(@RequestHeader(CONTENT_ID) long id) {
+    public ContentResponseDto findOneContentById(@RequestHeader(CONTENT_ID) long id) {
         Content content = contentService.findOneContById(id);
-        return ResponseEntity.ok(content);
+        return ContentResponseDto.of(content);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ContentResponseDto> createContent(
+    public ContentResponseDto createContent(
             @RequestHeader(USER_ID) long userId,
             @Validated @RequestBody ContentCreateRequestDto contentCreateRequestDto
             ) {
         Content content = contentService.createContent(userId, contentCreateRequestDto);
-        ContentResponseDto response = ContentResponseDto.of(content);
-        return ResponseEntity.ok(response);
+        return ContentResponseDto.of(content);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<ContentResponseDto> updateContent(
+    public ContentResponseDto updateContent(
             @RequestHeader(CONTENT_ID) long id,
             @Validated @RequestBody ContentUpdateRequestDto contentUpdateRequestDto
             ) {
         Content content = contentService.updateContent(id, contentUpdateRequestDto);
-        ContentResponseDto response = ContentResponseDto.of(content);
-        return ResponseEntity.ok(response);
+        return ContentResponseDto.of(content);
     }
 }

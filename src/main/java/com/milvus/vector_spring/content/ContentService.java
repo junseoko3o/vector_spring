@@ -19,7 +19,6 @@ import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +44,6 @@ public class ContentService {
         );
     }
 
-    @Transactional
     public Content createContent(long userId, ContentCreateRequestDto contentCreateRequestDto) throws CustomException {
         User user = userService.findOneUser(userId);
         Project project = projectService.findOneProjectByKey(contentCreateRequestDto.getProjectKey());
@@ -60,7 +58,6 @@ public class ContentService {
         return savedContent;
     }
 
-    @Transactional
     public Content updateContent(long id, ContentUpdateRequestDto contentUpdateRequestDto) {
         User user = userService.findOneUser(contentUpdateRequestDto.getUpdatedUserId());
         Content content = findOneContById(id);

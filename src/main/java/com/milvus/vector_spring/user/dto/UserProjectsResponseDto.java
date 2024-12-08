@@ -1,6 +1,5 @@
 package com.milvus.vector_spring.user.dto;
 
-import com.milvus.vector_spring.content.dto.ContentResponseDto;
 import com.milvus.vector_spring.project.dto.ProjectResponseDto;
 import com.milvus.vector_spring.user.User;
 import lombok.Getter;
@@ -30,5 +29,9 @@ public class UserProjectsResponseDto {
         this.projects = user.getCreatedProjectUser().stream()
                 .map(ProjectResponseDto::of)
                 .toList();
+    }
+
+    public static UserProjectsResponseDto of(User user) {
+        return new UserProjectsResponseDto(user);
     }
 }

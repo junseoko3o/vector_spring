@@ -2,6 +2,7 @@ package com.milvus.vector_spring.project;
 
 import com.milvus.vector_spring.project.dto.ProjectContentsResponseDto;
 import com.milvus.vector_spring.project.dto.ProjectCreateRequestDto;
+import com.milvus.vector_spring.project.dto.ProjectResponseDto;
 import com.milvus.vector_spring.project.dto.ProjectUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,39 +19,40 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping()
-    public ResponseEntity<List<Project>> findAllProjects() {
+    public List<ProjectResponseDto> findAllProjects() {
         List<Project> projects = projectService.findAllProject();
-        return ResponseEntity.ok(projects);
+        return projects.stream()
+                .map(ProjectResponseDto::of)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Project> findOneProject(@PathVariable Long id) {
+    public ProjectResponseDto findOneProject(@PathVariable Long id) {
         Project project = projectService.findOneProject(id);
-        return ResponseEntity.ok(project);
+        return ProjectResponseDto.of(project);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Project> findOneProjectByKey(@RequestParam String key) {
+    public ProjectResponseDto findOneProjectByKey(@RequestParam String key) {
         Project project = projectService.findOneProjectByKey(key);
-        return ResponseEntity.ok(project);
+        return ProjectResponseDto.of(project);
     }
 
     @GetMapping("/contents")
-    public ResponseEntity<ProjectContentsResponseDto> findOneProjectWithContents(@RequestParam String key) {
-        ProjectContentsResponseDto project = projectService.findOneProjectWithContents(key);
-        return ResponseEntity.ok(project);
+    public ProjectContentsResponseDto findOneProjectWithContents(@RequestParam String key) {
+        return projectService.findOneProjectWithContents(key);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Project> createProject(@Validated @RequestBody ProjectCreateRequestDto projectCreateRequestDto) {
+    public ProjectResponseDto createProject(@Validated @RequestBody ProjectCreateRequestDto projectCreateRequestDto) {
         Project project = projectService.createProject(projectCreateRequestDto);
-        return ResponseEntity.ok(project);
+        return ProjectResponseDto.of(project);
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Project> updateProject(@RequestParam() String key, ProjectUpdateRequestDto projectUpdateRequestDto) {
+    public ProjectResponseDto updateProject(@RequestParam() String key, ProjectUpdateRequestDto projectUpdateRequestDto) {
         Project project = projectService.updateProject(key, projectUpdateRequestDto);
-        return ResponseEntity.ok(project);
+        return ProjectResponseDto.of(project);
     }
 
     @DeleteMapping()

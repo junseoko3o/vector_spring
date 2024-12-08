@@ -6,5 +6,5 @@ import lombok.Getter;
 public class ProjectCreateRequestDto {
     private String name;
     private String openAiKey;
-    private Long createUserId;
+    private Long createdUserId;
 }

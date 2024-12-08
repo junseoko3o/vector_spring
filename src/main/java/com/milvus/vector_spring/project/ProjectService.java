@@ -6,13 +6,11 @@ import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.milvus.MilvusService;
 import com.milvus.vector_spring.project.dto.ProjectContentsResponseDto;
 import com.milvus.vector_spring.project.dto.ProjectCreateRequestDto;
-import com.milvus.vector_spring.project.dto.ProjectResponseDto;
 import com.milvus.vector_spring.project.dto.ProjectUpdateRequestDto;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -48,9 +46,8 @@ public class ProjectService {
         return new ProjectContentsResponseDto(project);
     }
 
-    @Transactional
     public Project createProject(ProjectCreateRequestDto projectCreateRequestDto) {
-        User user = userService.findOneUser(projectCreateRequestDto.getCreateUserId());
+        User user = userService.findOneUser(projectCreateRequestDto.getCreatedUserId());
         Project project = Project.builder()
                 .name(projectCreateRequestDto.getName())
                 .key(String.valueOf(UUID.randomUUID()))
@@ -61,7 +58,6 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    @Transactional
     public Project updateProject(String key, ProjectUpdateRequestDto projectUpdateRequestDto) {
         User user = userService.findOneUser(projectUpdateRequestDto.getUpdatedUserId());
         Project project = findOneProjectByKey(key);
@@ -75,7 +71,6 @@ public class ProjectService {
         return projectRepository.save(updateProject);
     }
 
-    @Transactional
     public String deleteProject(String key) {
         Project project = findOneProjectByKey(key);
         milvusService.deleteCollection(project.getId());
