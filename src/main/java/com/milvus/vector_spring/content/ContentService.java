@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +49,7 @@ public class ContentService {
         }
         String key = encryptionService.decryptData(project.getOpenAiKey());
         Content content = Content.builder()
+                .key(UUID.randomUUID().toString())
                 .title(contentCreateRequestDto.getTitle())
                 .answer(contentCreateRequestDto.getAnswer())
                 .project(project)
@@ -66,6 +68,7 @@ public class ContentService {
         Project project = projectService.findOneProject(content.getProject().getId());
         Content updateContent = Content.builder()
                 .id(content.getId())
+                .key(content.getKey())
                 .title(contentUpdateRequestDto.getTitle())
                 .answer(contentUpdateRequestDto.getAnswer())
                 .project(project)

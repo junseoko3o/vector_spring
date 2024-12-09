@@ -22,6 +22,9 @@ public class Content extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "content_key", nullable = false)
+    private String key;
+
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -41,8 +44,9 @@ public class Content extends BaseEntity {
     private User updatedBy;
 
     @Builder
-    public Content(Long id, String title, String answer, Project project, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
+    public Content(Long id, String key, String title, String answer, Project project, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
         this.id = id;
+        this.key = key;
         this.title = title;
         this.answer = answer;
         this.project = project;
