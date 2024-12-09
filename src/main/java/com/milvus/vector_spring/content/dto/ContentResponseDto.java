@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 public class ContentResponseDto {
     private final Long id;
+    private final String key;
     private final String title;
     private final String answer;
     private final Long projectId;
@@ -20,6 +21,7 @@ public class ContentResponseDto {
     public static ContentResponseDto contentResponseDto(Content content) {
         return ContentResponseDto.builder()
                 .id(content.getId())
+                .key(content.getKey())
                 .title(content.getTitle())
                 .answer(content.getAnswer())
                 .projectId(content.getProject().getId())
@@ -31,8 +33,9 @@ public class ContentResponseDto {
     }
 
     @Builder
-    public ContentResponseDto(Long id, String title, String answer, Long projectId, Long createdUserId, Long updatedUserId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public ContentResponseDto(Long id, String key, String title, String answer, Long projectId, Long createdUserId, Long updatedUserId, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
+        this.key = key;
         this.title = title;
         this.answer = answer;
         this.projectId = projectId;

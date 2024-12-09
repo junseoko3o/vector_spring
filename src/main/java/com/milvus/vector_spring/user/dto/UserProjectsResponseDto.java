@@ -27,7 +27,7 @@ public class UserProjectsResponseDto {
         this.createdAt = user.getCreatedAt();
         this.updatedAt = user.getUpdatedAt();
         this.projects = user.getCreatedProjectUser().stream()
-                .map(ProjectResponseDto::from)
+                .map(ProjectResponseDto::projectResponseDto)
                 .toList();
     }
 

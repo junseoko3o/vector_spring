@@ -19,7 +19,7 @@ public class ProjectContentsResponseDto {
 
     public static ProjectContentsResponseDto projectContentsResponseDto(Project project) {
         List<ContentResponseDto> contentList = project.getContents().stream()
-                .map(ContentResponseDto::from)
+                .map(ContentResponseDto::contentResponseDto)
                 .toList();
         return ProjectContentsResponseDto.builder()
                 .id(project.getId())
