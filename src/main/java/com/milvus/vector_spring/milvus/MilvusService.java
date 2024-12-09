@@ -131,7 +131,7 @@ public class MilvusService implements MilvusInterface {
         MilvusClientV2 client = connect();
         JsonObject dataObject = new JsonObject();
         JsonArray vectorArray = new JsonArray();
-        for (Float v : insertRequestDto.getVector()) {
+        for (Double v : insertRequestDto.getVector()) {
             vectorArray.add(v);
         }
         dataObject.addProperty("id", id);

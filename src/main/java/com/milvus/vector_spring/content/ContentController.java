@@ -4,6 +4,7 @@ import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
 import com.milvus.vector_spring.content.dto.ContentResponseDto;
 import com.milvus.vector_spring.content.dto.ContentUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,20 +35,20 @@ public class ContentController {
     }
 
     @PostMapping("/create")
-    public ContentResponseDto createContent(
+    public ResponseEntity<ContentResponseDto> createContent(
             @RequestHeader(USER_ID) long userId,
             @Validated @RequestBody ContentCreateRequestDto contentCreateRequestDto
             ) {
         Content content = contentService.createContent(userId, contentCreateRequestDto);
-        return ContentResponseDto.contentResponseDto(content);
+        return ResponseEntity.ok(ContentResponseDto.contentResponseDto(content));
     }
 
     @PostMapping("/update")
-    public ContentResponseDto updateContent(
+    public ResponseEntity<ContentResponseDto> updateContent(
             @RequestHeader(CONTENT_ID) long id,
             @Validated @RequestBody ContentUpdateRequestDto contentUpdateRequestDto
             ) {
         Content content = contentService.updateContent(id, contentUpdateRequestDto);
-        return ContentResponseDto.contentResponseDto(content);
+        return ResponseEntity.ok(ContentResponseDto.contentResponseDto(content));
     }
 }

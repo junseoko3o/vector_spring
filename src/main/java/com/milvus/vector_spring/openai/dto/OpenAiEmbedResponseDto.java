@@ -33,12 +33,12 @@ public class OpenAiEmbedResponseDto {
     public static class Data {
         private final String object;
         private final int index;
-        private final List<Float> embedding;
+        private final List<Double> embedding;
 
         public Data(
                 @JsonProperty("object") String object,
                 @JsonProperty("index") int index,
-                @JsonProperty("embedding") List<Float> embedding
+                @JsonProperty("embedding") List<Double> embedding
         ) {
             this.object = object;
             this.index = index;

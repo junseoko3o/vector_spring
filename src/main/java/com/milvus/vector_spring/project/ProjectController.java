@@ -45,15 +45,15 @@ public class ProjectController {
     }
 
     @PostMapping("/create")
-    public ProjectResponseDto createProject(@Validated @RequestBody ProjectCreateRequestDto projectCreateRequestDto) {
+    public ResponseEntity<ProjectResponseDto> createProject(@Validated @RequestBody ProjectCreateRequestDto projectCreateRequestDto) {
         Project project = projectService.createProject(projectCreateRequestDto);
-        return ProjectResponseDto.projectResponseDto(project);
+        return ResponseEntity.ok(ProjectResponseDto.projectResponseDto(project));
     }
 
     @PostMapping("/update")
-    public ProjectResponseDto updateProject(@RequestParam() String key, ProjectUpdateRequestDto projectUpdateRequestDto) {
+    public ResponseEntity<ProjectResponseDto> updateProject(@RequestParam() String key, ProjectUpdateRequestDto projectUpdateRequestDto) {
         Project project = projectService.updateProject(key, projectUpdateRequestDto);
-        return ProjectResponseDto.projectResponseDto(project);
+        return ResponseEntity.ok(ProjectResponseDto.projectResponseDto(project));
     }
 
     @DeleteMapping()
