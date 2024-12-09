@@ -131,7 +131,7 @@ public class MilvusService implements MilvusInterface {
         MilvusClientV2 client = connect();
         JsonObject dataObject = new JsonObject();
         JsonArray vectorArray = new JsonArray();
-        for (Double v : insertRequestDto.getVector()) {
+        for (Float v : insertRequestDto.getVector()) {
             vectorArray.add(v);
         }
         dataObject.addProperty("id", id);
@@ -170,12 +170,13 @@ public class MilvusService implements MilvusInterface {
         if (vectorData != null) {
             List<Float> floatList = new ArrayList<>(vectorData);
             baseVectors.add(new FloatVec(floatList));
-        }
+        }List<String> fields = Arrays.asList("title", "answer");
         SearchReq searchReq = SearchReq.builder()
                 .collectionName(collectionName)
                 .data(baseVectors)
                 .topK(5)
                 .searchParams(Map.of("metric_type", "COSINE", "efConstruction", 100, "M", 16))
+                .outputFields(fields)
                 .build();
 
         return client.search(searchReq);

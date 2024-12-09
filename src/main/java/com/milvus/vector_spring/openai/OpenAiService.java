@@ -70,6 +70,5 @@ public class OpenAiService {
         } catch (Exception e) {
             throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
         }
-
     }
 }

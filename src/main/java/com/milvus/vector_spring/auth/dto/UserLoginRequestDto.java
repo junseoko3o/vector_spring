@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Getter
 public class UserLoginRequestDto {
@@ -18,5 +19,4 @@ public class UserLoginRequestDto {
             regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$",
             message = "비밀번호는 숫자, 문자, 특수문자 1개 이상 ")
     private String password;
-    private LocalDateTime loginAt = LocalDateTime.now();
 }

@@ -8,13 +8,13 @@ import java.util.List;
 @Getter
 public class InsertRequestDto {
     private long id;
-    private List<Double> vector;
+    private List<Float> vector;
     private String title;
     private String answer;
 
 
     @Builder
-    public InsertRequestDto(long id, List<Double> vector, String title, String answer) {
+    public InsertRequestDto(long id, List<Float> vector, String title, String answer) {
         this.id = id;
         this.vector = vector;
         this.title = title;

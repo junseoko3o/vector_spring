@@ -17,14 +17,14 @@ public class AuthService {
     private final UserDetailService userDetailService;
     private final UserRepository userRepository;
 
-    public UserLoginResponseDto login(UserLoginRequestDto userLoginRequestDto) {
+    public User login(UserLoginRequestDto userLoginRequestDto) {
         User user = userDetailService.loadUserByUsername(userLoginRequestDto.getEmail());
-        user.updateLoginAt(userLoginRequestDto.getLoginAt());
-        userRepository.save(user);
-        return UserLoginResponseDto.builder()
+        User loginUser = User.builder()
                 .id(user.getId())
+                .username(user.getUsername())
                 .email(user.getEmail())
                 .loginAt(LocalDateTime.now())
                 .build();
+        return userRepository.save(loginUser);
     }
 }
