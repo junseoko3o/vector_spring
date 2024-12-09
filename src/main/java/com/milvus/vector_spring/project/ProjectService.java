@@ -50,7 +50,7 @@ public class ProjectService {
         Project project = Project.builder()
                 .name(projectCreateRequestDto.getName())
                 .key(String.valueOf(UUID.randomUUID()))
-                .openAiKey(encryptionService.encryptData(projectCreateRequestDto.getOpenAiKey()))
+                .openAiKey(projectCreateRequestDto.getOpenAiKey().isPresent() ? encryptionService.encryptData(String.valueOf(projectCreateRequestDto.getOpenAiKey())) : null)
                 .createdBy(user)
                 .build();
         milvusService.createSchema(project.getId());

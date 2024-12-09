@@ -9,4 +9,8 @@ public class ProjectCreateRequestDto {
     private String name;
     private Optional<String> openAiKey;
     private Long createdUserId;
+
+    public ProjectCreateRequestDto(Optional<String> openAiKey) {
+        this.openAiKey = openAiKey;
+    }
 }
