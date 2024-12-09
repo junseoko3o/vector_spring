@@ -4,7 +4,6 @@ import com.milvus.vector_spring.common.EncryptionService;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.milvus.MilvusService;
-import com.milvus.vector_spring.project.dto.ProjectContentsResponseDto;
 import com.milvus.vector_spring.project.dto.ProjectCreateRequestDto;
 import com.milvus.vector_spring.project.dto.ProjectUpdateRequestDto;
 import com.milvus.vector_spring.user.User;
@@ -50,8 +49,9 @@ public class ProjectService {
         Project project = Project.builder()
                 .name(projectCreateRequestDto.getName())
                 .key(String.valueOf(UUID.randomUUID()))
-                .openAiKey(projectCreateRequestDto.getOpenAiKey().isPresent() ? encryptionService.encryptData(String.valueOf(projectCreateRequestDto.getOpenAiKey())) : null)
+                .openAiKey(projectCreateRequestDto.getOpenAiKey() != null ? encryptionService.encryptData(projectCreateRequestDto.getOpenAiKey()) : null)
                 .createdBy(user)
+                .updatedBy(user)
                 .build();
         milvusService.createSchema(project.getId());
         return projectRepository.save(project);
@@ -63,8 +63,11 @@ public class ProjectService {
         String secretKey = resolveOpenAiKey(project, projectUpdateRequestDto);
         Project updateProject = Project.builder()
                 .id(project.getId())
+                .key(project.getKey())
                 .name(projectUpdateRequestDto.getName())
                 .openAiKey(secretKey)
+                .createdBy(project.getCreatedBy())
+                .createdAt(project.getCreatedAt())
                 .updatedBy(user)
                 .build();
         return projectRepository.save(updateProject);
@@ -78,13 +81,26 @@ public class ProjectService {
     }
 
     private String resolveOpenAiKey(Project project, ProjectUpdateRequestDto projectUpdateRequestDto) {
-        if (!project.getOpenAiKey().isEmpty()
-                && encryptionService.decryptData(project.getOpenAiKey()).equals(projectUpdateRequestDto.getOpenAiKey())) {
-            return project.getOpenAiKey();
-        } else if (project.getOpenAiKey().isEmpty()) {
+        String projectKey = project.getOpenAiKey();
+        String dtoKey = projectUpdateRequestDto.getOpenAiKey();
+
+        boolean isProjectKeyEmpty = projectKey == null || projectKey.isEmpty();
+        boolean isDtoKeyEmpty = dtoKey == null || dtoKey.isEmpty();
+
+        if (isProjectKeyEmpty && isDtoKeyEmpty) {
             return null;
-        } else {
-            return encryptionService.encryptData(projectUpdateRequestDto.getOpenAiKey());
         }
+        if (isProjectKeyEmpty) {
+            return encryptionService.encryptData(dtoKey);
+        }
+        if (!isProjectKeyEmpty && !isDtoKeyEmpty) {
+            String decryptedProjectKey = encryptionService.decryptData(projectKey);
+            if (decryptedProjectKey.equals(dtoKey)) {
+                return projectKey;
+            }
+            return encryptionService.encryptData(dtoKey);
+        }
+        return projectKey;
     }
+
 }

@@ -51,7 +51,7 @@ public class ProjectController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<ProjectResponseDto> updateProject(@RequestParam() String key, ProjectUpdateRequestDto projectUpdateRequestDto) {
+    public ResponseEntity<ProjectResponseDto> updateProject(@RequestParam("key") String key, @Validated @RequestBody ProjectUpdateRequestDto projectUpdateRequestDto) {
         Project project = projectService.updateProject(key, projectUpdateRequestDto);
         return ResponseEntity.ok(ProjectResponseDto.projectResponseDto(project));
     }

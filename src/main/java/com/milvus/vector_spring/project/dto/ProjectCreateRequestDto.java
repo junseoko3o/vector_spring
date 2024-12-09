@@ -1,16 +1,14 @@
 package com.milvus.vector_spring.project.dto;
 
-import lombok.Getter;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
-import java.util.Optional;
-
-@Getter
+@Data
 public class ProjectCreateRequestDto {
     private String name;
-    private Optional<String> openAiKey;
-    private Long createdUserId;
 
-    public ProjectCreateRequestDto(Optional<String> openAiKey) {
-        this.openAiKey = openAiKey;
-    }
+    private String openAiKey;
+
+    @NotNull
+    private Long createdUserId;
 }
