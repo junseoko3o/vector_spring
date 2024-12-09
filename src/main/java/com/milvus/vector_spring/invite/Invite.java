@@ -21,10 +21,11 @@ public class Invite extends BaseEntity {
     private Long receivedId;
 
     @ManyToOne
+    @JoinColumn(name = "invite_id", nullable = false)
+    private User createdBy;
+
+    @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    @ManyToOne
-    @JoinColumn(name = "invited_id", nullable = false)
-    private User createdBy;
 }
