@@ -41,11 +41,11 @@ public class Content extends BaseEntity {
     private User updatedBy;
 
     @Builder
-    public Content(Long id, String title, String answer, Project projects, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
+    public Content(Long id, String title, String answer, Project project, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
         this.id = id;
         this.title = title;
         this.answer = answer;
-        this.project = projects;
+        this.project = project;
         this.createdBy = createdBy;
         this.updatedBy = updatedBy;
         this.createdAt = createdAt;

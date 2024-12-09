@@ -48,7 +48,13 @@ public class ContentService {
             throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
         }
         String key = encryptionService.decryptData(project.getOpenAiKey());
-        Content content = buildContent(contentCreateRequestDto, user);
+        Content content = Content.builder()
+                .title(contentCreateRequestDto.getTitle())
+                .answer(contentCreateRequestDto.getAnswer())
+                .project(project)
+                .createdBy(user)
+                .updatedBy(user)
+                .build();;
         OpenAiEmbedResponseDto embedResponseDto = fetchEmbedding(key, content.getAnswer());
         Content savedContent = contentRepository.save(content);
         insertIntoMilvus(savedContent, embedResponseDto);
@@ -63,6 +69,7 @@ public class ContentService {
                 .id(content.getId())
                 .title(contentUpdateRequestDto.getTitle())
                 .answer(contentUpdateRequestDto.getAnswer())
+                .project(project)
                 .createdBy(content.getCreatedBy())
                 .createdAt(content.getCreatedAt())
                 .updatedBy(user)
@@ -75,15 +82,6 @@ public class ContentService {
         }
 
         return contentRepository.save(updateContent);
-    }
-
-    private Content buildContent(ContentCreateRequestDto contentCreateRequestDto, User user) {
-        return Content.builder()
-                .title(contentCreateRequestDto.getTitle())
-                .answer(contentCreateRequestDto.getAnswer())
-                .createdBy(user)
-                .updatedBy(user)
-                .build();
     }
 
     private OpenAiEmbedResponseDto fetchEmbedding(String openAiKey, String answer) throws CustomException {
