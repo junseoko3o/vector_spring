@@ -23,14 +23,14 @@ public class ContentController {
     public List<ContentResponseDto> findAllContent() {
         List<Content> contentList = contentService.findAllContent();
         return contentList.stream()
-                .map(ContentResponseDto::of)
+                .map(ContentResponseDto::contentResponseDto)
                 .toList();
     }
 
     @GetMapping("/{id}")
     public ContentResponseDto findOneContentById(@RequestHeader(CONTENT_ID) long id) {
         Content content = contentService.findOneContById(id);
-        return ContentResponseDto.of(content);
+        return ContentResponseDto.contentResponseDto(content);
     }
 
     @PostMapping("/create")
@@ -39,7 +39,7 @@ public class ContentController {
             @Validated @RequestBody ContentCreateRequestDto contentCreateRequestDto
             ) {
         Content content = contentService.createContent(userId, contentCreateRequestDto);
-        return ContentResponseDto.of(content);
+        return ContentResponseDto.contentResponseDto(content);
     }
 
     @PostMapping("/update")
@@ -48,6 +48,6 @@ public class ContentController {
             @Validated @RequestBody ContentUpdateRequestDto contentUpdateRequestDto
             ) {
         Content content = contentService.updateContent(id, contentUpdateRequestDto);
-        return ContentResponseDto.of(content);
+        return ContentResponseDto.contentResponseDto(content);
     }
 }

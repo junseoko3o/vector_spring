@@ -22,37 +22,38 @@ public class ProjectController {
     public List<ProjectResponseDto> findAllProjects() {
         List<Project> projects = projectService.findAllProject();
         return projects.stream()
-                .map(ProjectResponseDto::of)
+                .map(ProjectResponseDto::projectResponseDto)
                 .toList();
     }
 
     @GetMapping("/{id}")
     public ProjectResponseDto findOneProject(@PathVariable Long id) {
         Project project = projectService.findOneProject(id);
-        return ProjectResponseDto.of(project);
+        return ProjectResponseDto.projectResponseDto(project);
     }
 
     @GetMapping("/search")
     public ProjectResponseDto findOneProjectByKey(@RequestParam String key) {
         Project project = projectService.findOneProjectByKey(key);
-        return ProjectResponseDto.of(project);
+        return ProjectResponseDto.projectResponseDto(project);
     }
 
     @GetMapping("/contents")
     public ProjectContentsResponseDto findOneProjectWithContents(@RequestParam String key) {
-        return projectService.findOneProjectWithContents(key);
+        Project project = projectService.findOneProjectWithContents(key);
+        return ProjectContentsResponseDto.projectContentsResponseDto(project);
     }
 
     @PostMapping("/create")
     public ProjectResponseDto createProject(@Validated @RequestBody ProjectCreateRequestDto projectCreateRequestDto) {
         Project project = projectService.createProject(projectCreateRequestDto);
-        return ProjectResponseDto.of(project);
+        return ProjectResponseDto.projectResponseDto(project);
     }
 
     @PostMapping("/update")
     public ProjectResponseDto updateProject(@RequestParam() String key, ProjectUpdateRequestDto projectUpdateRequestDto) {
         Project project = projectService.updateProject(key, projectUpdateRequestDto);
-        return ProjectResponseDto.of(project);
+        return ProjectResponseDto.projectResponseDto(project);
     }
 
     @DeleteMapping()

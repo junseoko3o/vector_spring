@@ -23,20 +23,20 @@ public class UserController {
     public List<UserResponseDto> findAllUser() {
         List<User> users = userService.findAllUser();
         return users.stream()
-                .map(UserResponseDto::of)
+                .map(UserResponseDto::userResponseDto)
                 .toList();
     }
 
     @PostMapping("/sign-up")
     public UserResponseDto signUpUser(@Validated @RequestBody UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
         User user = userService.signUpUser(userSignUpRequestDto);
-        return UserResponseDto.of(user);
+        return UserResponseDto.userResponseDto(user);
     }
 
     @PostMapping("/update/{id}")
     public UserResponseDto updateUser(@PathVariable() Long id, @Validated @RequestBody UserUpdateRequestDto userUpdateRequestDto) throws CustomException {
         User user = userService.updateUser(id, userUpdateRequestDto);
-        return UserResponseDto.of(user);
+        return UserResponseDto.userResponseDto(user);
     }
 
     @GetMapping("/project/{id}")

@@ -1,27 +1,33 @@
 package com.milvus.vector_spring.project.dto;
 
 import com.milvus.vector_spring.project.Project;
+import com.milvus.vector_spring.user.User;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+
 @Getter
-@RequiredArgsConstructor
+@Builder
 public class ProjectResponseDto {
 
     private final Long id;
     private final String name;
     private final String key;
+    private final Long createdUserId;
+    private final Long updatedUserId;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public static ProjectResponseDto of (Project project) {
-        return new ProjectResponseDto(
-                project.getId(),
-                project.getName(),
-                project.getKey(),
-                project.getCreatedAt(),
-                project.getUpdatedAt()
-        );
+    public static ProjectResponseDto projectResponseDto(Project project) {
+        return ProjectResponseDto.builder()
+                .id(project.getId())
+                .name(project.getName())
+                .key(project.getKey())
+                .createdUserId(project.getCreatedBy().getId())
+                .updatedUserId(project.getUpdatedBy().getId())
+                .createdAt(project.getCreatedAt())
+                .updatedAt(project.getUpdatedAt())
+                .build();
     }
 }

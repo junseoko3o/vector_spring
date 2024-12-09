@@ -2,11 +2,12 @@ package com.milvus.vector_spring.project.dto;
 
 import com.milvus.vector_spring.content.dto.ContentResponseDto;
 import com.milvus.vector_spring.project.Project;
-import com.milvus.vector_spring.user.User;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Builder
 public class ProjectContentsResponseDto {
     private Long id;
     private String name;
@@ -16,15 +17,18 @@ public class ProjectContentsResponseDto {
     private LocalDateTime updatedAt;
     private List<ContentResponseDto> contents;
 
-    public ProjectContentsResponseDto(Project project) {
-        this.id = project.getId();
-        this.name = project.getName();
-        this.key = project.getKey();
-        this.openAiKey = project.getOpenAiKey();
-        this.createdAt = project.getCreatedAt();
-        this.updatedAt = project.getUpdatedAt();
-        this.contents = project.getContents().stream()
-                .map(ContentResponseDto::of)
+    public static ProjectContentsResponseDto projectContentsResponseDto(Project project) {
+        List<ContentResponseDto> contentList = project.getContents().stream()
+                .map(ContentResponseDto::from)
                 .toList();
+        return ProjectContentsResponseDto.builder()
+                .id(project.getId())
+                .name(project.getName())
+                .key(project.getKey())
+                .openAiKey(project.getOpenAiKey())
+                .createdAt(project.getCreatedAt())
+                .updatedAt(project.getUpdatedAt())
+                .contents(contentList)
+                .build();
     }
 }

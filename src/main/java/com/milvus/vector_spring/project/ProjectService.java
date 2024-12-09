@@ -40,10 +40,9 @@ public class ProjectService {
         );
     }
 
-    public ProjectContentsResponseDto findOneProjectWithContents(String key) {
+    public Project findOneProjectWithContents(String key) {
         projectRepository.findProjectByKey(key);
-        Project project = projectRepository.findOneProjectWithContents(key);
-        return new ProjectContentsResponseDto(project);
+        return projectRepository.findOneProjectWithContents(key);
     }
 
     public Project createProject(ProjectCreateRequestDto projectCreateRequestDto) {

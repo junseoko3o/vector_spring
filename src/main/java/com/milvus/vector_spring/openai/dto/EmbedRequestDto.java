@@ -1,12 +1,10 @@
 package com.milvus.vector_spring.openai.dto;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
-@Getter
-@RequiredArgsConstructor
+@Data
+@NoArgsConstructor
 public class EmbedRequestDto {
     @NotNull
     private String embedText;
