@@ -1,11 +1,11 @@
 package com.milvus.vector_spring.openai;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class ChatRequestDto {
-    private final String role;
-    private final String content;
+    private String role;
+    private String content;
 }

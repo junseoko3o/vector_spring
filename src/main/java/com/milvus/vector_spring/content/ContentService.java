@@ -1,7 +1,5 @@
 package com.milvus.vector_spring.content;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.milvus.vector_spring.common.EncryptionService;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
@@ -12,7 +10,6 @@ import com.milvus.vector_spring.milvus.dto.InsertRequestDto;
 import com.milvus.vector_spring.openai.OpenAiService;
 import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
 import com.milvus.vector_spring.openai.dto.OpenAiEmbedResponseDto;
-import com.milvus.vector_spring.openai.dto.OpenAiUsageResponseDto;
 import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.user.User;
@@ -91,40 +88,14 @@ public class ContentService {
 
     private OpenAiEmbedResponseDto fetchEmbedding(String openAiKey, String answer) throws CustomException {
         EmbedRequestDto embedRequestDto = new EmbedRequestDto(answer);
-        JsonNode jsonNode = openAiService.embedding(openAiKey, embedRequestDto);
-        JsonNode embeddingNode = jsonNode.get("data").get(0).get("embedding");
-        List<Float> embeddingList = parseEmbedding(embeddingNode);
-
-        JsonNode usageNode = jsonNode.get("usage");
-        OpenAiUsageResponseDto usage = parseUsage(usageNode);
-
-        return OpenAiEmbedResponseDto.builder()
-                .embedding(embeddingList)
-                .usage(usage)
-                .build();
-    }
-
-    private List<Float> parseEmbedding(JsonNode embeddingNode) {
-        List<Float> embeddingList = new ArrayList<>();
-        for (JsonNode element : embeddingNode) {
-            embeddingList.add(element.floatValue());
-        }
-        return embeddingList;
-    }
-
-    private OpenAiUsageResponseDto parseUsage(JsonNode usageNode) throws CustomException{
-        try {
-            return new ObjectMapper().treeToValue(usageNode, OpenAiUsageResponseDto.class);
-        } catch (Exception e) {
-            throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
-        }
+        return openAiService.embedding(openAiKey, embedRequestDto);
     }
 
     private void insertIntoMilvus(Content content, OpenAiEmbedResponseDto embedResponseDto) throws CustomException{
         try {
             InsertRequestDto insertRequestDto = InsertRequestDto.builder()
                     .id(content.getId())
-                    .vector(embedResponseDto.getEmbedding())
+                    .vector(embedResponseDto.getData().get(0).getEmbedding())
                     .title(content.getTitle())
                     .answer(content.getAnswer())
                     .build();

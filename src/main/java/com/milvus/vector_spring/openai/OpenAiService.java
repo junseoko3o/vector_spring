@@ -1,11 +1,12 @@
 package com.milvus.vector_spring.openai;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.config.WebClientConfig;
 import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
+import com.milvus.vector_spring.openai.dto.OpenAiChatResponseDto;
+import com.milvus.vector_spring.openai.dto.OpenAiEmbedResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class OpenAiService {
                 .build();
     }
 
-    public JsonNode chat(String openAiKey, ChatRequestDto chatRequestDto) throws CustomException{
+    public OpenAiChatResponseDto chat(String openAiKey, ChatRequestDto chatRequestDto) throws CustomException{
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestBody = Map.of(
                 "model", "gpt-4o",
@@ -46,13 +47,13 @@ public class OpenAiService {
                     .bodyToMono(String.class)
                     .block();
 
-            return objectMapper.readTree(res);
+            return objectMapper.readValue(res, OpenAiChatResponseDto.class);
         } catch (Exception e) {
             throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
         }
     }
 
-    public JsonNode embedding(String openAiKey, EmbedRequestDto embedRequestDto) throws CustomException {
+    public OpenAiEmbedResponseDto embedding(String openAiKey, EmbedRequestDto embedRequestDto) throws CustomException {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestBody = Map.of(
                 "model", "text-embedding-3-large",
@@ -65,7 +66,7 @@ public class OpenAiService {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-            return objectMapper.readTree(res);
+            return objectMapper.readValue(res, OpenAiEmbedResponseDto.class);
         } catch (Exception e) {
             throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
         }

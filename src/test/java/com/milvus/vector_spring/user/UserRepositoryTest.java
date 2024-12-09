@@ -34,7 +34,7 @@ class UserRepositoryTest {
                 "hello@gmail.com",
                 "asdf123!"
         );
-        user = new User(1L, userSignUpRequestDto.getUsername(), userSignUpRequestDto.getEmail(), userSignUpRequestDto.getPassword(), null);
+        user = new User(1L, userSignUpRequestDto.getEmail(), userSignUpRequestDto.getUsername(), userSignUpRequestDto.getPassword(), null);
         userRepository.save(user);
     }
 
