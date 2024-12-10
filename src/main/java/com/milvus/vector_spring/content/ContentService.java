@@ -35,12 +35,11 @@ public class ContentService {
         return contentRepository.findAll();
     }
 
-    public Content findOneContById(Long id) throws CustomException{
+    public Content findOneContentById(Long id) throws CustomException{
         return contentRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorStatus._NOT_FOUND_CONTENT)
         );
     }
-
     public Content createContent(long userId, ContentCreateRequestDto contentCreateRequestDto) throws CustomException {
         User user = userService.findOneUser(userId);
         Project project = projectService.findOneProjectByKey(contentCreateRequestDto.getProjectKey());
@@ -64,7 +63,7 @@ public class ContentService {
 
     public Content updateContent(long id, ContentUpdateRequestDto contentUpdateRequestDto) {
         User user = userService.findOneUser(contentUpdateRequestDto.getUpdatedUserId());
-        Content content = findOneContById(id);
+        Content content = findOneContentById(id);
         Project project = projectService.findOneProject(content.getProject().getId());
         Content updateContent = Content.builder()
                 .id(content.getId())

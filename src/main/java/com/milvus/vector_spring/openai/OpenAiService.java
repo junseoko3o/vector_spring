@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.config.WebClientConfig;
+import com.milvus.vector_spring.openai.dto.OpenAiChatRequestDto;
 import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
 import com.milvus.vector_spring.openai.dto.OpenAiChatResponseDto;
 import com.milvus.vector_spring.openai.dto.OpenAiEmbedResponseDto;
@@ -34,12 +35,13 @@ public class OpenAiService {
                 .build();
     }
 
-    public OpenAiChatResponseDto chat(String openAiKey, ChatRequestDto chatRequestDto) throws CustomException{
+    public OpenAiChatResponseDto chat(String openAiKey, OpenAiChatRequestDto openAiChatRequestDto) throws CustomException{
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestBody = Map.of(
-                "model", "gpt-4o",
-                "messages", List.of(chatRequestDto)
+                "model", openAiChatRequestDto.getModel(),
+                "messages", openAiChatRequestDto.getMessages()
         );
+
         try {
             String res = connect(openAiUrl, openAiKey).post()
                     .bodyValue(requestBody)

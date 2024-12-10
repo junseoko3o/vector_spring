@@ -30,12 +30,12 @@ public class ContentController {
 
     @GetMapping("/{id}")
     public ContentResponseDto findOneContentById(@RequestHeader(CONTENT_ID) long id) {
-        Content content = contentService.findOneContById(id);
+        Content content = contentService.findOneContentById(id);
         return ContentResponseDto.contentResponseDto(content);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ContentResponseDto> createContent(
+    public ResponseEntity<ContentResponseDto> createContenrt(
             @RequestHeader(USER_ID) long userId,
             @Validated @RequestBody ContentCreateRequestDto contentCreateRequestDto
             ) {
