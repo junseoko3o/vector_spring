@@ -1,13 +1,11 @@
 package com.milvus.vector_spring.openai;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.config.WebClientConfig;
-import com.milvus.vector_spring.openai.dto.OpenAiChatRequestDto;
-import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
-import com.milvus.vector_spring.openai.dto.OpenAiChatResponseDto;
-import com.milvus.vector_spring.openai.dto.OpenAiEmbedResponseDto;
+import com.milvus.vector_spring.openai.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -69,6 +67,51 @@ public class OpenAiService {
                     .bodyToMono(String.class)
                     .block();
             return objectMapper.readValue(res, OpenAiEmbedResponseDto.class);
+        } catch (Exception e) {
+            throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
+        }
+    }
+
+    public OpenAiZodResponseDto zod(String openAiKey, OpenAiChatRequestDto openAiChatRequestDto) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> responseFormat = Map.of(
+                "type", "json_schema",
+                "json_schema", Map.of(
+                        "name", "result",
+                        "schema", Map.of(
+                                "type", "object",
+                                "properties", Map.of(
+                                        "res", Map.of(
+                                                "type", "array",
+                                                "items", Map.of(
+                                                        "type", "object",
+                                                        "properties", Map.of(
+                                                                "title", Map.of("type", "string"),
+                                                                "answer", Map.of("type", "string")
+                                                        ),
+                                                        "required", List.of("title", "answer"),
+                                                        "additionalProperties", false
+                                                )
+                                        )
+                                ),
+                                "strict", true
+                        )
+                )
+        );
+        Map<String, Object> requestBody = Map.of(
+                "model", "gpt-4o-2024-08-06",
+                "messages", openAiChatRequestDto.getMessages(),
+                "response_format", responseFormat
+        );
+
+        try {
+            String res = connect(openAiUrl, openAiKey).post()
+                    .bodyValue(requestBody)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+            JsonNode result = objectMapper.readTree(res);
+            return OpenAiZodResponseDto.fromJson(result);
         } catch (Exception e) {
             throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
         }
