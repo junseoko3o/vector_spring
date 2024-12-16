@@ -53,6 +53,7 @@ public class UserService {
                 .id(user.getId())
                 .email(user.getEmail())
                 .username(userUpdateRequestDto.getUsername())
+                .password(user.getPassword())
                 .build();
         return userRepository.save(updatedUser);
     }
