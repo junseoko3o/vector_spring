@@ -1,16 +1,33 @@
-FROM eclipse-temurin:17 as builder
+# Step 1: Dependencies
+FROM eclipse-temurin:17 as deps
 
+WORKDIR /app
+
+# Copy necessary files for dependency resolution
 COPY gradlew .
 COPY gradle gradle
 COPY build.gradle .
 COPY settings.gradle .
-COPY src src
 
 RUN chmod +x ./gradlew
-RUN ./gradlew clean bootJar
+RUN ./gradlew dependencies
+
+# Step 2: Builder
+FROM eclipse-temurin:17 as builder
+
+WORKDIR /app
+
+# Copy dependencies from the previous stage
+COPY --from=deps /app ./
+
+# Copy the source code
+COPY src src
+
 RUN ./gradlew bootJar
 
-FROM eclipse-temurin:17
+# Step 3: Runner
+FROM eclipse-temurin:17 as runner
+WORKDIR /app
 
 ARG ARG_DATASOURCE_URL
 ARG ARG_DATASOURCE_USERNAME
@@ -53,7 +70,13 @@ ENV SPRING_DATA_REDIS_PASSWORD=${ARG_REDIS_PASSWORD}
 ENV SECRET_KEY=${ARG_SECRET_KEY}
 ENV IV_SIZE=${ARG_SECRET_IV_SIZE}
 
-COPY --from=builder build/libs/*.jar app.jar
+# Copy the built jar file from the builder stage
+COPY --from=builder /app/build/libs/*.jar app.jar
+
+# Use a non-root user for security (optional)
+RUN addgroup --system --gid 1001 spring && adduser --system --uid 1001 springuser
+RUN chown springuser:spring /app
+USER springuser
 
 EXPOSE 8080
 
