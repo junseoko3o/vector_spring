@@ -24,6 +24,7 @@ public enum ErrorStatus implements BaseCode {
     _DECRYPTION_ERROR(HttpStatus.BAD_REQUEST, "400", "복호화 에러"),
     _ENCRYPTION_ERROR(HttpStatus.BAD_REQUEST, "400", "암호화 에러"),
     _OPEN_AI_KEY_ERROR(HttpStatus.UNAUTHORIZED, "403", "OpenAI 키 에러"),
+    _NOT_INVITED_USER(HttpStatus.BAD_REQUEST, "400", "초대되지 않은 유저"),
     ;
 
 
