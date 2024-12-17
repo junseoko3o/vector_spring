@@ -34,4 +34,10 @@ public class RedisService {
         data.get(key);
         return data;
     }
+
+    public String deleteRedis(String key) {
+        ValueOperations<String, Object> data = redisTemplate.opsForValue();
+        data.getAndDelete(key);
+        return "deleted";
+    }
 }
