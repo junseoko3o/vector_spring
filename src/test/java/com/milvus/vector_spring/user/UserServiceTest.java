@@ -33,7 +33,7 @@ class UserServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        signUpRequestDto = new UserSignUpRequestDto("estuser","test@example.com", "password123!");
+        signUpRequestDto = new UserSignUpRequestDto("testuser","test@example.com", "password123!");
         updateRequestDto = new UserUpdateRequestDto("updatedUser", "test@example.com");
         user = new User(1L, "test@example.com", "testuser", "password123", null);
     }
@@ -68,16 +68,20 @@ class UserServiceTest {
     @DisplayName("유저 정보 수정")
     void updateUser() {
         when(userRepository.findById(1L)).thenReturn(java.util.Optional.of(user));
-        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        User updatedMockUser = new User(1L, "test@example.com", "updatedUser", "password123", null);
+        when(userRepository.save(any(User.class))).thenReturn(updatedMockUser);
 
         User updatedUser = userService.updateUser(1L, updateRequestDto);
 
         assertNotNull(updatedUser);
         assertEquals("updatedUser", updatedUser.getUsername());
         assertEquals("test@example.com", updatedUser.getEmail());
+
         verify(userRepository, times(1)).findById(1L);
         verify(userRepository, times(1)).save(any(User.class));
     }
+
 
     @Test
     @DisplayName("유저 수정 시 없는 유저 수정 시도")

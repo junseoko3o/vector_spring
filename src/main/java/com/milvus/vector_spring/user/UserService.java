@@ -35,6 +35,11 @@ public class UserService {
         return UserProjectsResponseDto.of(user);
     }
 
+    public User findOneUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_USER));
+    }
+
     public User signUpUser(UserSignUpRequestDto userSignUpRequestDto) {
         duplicateEmailCheck(userSignUpRequestDto.getEmail());
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -53,6 +58,7 @@ public class UserService {
                 .id(user.getId())
                 .email(user.getEmail())
                 .username(userUpdateRequestDto.getUsername())
+                .password(user.getPassword())
                 .build();
         return userRepository.save(updatedUser);
     }
