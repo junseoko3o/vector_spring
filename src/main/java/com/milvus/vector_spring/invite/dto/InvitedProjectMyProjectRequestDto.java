@@ -4,6 +4,5 @@ import lombok.Data;
 
 @Data
 public class InvitedProjectMyProjectRequestDto {
-    private String projectKey;
     private Long userId;
 }

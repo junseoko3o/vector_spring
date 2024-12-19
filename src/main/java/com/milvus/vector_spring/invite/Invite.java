@@ -18,8 +18,8 @@ public class Invite extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "received_id")
-    private Long receivedId;
+    @Column(name = "received_email")
+    private String receivedEmail;
 
     @ManyToOne
     @JoinColumn(name = "invited_id", nullable = false)
@@ -30,9 +30,9 @@ public class Invite extends BaseEntity {
     private Project project;
 
     @Builder
-    public Invite(Long id, Long receivedId, User createdBy, Project project) {
+    public Invite(Long id, String receivedEmail, User createdBy, Project project) {
         this.id = id;
-        this.receivedId = receivedId;
+        this.receivedEmail = receivedEmail;
         this.createdBy = createdBy;
         this.project = project;
     }
