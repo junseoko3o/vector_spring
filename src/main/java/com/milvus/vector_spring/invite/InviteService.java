@@ -22,25 +22,25 @@ public class InviteService {
     private final ProjectService projectService;
     private final InviteRepository inviteRepository;
 
-    private Invite findInviteIndexForBanish(Long projectId, Long banishId) {
-        return inviteRepository.findOneForBanish(projectId, banishId)
+    private Invite findInviteIndexForBanish(Project project, Long banishId) {
+        return inviteRepository.findByProjectAndReceivedId(project, banishId)
                 .orElseThrow(() -> new CustomException(ErrorStatus._NOT_INVITED_USER));
     }
 
-    public List<Invite> invitedUserList(Long invitedUserId) {
-        return inviteRepository.invitedUserList(invitedUserId)
+    public List<Invite> invitedUserList(User invitedBy) {
+        return inviteRepository.findByCreatedBy(invitedBy)
                 .orElseThrow(() -> new CustomException(ErrorStatus._NOT_INVITED_USER));
     }
 
-    public List<Invite> projectInvitedUserList(Long projectId, Long invitedUserId) {
-        return inviteRepository.projectInvitedUserList(projectId, invitedUserId)
+    public List<Invite> projectInvitedUserList(Project project, User invitedBy) {
+        return inviteRepository.findByCreatedByAndProject(invitedBy, project)
                 .orElseThrow(() -> new CustomException(ErrorStatus._NOT_INVITED_USER));
     }
 
     public void invitedProjectAndCreateProjectList(InvitedProjectMyProjectRequestDto invitedProjectMyProjectRequestDto) {
         Project project = projectService.findOneProjectByKey(invitedProjectMyProjectRequestDto.getProjectKey());
         User user = userService.findOneUser(invitedProjectMyProjectRequestDto.getUserId());
-        List<Invite> invitedProjectList = projectInvitedUserList(project.getId(), user.getId());
+        List<Invite> invitedProjectList = projectInvitedUserList(project, user);
         List<ProjectResponseDto> myProjectList = userService.fineOneUserWithProjects(user.getId()).getProjects();
     }
 
@@ -62,7 +62,7 @@ public class InviteService {
         User banishUserEmail = userService.findOneUserByEmail(banishUserRequestDto.getBanishedEmail());
         Project project = projectService.findOneProjectByKey(banishUserRequestDto.getProjectKey());
 
-        Invite invite = findInviteIndexForBanish(project.getId(), banishUserEmail.getId());
+        Invite invite = findInviteIndexForBanish(project, banishUserEmail.getId());
         inviteRepository.delete(invite);
         return "Banish User!";
     }
