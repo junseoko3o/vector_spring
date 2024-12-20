@@ -63,9 +63,8 @@ public class User extends BaseEntity implements UserDetails {
         this.loginAt = loginAt;
     }
 
-    public User updateLoginAt(LocalDateTime loginAt) {
+    public void updateLoginAt(LocalDateTime loginAt) {
         this.loginAt = loginAt;
-        return this;
     }
 
     @Override

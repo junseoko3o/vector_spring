@@ -11,6 +11,5 @@ public interface InviteRepository extends JpaRepository<Invite, Long> {
     Optional<Invite> findByProjectAndReceivedEmail(Project project, String receivedEmail);
     Optional<List<Invite>> findByReceivedEmail(String receivedEmail);
     Optional<List<Invite>> findByProject(Project project);
-
     Optional<List<Invite>> findByCreatedByAndProject(User createdBy, Project project);
 }

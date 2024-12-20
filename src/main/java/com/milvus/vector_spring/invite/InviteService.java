@@ -85,7 +85,7 @@ public class InviteService {
         return "Banish User!";
     }
 
-    public List<Invite> updateMasterUser(UpdateMasterUserRequestDto updateMasterUserRequestDto) {
+    public void updateMasterUser(UpdateMasterUserRequestDto updateMasterUserRequestDto) {
         User beforeMasterUser = userService.findOneUser(updateMasterUserRequestDto.getCreatedUserId());
         User afterMasterUser = userService.findOneUserByEmail(updateMasterUserRequestDto.getChangeMasterUser());
 
@@ -101,6 +101,6 @@ public class InviteService {
         for (Invite invite : invited) {
             invite.updateCreatedBy(afterMasterUser);
         }
-        return inviteRepository.saveAll(invited);
+        inviteRepository.saveAll(invited);
     }
 }
