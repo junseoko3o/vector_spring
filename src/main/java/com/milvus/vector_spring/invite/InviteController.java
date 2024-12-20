@@ -1,7 +1,6 @@
 package com.milvus.vector_spring.invite;
 
 import com.milvus.vector_spring.invite.dto.*;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -42,5 +41,10 @@ public class InviteController {
                         .build())
                 .findFirst()
                 .orElse(null);
+    }
+
+    @DeleteMapping("/banish")
+    public String banishUser(@Validated @RequestBody BanishUserRequestDto banishUserRequestDto) {
+        return inviteService.banishUserFromProject(banishUserRequestDto);
     }
 }
