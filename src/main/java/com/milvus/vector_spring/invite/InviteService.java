@@ -2,10 +2,7 @@ package com.milvus.vector_spring.invite;
 
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
-import com.milvus.vector_spring.invite.dto.BanishUserRequestDto;
-import com.milvus.vector_spring.invite.dto.CombinedProjectListResponseDto;
-import com.milvus.vector_spring.invite.dto.InviteUserRequestDto;
-import com.milvus.vector_spring.invite.dto.InvitedProjectMyProjectRequestDto;
+import com.milvus.vector_spring.invite.dto.*;
 import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.project.dto.ProjectResponseDto;
@@ -38,6 +35,11 @@ public class InviteService {
         Project project = projectService.findOneProjectByKey(projectKey);
         return inviteRepository.findByProject(project)
                 .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_PROJECT));
+    }
+
+    private List<Invite> findByCreatedByAndProject(User user, Project project) {
+        return inviteRepository.findByCreatedByAndProject(user, project)
+                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_INVITED_USER));
     }
 
     public List<CombinedProjectListResponseDto> invitedProjectAndCreateProjectList(InvitedProjectMyProjectRequestDto invitedProjectMyProjectRequestDto) {
@@ -81,5 +83,24 @@ public class InviteService {
         Invite invite = findInviteIndexForBanish(project, banishUserEmail.getEmail());
         inviteRepository.delete(invite);
         return "Banish User!";
+    }
+
+    public List<Invite> updateMasterUser(UpdateMasterUserRequestDto updateMasterUserRequestDto) {
+        User beforeMasterUser = userService.findOneUser(updateMasterUserRequestDto.getCreatedUserId());
+        User afterMasterUser = userService.findOneUserByEmail(updateMasterUserRequestDto.getChangeMasterUser());
+
+        Project project = projectService.findOneProjectByKey(updateMasterUserRequestDto.getProjectKey());
+        projectService.updateProjectMaster(project, afterMasterUser);
+
+        List<Invite> invited = findByCreatedByAndProject(beforeMasterUser, project);
+        Invite toDelete = invited.stream()
+                .filter(invite -> afterMasterUser.getEmail().equals(invite.getReceivedEmail()))
+                .toList().get(0);
+        inviteRepository.delete(toDelete);
+        invited.remove(toDelete);
+        for (Invite invite : invited) {
+            invite.updateCreatedBy(afterMasterUser);
+        }
+        return inviteRepository.saveAll(invited);
     }
 }

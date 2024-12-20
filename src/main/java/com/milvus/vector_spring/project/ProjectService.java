@@ -103,4 +103,8 @@ public class ProjectService {
         return projectKey;
     }
 
+    public void updateProjectMaster(Project project, User user) {
+        project.updateByUser(user, user);
+        projectRepository.save(project);
+    }
 }

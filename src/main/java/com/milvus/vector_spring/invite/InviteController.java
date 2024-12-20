@@ -43,6 +43,12 @@ public class InviteController {
                 .orElse(null);
     }
 
+    @PostMapping("/change/master")
+    public String changeMasterUser(@Validated @RequestBody UpdateMasterUserRequestDto updateMasterUserRequestDto) {
+        inviteService.updateMasterUser(updateMasterUserRequestDto);
+        return "Finish change to " + updateMasterUserRequestDto.getChangeMasterUser() + "!!";
+    }
+
     @DeleteMapping("/banish")
     public String banishUser(@Validated @RequestBody BanishUserRequestDto banishUserRequestDto) {
         return inviteService.banishUserFromProject(banishUserRequestDto);

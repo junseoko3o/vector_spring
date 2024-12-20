@@ -58,4 +58,9 @@ public class Project extends BaseEntity {
         this.createdBy = createdBy;
         this.updatedBy = updatedBy;
     }
+
+    public void updateByUser(User updatedUser, User createdUser) {
+        this.updatedBy = updatedUser;
+        this.createdBy = createdUser;
+    }
 }

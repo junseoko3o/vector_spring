@@ -36,4 +36,8 @@ public class Invite extends BaseEntity {
         this.createdBy = createdBy;
         this.project = project;
     }
+
+    public void updateCreatedBy(User newCreatedBy) {
+        this.createdBy = newCreatedBy;
+    }
 }
