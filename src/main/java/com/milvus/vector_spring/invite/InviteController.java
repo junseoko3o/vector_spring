@@ -1,9 +1,6 @@
 package com.milvus.vector_spring.invite;
 
-import com.milvus.vector_spring.invite.dto.CombinedProjectListResponseDto;
-import com.milvus.vector_spring.invite.dto.InviteResponseDto;
-import com.milvus.vector_spring.invite.dto.InviteUserRequestDto;
-import com.milvus.vector_spring.invite.dto.InvitedProjectMyProjectRequestDto;
+import com.milvus.vector_spring.invite.dto.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/invite")
@@ -27,5 +25,22 @@ public class InviteController {
     @PostMapping("/list")
     public List<CombinedProjectListResponseDto> invitedProjectAndCreateProjectList(@Validated @RequestBody InvitedProjectMyProjectRequestDto invitedProjectMyProjectRequestDto) {
         return inviteService.invitedProjectAndCreateProjectList(invitedProjectMyProjectRequestDto);
+    }
+
+    @GetMapping("/list")
+    public InvitedProjectUserResponseDto invitedProjectUserList(@RequestParam("key") String projectKey) {
+        List<Invite> invitedList = inviteService.findByInvitedProjectUserList(projectKey);
+        return invitedList.stream()
+                .collect(Collectors.groupingBy(invite -> invite.getProject().getKey()))
+                .entrySet().stream()
+                .map(entry -> InvitedProjectUserResponseDto.builder()
+                        .projectKey(entry.getKey())
+                        .createdUserId(entry.getValue().get(0).getCreatedBy().getId())
+                        .receivedEmail(entry.getValue().stream()
+                                .map(Invite::getReceivedEmail)
+                                .toList())
+                        .build())
+                .findFirst()
+                .orElse(null);
     }
 }

@@ -34,14 +34,10 @@ public class InviteService {
                 .orElseThrow(() -> new CustomException(ErrorStatus._NOT_INVITED_USER));
     }
 
-    public List<Invite> invitedUserList(User invitedBy) {
-        return inviteRepository.findByCreatedBy(invitedBy)
-                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_INVITED_USER));
-    }
-
-    public List<Invite> projectInvitedUserList(Project project, User invitedBy) {
-        return inviteRepository.findByCreatedByAndProject(invitedBy, project)
-                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_INVITED_USER));
+    public List<Invite> findByInvitedProjectUserList(String projectKey) {
+        Project project = projectService.findOneProjectByKey(projectKey);
+        return inviteRepository.findByProject(project)
+                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_PROJECT));
     }
 
     public List<CombinedProjectListResponseDto> invitedProjectAndCreateProjectList(InvitedProjectMyProjectRequestDto invitedProjectMyProjectRequestDto) {
