@@ -37,14 +37,12 @@ public class MilvusService implements MilvusInterface {
     @Value("${collection.name}")
     private String collectionName;
 
-    private MilvusClientV2 client;
-
     @Override
     public MilvusClientV2 connect() throws CustomException {
         ConnectConfig connectConfig = ConnectConfig.builder()
                 .uri(clusterEndpoint)
                 .build();
-        client = new MilvusClientV2(connectConfig);
+        MilvusClientV2 client = new MilvusClientV2(connectConfig);
         System.out.println("Connected to Milvus at: " + clusterEndpoint);
         return client;
     }
