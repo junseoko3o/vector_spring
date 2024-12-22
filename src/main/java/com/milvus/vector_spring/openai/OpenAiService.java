@@ -1,6 +1,5 @@
 package com.milvus.vector_spring.openai;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
@@ -110,8 +109,7 @@ public class OpenAiService {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-            JsonNode result = objectMapper.readTree(res);
-            return OpenAiZodResponseDto.fromJson(result);
+            return objectMapper.readValue(res, OpenAiZodResponseDto.class);
         } catch (Exception e) {
             throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
         }
