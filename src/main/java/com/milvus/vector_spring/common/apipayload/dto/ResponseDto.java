@@ -15,5 +15,4 @@ public class ResponseDto {
     private String statusCode;
     private String message;
     private HttpStatus httpStatus;
-    private Boolean success;
 }

@@ -28,9 +28,9 @@ public enum ErrorStatus implements BaseCode {
     ;
 
 
-    private HttpStatus httpStatus;
-    private String statusCode;
-    private String message;
+    private final HttpStatus httpStatus;
+    private final String statusCode;
+    private final String message;
 
     public static ErrorStatus getErrorStatus(String findMessage) {
         return Arrays.stream(values())
@@ -45,7 +45,6 @@ public enum ErrorStatus implements BaseCode {
                 .statusCode(statusCode)
                 .message(message)
                 .httpStatus(httpStatus)
-                .success(false)
                 .build();
     }
 }
