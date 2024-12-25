@@ -4,8 +4,8 @@ import com.milvus.vector_spring.content.dto.ContentResponseDto;
 import io.milvus.v2.service.vector.response.SearchResp;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Builder
+@Document(collection = "chat_response")
 public class ChatResponseDto {
     private String sessionId;
     private String projectKey;

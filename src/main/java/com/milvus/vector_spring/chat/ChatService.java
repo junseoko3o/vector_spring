@@ -15,6 +15,7 @@ import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class ChatService {
     private final OpenAiService openAiService;
     private final ChatOptionService chatOptionService;
     private final EncryptionService encryptionService;
+    private final MongoTemplate mongoTemplate;
 
     public ChatResponseDto chat(ChatRequestDto chatRequestDto) {
         LocalDateTime inputDateTime = LocalDateTime.now();
@@ -50,7 +52,7 @@ public class ChatService {
 
         Content content = contentService.findOneContentById(vectorSearchResponseDto.getFirstSearchId());
         LocalDateTime outputDateTime = LocalDateTime.now();
-        return ChatResponseDto.chatResponseDto(
+        ChatResponseDto chatResponseDto = ChatResponseDto.chatResponseDto(
                 project.getKey(),
                 "DEV",
                 chatRequestDto.getText(),
@@ -60,5 +62,7 @@ public class ChatService {
                 vectorSearchResponseDto.getSearch(),
                 ContentResponseDto.contentResponseDto(content)
         );
+        mongoTemplate.save(chatRequestDto, "chat_response");
+        return chatResponseDto;
     }
 }
