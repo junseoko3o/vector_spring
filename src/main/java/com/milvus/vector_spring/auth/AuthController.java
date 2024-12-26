@@ -1,7 +1,9 @@
 package com.milvus.vector_spring.auth;
 
 import com.milvus.vector_spring.auth.dto.UserLoginRequestDto;
+import com.milvus.vector_spring.auth.dto.UserLoginResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
 
-    @GetMapping("/login")
-    public void login(@Validated @RequestBody UserLoginRequestDto userLoginRequestDto) {
-        authService.login(userLoginRequestDto);
+    @PostMapping("/login")
+    public ResponseEntity<UserLoginResponseDto> login(@Validated @RequestBody UserLoginRequestDto userLoginRequestDto) {
+        return ResponseEntity.ok(authService.login(userLoginRequestDto));
     }
 }

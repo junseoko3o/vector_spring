@@ -29,10 +29,13 @@ public class RedisService {
         data.set(key, value, ttl);
     }
 
-    public ValueOperations<String, Object> getRedis(String key) {
+    public String getRedis(String key) {
         ValueOperations<String, Object> data = redisTemplate.opsForValue();
-        data.get(key);
-        return data;
+        Object value = data.get(key);
+        if (value != null) {
+            return value.toString();
+        }
+        return null;
     }
 
     public String deleteRedis(String key) {

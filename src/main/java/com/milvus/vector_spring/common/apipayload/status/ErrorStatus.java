@@ -15,6 +15,7 @@ public enum ErrorStatus implements BaseCode {
     _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "요청에 실패하였습니다."),
     _DUPLICATE_USER_EMAIL(HttpStatus.BAD_REQUEST, "400", "중복된 이메일."),
     _NOT_FOUND_USER(HttpStatus.NOT_FOUND, "400", "유저 없음"),
+    _NOT_PASSWORD_MATCHES(HttpStatus.BAD_REQUEST, "400", "패스워드 다름"),
     _NOT_FOUND_PROJECT(HttpStatus.NOT_FOUND, "400", "프로젝트 없음"),
     _DATABASE_ERROR(HttpStatus.BAD_REQUEST, "400", "데이터베이스 오류"),
     _SQL_ERROR(HttpStatus.BAD_REQUEST, "400", "SQL 오류"),
@@ -25,6 +26,7 @@ public enum ErrorStatus implements BaseCode {
     _ENCRYPTION_ERROR(HttpStatus.BAD_REQUEST, "400", "암호화 에러"),
     _OPEN_AI_KEY_ERROR(HttpStatus.UNAUTHORIZED, "403", "OpenAI 키 에러"),
     _NOT_INVITED_USER(HttpStatus.BAD_REQUEST, "400", "초대되지 않은 유저"),
+    _COOKIE_ENCODING_ERROR(HttpStatus.UNAUTHORIZED, "401", "쿠키 에러")
     ;
 
 

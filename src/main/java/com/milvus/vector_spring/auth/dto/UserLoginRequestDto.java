@@ -5,9 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 @Getter
 public class UserLoginRequestDto {
     @Email(message = "이메일 형식 이어야 한다.")
