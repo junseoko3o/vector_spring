@@ -102,7 +102,7 @@ class RedisServiceTest {
         when(valueOperations.get(key)).thenReturn(expectedValue);
 
         // Act
-        ValueOperations<String, Object> result = redisService.getRedis(key);
+        String result = redisService.getRedis(key);
 
         // Assert
         assertNotNull(result);

@@ -1,5 +1,6 @@
 package com.milvus.vector_spring.config.jwt;
 
+import com.milvus.vector_spring.config.jwt.JwtTokenProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

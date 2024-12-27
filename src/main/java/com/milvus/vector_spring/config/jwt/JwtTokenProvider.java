@@ -2,6 +2,7 @@ package com.milvus.vector_spring.config.jwt;
 
 import com.milvus.vector_spring.common.RedisService;
 import com.milvus.vector_spring.user.User;
+import com.milvus.vector_spring.user.UserDetailService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
@@ -11,15 +12,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +34,7 @@ public class JwtTokenProvider {
     private int refreshTokenExpiration;
 
     private final RedisService redisService;
+    private final UserDetailService userDetailService;
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
@@ -64,10 +64,8 @@ public class JwtTokenProvider {
         LocalDateTime expiryDate = now.plusSeconds(refreshTokenExpiration / 1000);
 
         String refreshToken = Jwts.builder()
-                .subject(user.getEmail())
                 .issuedAt(java.sql.Timestamp.valueOf(now))
                 .expiration(java.sql.Timestamp.valueOf(expiryDate))
-                .claims(userToMap(user))
                 .signWith(this.getSigningKey())
                 .compact();
 
@@ -95,13 +93,9 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
-        Set<SimpleGrantedAuthority> authorities = Collections.singleton(
-                new SimpleGrantedAuthority("ROLE_USER")
-        );
 
-        return new UsernamePasswordAuthenticationToken(new org.springframework.security.core.userdetails.User(
-                claims.getSubject(), "", authorities), token, authorities
-        );
+        UserDetails userDetails = userDetailService.loadUserByUsername(claims.getSubject());
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     public Claims getClaims(String token) {
