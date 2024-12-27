@@ -4,7 +4,6 @@ import com.milvus.vector_spring.common.apipayload.BaseCode;
 import com.milvus.vector_spring.common.apipayload.dto.ResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
@@ -26,7 +25,8 @@ public enum ErrorStatus implements BaseCode {
     _ENCRYPTION_ERROR(HttpStatus.BAD_REQUEST, "400", "암호화 에러"),
     _OPEN_AI_KEY_ERROR(HttpStatus.UNAUTHORIZED, "403", "OpenAI 키 에러"),
     _NOT_INVITED_USER(HttpStatus.BAD_REQUEST, "400", "초대되지 않은 유저"),
-    _COOKIE_ENCODING_ERROR(HttpStatus.UNAUTHORIZED, "401", "쿠키 에러")
+    _COOKIE_ENCODING_ERROR(HttpStatus.UNAUTHORIZED, "401", "쿠키 에러"),
+    _EMPTY_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "401", "토큰 없음")
     ;
 
 

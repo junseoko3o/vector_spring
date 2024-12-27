@@ -2,13 +2,13 @@ package com.milvus.vector_spring.auth;
 
 import com.milvus.vector_spring.auth.dto.UserLoginRequestDto;
 import com.milvus.vector_spring.auth.dto.UserLoginResponseDto;
+import com.milvus.vector_spring.common.RedisService;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.config.jwt.JwtTokenProvider;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserDetailService;
 import com.milvus.vector_spring.user.UserRepository;
-import com.milvus.vector_spring.util.CookieUtil;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,7 +24,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
+    private final RedisService redisService;
 
     public UserLoginResponseDto login(UserLoginRequestDto userLoginRequestDto) {
         User user = userDetailService.loadUserByUsername(userLoginRequestDto.getEmail());
@@ -48,6 +48,13 @@ public class AuthService {
 
     public Claims loginCheck(String token) {
         String accessToken = token.replace("Bearer ", "");
-        return jwtTokenProvider.getClaims(accessToken);
+        Claims user = jwtTokenProvider.getClaims(accessToken);
+        String email = user.get("email").toString();
+        String refreshToken = redisService.getRedis("refreshToken:" + email);
+        if (refreshToken != null && !refreshToken.isEmpty()) {
+            return user;
+        } else {
+            throw new CustomException(ErrorStatus._EMPTY_REFRESH_TOKEN);
+        }
     }
 }

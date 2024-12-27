@@ -1,6 +1,5 @@
 package com.milvus.vector_spring.config.jwt;
 
-import com.milvus.vector_spring.config.jwt.JwtTokenProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +24,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
         String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
-        System.out.println("Authorization Header: " + authorizationHeader);
         String token = getAccessToken(authorizationHeader);
 
         if (jwtTokenProvider.validateToken(token)) {
