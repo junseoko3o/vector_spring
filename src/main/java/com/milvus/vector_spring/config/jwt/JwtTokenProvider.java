@@ -41,7 +41,6 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-
     public String generateAccessToken(User user) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expiryDate = now.plusSeconds(accessTokenExpiration / 1000);
