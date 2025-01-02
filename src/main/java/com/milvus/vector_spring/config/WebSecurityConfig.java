@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
@@ -39,11 +40,13 @@ public class WebSecurityConfig {
             .formLogin(AbstractHttpConfigurer::disable)
             .logout(AbstractHttpConfigurer::disable);
 
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/auth/login", "/user/sign-up").permitAll()
+                    .requestMatchers("/auth/login", "/auth/check", "/user/sign-up").permitAll()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(

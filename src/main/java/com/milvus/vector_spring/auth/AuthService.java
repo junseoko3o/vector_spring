@@ -1,5 +1,6 @@
 package com.milvus.vector_spring.auth;
 
+import com.milvus.vector_spring.auth.dto.UserLoginCheckResponseDto;
 import com.milvus.vector_spring.auth.dto.UserLoginRequestDto;
 import com.milvus.vector_spring.auth.dto.UserLoginResponseDto;
 import com.milvus.vector_spring.common.RedisService;
@@ -9,7 +10,8 @@ import com.milvus.vector_spring.config.jwt.JwtTokenProvider;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserDetailService;
 import com.milvus.vector_spring.user.UserRepository;
-import io.jsonwebtoken.Claims;
+import com.milvus.vector_spring.user.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisService redisService;
+    private final UserService userService;
 
     public UserLoginResponseDto login(UserLoginRequestDto userLoginRequestDto) {
         User user = userDetailService.loadUserByUsername(userLoginRequestDto.getEmail());
@@ -46,15 +49,58 @@ public class AuthService {
         );
     }
 
-    public Claims loginCheck(String token) {
-        String accessToken = token.replace("Bearer ", "");
-        Claims user = jwtTokenProvider.getClaims(accessToken);
-        String email = user.get("email").toString();
-        String refreshToken = redisService.getRedis("refreshToken:" + email);
-        if (refreshToken != null && !refreshToken.isEmpty()) {
-            return user;
-        } else {
+    public UserLoginCheckResponseDto loginCheck(String token) {
+        String accessToken = extractAccessToken(token);
+
+        if (jwtTokenProvider.validateToken(accessToken)) {
+            return createResponseWithValidAccessToken(accessToken);
+        }
+
+        return handleExpiredAccessToken(accessToken);
+    }
+
+    private String extractAccessToken(String token) {
+        return token.replace("Bearer ", "");
+    }
+
+    private UserLoginCheckResponseDto createResponseWithValidAccessToken(String accessToken) {
+        Long userId = jwtTokenProvider.getUserId(accessToken);
+        User user = userService.findOneUser(userId);
+        String refreshToken = redisService.getRedis("refreshToken:" + user.getEmail());
+
+        return UserLoginCheckResponseDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    private UserLoginCheckResponseDto handleExpiredAccessToken(String accessToken) {
+        try {
+            Long userId = jwtTokenProvider.getUserId(accessToken);
+            User user = userService.findOneUser(userId);
+
+            String refreshToken = redisService.getRedis("refreshToken:" + user.getEmail());
+            validateRefreshToken(refreshToken);
+
+            String newAccessToken = jwtTokenProvider.generateAccessToken(user);
+
+            return UserLoginCheckResponseDto.builder()
+                    .id(user.getId())
+                    .email(user.getEmail())
+                    .accessToken(newAccessToken)
+                    .refreshToken(refreshToken)
+                    .build();
+        } catch (ExpiredJwtException e) {
             throw new CustomException(ErrorStatus._EMPTY_REFRESH_TOKEN);
         }
     }
+
+    private void validateRefreshToken(String refreshToken) {
+        if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
+            throw new CustomException(ErrorStatus._EMPTY_REFRESH_TOKEN);
+        }
+    }
+
 }

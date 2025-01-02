@@ -51,6 +51,7 @@ public class JwtTokenProvider {
                 .header().add(jwtHeader)
                 .and()
                 .subject(user.getEmail())
+                .subject(user.getId().toString())
                 .issuedAt(java.sql.Timestamp.valueOf(now))
                 .expiration(java.sql.Timestamp.valueOf(expiryDate))
                 .claims(userToMap(user))
@@ -73,7 +74,6 @@ public class JwtTokenProvider {
                 refreshToken,
                 refreshTokenExpiration / 1000
         );
-
         return refreshToken;
     }
 
@@ -107,7 +107,7 @@ public class JwtTokenProvider {
 
     public Long getUserId(String token) {
         Claims claims = getClaims(token);
-        return claims.get("id", Long.class);
+        return claims.get("userId", Long.class);
     }
 
     public void deleteRefreshToken(String email) {

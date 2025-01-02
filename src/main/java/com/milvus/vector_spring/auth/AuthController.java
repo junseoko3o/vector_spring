@@ -1,9 +1,8 @@
 package com.milvus.vector_spring.auth;
 
+import com.milvus.vector_spring.auth.dto.UserLoginCheckResponseDto;
 import com.milvus.vector_spring.auth.dto.UserLoginRequestDto;
 import com.milvus.vector_spring.auth.dto.UserLoginResponseDto;
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,13 +15,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponseDto> login(@Validated @RequestBody UserLoginRequestDto userLoginRequestDto, HttpServletResponse httpServletResponse) {
+    public ResponseEntity<UserLoginResponseDto> login(@Validated @RequestBody UserLoginRequestDto userLoginRequestDto) {
         UserLoginResponseDto userLoginResponseDto = authService.login(userLoginRequestDto);
         return ResponseEntity.ok(userLoginResponseDto);
     }
 
     @GetMapping("/check")
-    public ResponseEntity<Claims> loginCheck(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<UserLoginCheckResponseDto> loginCheck(@RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(authService.loginCheck(token));
     }
 }
