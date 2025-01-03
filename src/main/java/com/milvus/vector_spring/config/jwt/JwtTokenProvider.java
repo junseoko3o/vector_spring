@@ -57,7 +57,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String generateRefreshToken(User user) {
+    public void generateRefreshToken(User user) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expiryDate = now.plusSeconds(refreshTokenExpiration / 1000);
 
@@ -72,7 +72,6 @@ public class JwtTokenProvider {
                 refreshToken,
                 refreshTokenExpiration / 1000
         );
-        return refreshToken;
     }
 
     public boolean validateToken(String token) {
