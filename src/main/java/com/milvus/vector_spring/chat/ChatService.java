@@ -2,6 +2,7 @@ package com.milvus.vector_spring.chat;
 
 import com.milvus.vector_spring.chat.dto.ChatRequestDto;
 import com.milvus.vector_spring.chat.dto.ChatResponseDto;
+import com.milvus.vector_spring.chat.dto.VectorSearchRankDto;
 import com.milvus.vector_spring.chat.dto.VectorSearchResponseDto;
 import com.milvus.vector_spring.common.EncryptionService;
 import com.milvus.vector_spring.content.Content;
@@ -19,10 +20,13 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class ChatService {
+
     private final UserService userService;
     private final ProjectService projectService;
     private final ContentService contentService;
@@ -33,36 +37,85 @@ public class ChatService {
 
     public ChatResponseDto chat(ChatRequestDto chatRequestDto) {
         LocalDateTime inputDateTime = LocalDateTime.now();
-        userService.findOneUser(chatRequestDto.getUserId());
 
-        Project project = projectService.findOneProjectByKey(chatRequestDto.getProjectKey());
+        validateUser(chatRequestDto.getUserId());
+        Project project = getProject(chatRequestDto.getProjectKey());
         String secretKey = encryptionService.decryptData(project.getOpenAiKey());
 
-        EmbedRequestDto embedRequestDto = EmbedRequestDto.builder()
-                .embedText(chatRequestDto.getText())
-                .build();
-        OpenAiEmbedResponseDto openAiEmbedResponseDto = openAiService.embedding(secretKey, embedRequestDto);
+        OpenAiEmbedResponseDto embedResponse = getEmbedding(secretKey, chatRequestDto.getText());
+        VectorSearchResponseDto searchResponse = performVectorSearch(embedResponse);
+        List<VectorSearchRankDto> rankList = mapSearchResultsToRankList(searchResponse);
 
-        VectorSearchResponseDto vectorSearchResponseDto = chatOptionService.vectorSearchResult(openAiEmbedResponseDto.getData().get(0).getEmbedding());
+        String finalAnswer = generateFinalAnswer(chatRequestDto.getText(), secretKey, rankList, searchResponse);
 
-        OpenAiChatResponseDto openAiChatResponseDto = chatOptionService.openAiChatResponse(
-                secretKey,
-                chatOptionService.prompt(chatRequestDto.getText(), vectorSearchResponseDto.getAnswers())
-        );
-
-        Content content = contentService.findOneContentById(vectorSearchResponseDto.getFirstSearchId());
+        Content content = contentService.findOneContentById(searchResponse.getFirstSearchId());
         LocalDateTime outputDateTime = LocalDateTime.now();
-        ChatResponseDto chatResponseDto = ChatResponseDto.chatResponseDto(
+
+        ChatResponseDto chatResponseDto = buildChatResponse(project, chatRequestDto, finalAnswer, inputDateTime, outputDateTime, searchResponse, content);
+
+        mongoTemplate.save(chatRequestDto, "chat_response");
+        return chatResponseDto;
+    }
+
+    private void validateUser(Long userId) {
+        userService.findOneUser(userId);
+    }
+
+    private Project getProject(String projectKey) {
+        return projectService.findOneProjectByKey(projectKey);
+    }
+
+    private OpenAiEmbedResponseDto getEmbedding(String secretKey, String text) {
+        EmbedRequestDto embedRequest = EmbedRequestDto.builder()
+                .embedText(text)
+                .build();
+        return openAiService.embedding(secretKey, embedRequest);
+    }
+
+    private VectorSearchResponseDto performVectorSearch(OpenAiEmbedResponseDto embedResponse) {
+        return chatOptionService.vectorSearchResult(embedResponse.getData().get(0).getEmbedding());
+    }
+
+    private List<VectorSearchRankDto> mapSearchResultsToRankList(VectorSearchResponseDto searchResponse) {
+        return searchResponse.getSearch().getSearchResults().stream()
+                .flatMap(List::stream)
+                .map(result -> {
+                    Map<String, Object> entity = result.getEntity();
+                    return VectorSearchRankDto.builder()
+                            .answer((String) entity.get("answer"))
+                            .title((String) entity.get("title"))
+                            .score(result.getScore())
+                            .id((Long) result.getId())
+                            .build();
+                })
+                .toList();
+    }
+
+    private String generateFinalAnswer(String text, String secretKey, List<VectorSearchRankDto> rankList, VectorSearchResponseDto searchResponse) {
+        if (!rankList.isEmpty() && rankList.get(0).getScore() >= 0.5) {
+            OpenAiChatResponseDto chatResponse = chatOptionService.openAiChatResponse(
+                    secretKey,
+                    chatOptionService.prompt(text, searchResponse.getAnswers())
+            );
+            return chatResponse.getChoices().get(0).getMessage().getContent();
+        }
+        OpenAiChatResponseDto fallbackResponse = chatOptionService.onlyOpenAiAnswer(secretKey, text);
+        return fallbackResponse.getChoices().get(0).getMessage().getContent();
+    }
+
+    private ChatResponseDto buildChatResponse(
+            Project project, ChatRequestDto chatRequestDto, String finalAnswer,
+            LocalDateTime inputDateTime, LocalDateTime outputDateTime,
+            VectorSearchResponseDto searchResponse, Content content) {
+        return ChatResponseDto.chatResponseDto(
                 project.getKey(),
                 "DEV",
                 chatRequestDto.getText(),
-                openAiChatResponseDto.getChoices().get(0).getMessage().getContent(),
+                finalAnswer,
                 inputDateTime,
                 outputDateTime,
-                vectorSearchResponseDto.getSearch(),
+                searchResponse.getSearch(),
                 ContentResponseDto.contentResponseDto(content)
         );
-        mongoTemplate.save(chatRequestDto, "chat_response");
-        return chatResponseDto;
     }
 }

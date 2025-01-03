@@ -29,12 +29,20 @@ public class ChatOptionService {
                 data;
     }
 
-    public OpenAiChatResponseDto openAiChatResponse(String openAikey, String prompt) {
+    public OpenAiChatResponseDto openAiChatResponse(String openAiKey, String prompt) {
         List<OpenAiChatRequestDto.OpenAiMessageDto> messages = List.of(
                 new OpenAiChatRequestDto.OpenAiMessageDto("system", prompt)
         );
         OpenAiChatRequestDto requestDto = new OpenAiChatRequestDto("gpt-4o", messages);
-        return openAiService.chat(openAikey, requestDto);
+        return openAiService.chat(openAiKey, requestDto);
+    }
+
+    public OpenAiChatResponseDto onlyOpenAiAnswer(String openAiKey, String question) {
+        List<OpenAiChatRequestDto.OpenAiMessageDto> messages = List.of(
+                new OpenAiChatRequestDto.OpenAiMessageDto("user", question)
+        );
+        OpenAiChatRequestDto requestDto = new OpenAiChatRequestDto("gpt-4o", messages);
+        return openAiService.chat(openAiKey, requestDto);
     }
 
     public VectorSearchResponseDto vectorSearchResult(List<Float> vector) {
