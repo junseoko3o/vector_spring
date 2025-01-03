@@ -12,7 +12,6 @@ import com.milvus.vector_spring.user.UserDetailService;
 import com.milvus.vector_spring.user.UserRepository;
 import com.milvus.vector_spring.user.UserService;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,13 +38,12 @@ public class AuthService {
         User savedUser = userRepository.save(user);
 
         String accessToken = jwtTokenProvider.generateAccessToken(user);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user);
+        jwtTokenProvider.generateRefreshToken(user);
         return new UserLoginResponseDto(
                 savedUser.getId(),
                 savedUser.getEmail(),
                 savedUser.getUsername(),
                 accessToken,
-                refreshToken,
                 savedUser.getLoginAt()
         );
     }
@@ -67,38 +65,27 @@ public class AuthService {
     private UserLoginCheckResponseDto createResponseWithValidAccessToken(String accessToken) {
         Long userId = jwtTokenProvider.getUserId(accessToken);
         User user = userService.findOneUser(userId);
-        String refreshToken = redisService.getRedis("refreshToken:" + user.getEmail());
-
         return UserLoginCheckResponseDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .loginAt(user.getLoginAt())
                 .build();
     }
 
     private UserLoginCheckResponseDto handleExpiredAccessToken(String accessToken) {
-        System.out.println("만료된 AccessToken");
-        try {
-            Claims claims = jwtTokenProvider.expiredTokenGetPayload(accessToken);
-            User user = userService.findOneUser(claims.get("userId", Long.class));
+        Claims claims = jwtTokenProvider.expiredTokenGetPayload(accessToken);
+        User user = userService.findOneUser(claims.get("userId", Long.class));
 
-            String refreshToken = redisService.getRedis("refreshToken:" + user.getEmail());
-            validateRefreshToken(refreshToken);
-
-            String newAccessToken = jwtTokenProvider.generateAccessToken(user);
-
-            return UserLoginCheckResponseDto.builder()
-                    .id(user.getId())
-                    .email(user.getEmail())
-                    .accessToken(newAccessToken)
-                    .refreshToken(refreshToken)
-                    .loginAt(user.getLoginAt())
-                    .build();
-        } catch (ExpiredJwtException e) {
-            throw new CustomException(ErrorStatus._EMPTY_REFRESH_TOKEN);
-        }
+        String refreshToken = redisService.getRedis("refreshToken:" + user.getEmail());
+        validateRefreshToken(refreshToken);
+        String newAccessToken = jwtTokenProvider.generateAccessToken(user);
+        return UserLoginCheckResponseDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .accessToken(newAccessToken)
+                .loginAt(user.getLoginAt())
+                .build();
     }
 
     private void validateRefreshToken(String refreshToken) {
@@ -106,5 +93,4 @@ public class AuthService {
             throw new CustomException(ErrorStatus._EMPTY_REFRESH_TOKEN);
         }
     }
-
 }
