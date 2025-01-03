@@ -58,6 +58,21 @@ public class AuthService {
         return handleExpiredAccessToken(accessToken);
     }
 
+    public void logout(String accessToken) {
+        String extractedAccessToken = extractAccessToken(accessToken);
+
+        if (jwtTokenProvider.validateToken(extractedAccessToken)) {
+            Claims claims = jwtTokenProvider.getClaims(extractedAccessToken);
+            Long userId = claims.get("userId", Long.class);
+            User user = userService.findOneUser(userId);
+
+            String redisKey = "refreshToken:" + user.getEmail();
+            redisService.deleteRedis(redisKey);
+        } else {
+            throw new CustomException(ErrorStatus._INVALID_ACCESS_TOKEN);
+        }
+    }
+
     private String extractAccessToken(String token) {
         return token.replace("Bearer ", "");
     }

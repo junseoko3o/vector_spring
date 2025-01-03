@@ -24,4 +24,10 @@ public class AuthController {
     public ResponseEntity<UserLoginCheckResponseDto> loginCheck(@RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(authService.loginCheck(token));
     }
+
+    @GetMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
+        authService.logout(token);
+        return ResponseEntity.ok("로그아웃 완료!");
+    }
 }

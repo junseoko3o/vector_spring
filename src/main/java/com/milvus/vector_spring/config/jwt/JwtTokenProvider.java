@@ -122,10 +122,6 @@ public class JwtTokenProvider {
         return claims.get("userId", Long.class);
     }
 
-    public void deleteRefreshToken(String email) {
-        redisService.deleteRedis("refreshToken:" + email);
-    }
-
     private Map<String, Object> userToMap(User user) {
         Map<String, Object> userMap = new HashMap<>();
 
