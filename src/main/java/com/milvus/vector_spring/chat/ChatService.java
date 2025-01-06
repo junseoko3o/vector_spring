@@ -107,9 +107,10 @@ public class ChatService {
             Project project, ChatRequestDto chatRequestDto, String finalAnswer,
             LocalDateTime inputDateTime, LocalDateTime outputDateTime,
             VectorSearchResponseDto searchResponse, Content content) {
+        chatRequestDto.setSessionId("DEV");
         return ChatResponseDto.chatResponseDto(
                 project.getKey(),
-                "DEV",
+                chatRequestDto.getSessionId(),
                 chatRequestDto.getText(),
                 finalAnswer,
                 inputDateTime,
