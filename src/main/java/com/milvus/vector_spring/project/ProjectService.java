@@ -53,8 +53,9 @@ public class ProjectService {
                 .createdBy(user)
                 .updatedBy(user)
                 .build();
-        milvusService.createSchema(project.getId());
-        return projectRepository.save(project);
+        Project savedProject = projectRepository.save(project);
+        milvusService.createSchema(savedProject.getId());
+        return savedProject;
     }
 
     public Project updateProject(String key, ProjectUpdateRequestDto projectUpdateRequestDto) {
