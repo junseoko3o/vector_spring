@@ -21,7 +21,7 @@ public class AuthController {
     public ResponseEntity<UserLoginResponseDto> login(@Validated @RequestBody UserLoginRequestDto userLoginRequestDto) {
         UserLoginResponseDto userLoginResponseDto = authService.login(userLoginRequestDto);
 //        String token = userLoginResponseDto.getAccessToken();
-//        CookieUtil.addCookie(httpServletResponse, "accessToken", token, 7 * 24 * 60 * 60);
+//        CookieUtil.addCookie(httpServletResponse, "accessToken", token);
         return ResponseEntity.ok(userLoginResponseDto);
     }
 

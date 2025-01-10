@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.SerializationUtils;
 
@@ -13,10 +14,13 @@ import java.util.Base64;
 @RequiredArgsConstructor
 public class CookieUtil {
 
-    public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+    @Value("${jwt.access.token.expiration}")
+    private static int accessTokenMaxAge;
+
+    public static void addCookie(HttpServletResponse response, String name, String value) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
-        cookie.setMaxAge(maxAge);
+        cookie.setMaxAge(accessTokenMaxAge);
 
         response.addCookie(cookie);
     }
