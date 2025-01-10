@@ -90,7 +90,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
 
-        UserDetails userDetails = userDetailService.loadUserByUsername(claims.getSubject());
+        UserDetails userDetails = userDetailService.loadUserByUsername(claims.get("email", String.class));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
