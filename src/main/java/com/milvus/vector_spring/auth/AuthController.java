@@ -18,24 +18,24 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponseDto> login(@Validated @RequestBody UserLoginRequestDto userLoginRequestDto, HttpServletResponse httpServletResponse) {
+    public ResponseEntity<UserLoginResponseDto> login(@Validated @RequestBody UserLoginRequestDto userLoginRequestDto) {
         UserLoginResponseDto userLoginResponseDto = authService.login(userLoginRequestDto);
-        String token = userLoginResponseDto.getAccessToken();
-        CookieUtil.addCookie(httpServletResponse, "accessToken", token, 7 * 24 * 60 * 60);
+//        String token = userLoginResponseDto.getAccessToken();
+//        CookieUtil.addCookie(httpServletResponse, "accessToken", token, 7 * 24 * 60 * 60);
         return ResponseEntity.ok(userLoginResponseDto);
     }
 
     @GetMapping("/check")
-    public ResponseEntity<UserLoginCheckResponseDto> loginCheck(HttpServletRequest request) {
-        String token = CookieUtil.getCookie(request, "accessToken");
+    public ResponseEntity<UserLoginCheckResponseDto> loginCheck(@RequestHeader("Authorization") String token) {
+//        String token = CookieUtil.getCookie(request, "accessToken");
         return ResponseEntity.ok(authService.loginCheck(token));
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-        String token = CookieUtil.getCookie(request, "accessToken");
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
+//        String token = CookieUtil.getCookie(request, "accessToken");
         authService.logout(token);
-        CookieUtil.deleteCookie(response, "accessToken" );
+//        CookieUtil.deleteCookie(response, "accessToken" );
         return ResponseEntity.ok("로그아웃 완료!");
     }
 }

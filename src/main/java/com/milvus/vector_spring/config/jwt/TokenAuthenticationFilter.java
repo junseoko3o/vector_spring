@@ -16,9 +16,9 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-//    private final static String HEADER_AUTHORIZATION = "Authorization";
+    private final static String HEADER_AUTHORIZATION = "Authorization";
     private final static String TOKEN_PREFIX = "Bearer";
-    private final static String COOKIE_NAME = "accessToken";
+//    private final static String COOKIE_NAME = "accessToken";
 
     @Override
     protected void doFilterInternal(
@@ -26,9 +26,11 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             @NotNull HttpServletResponse response,
             @NotNull FilterChain filterChain)
             throws ServletException, IOException {
-//        String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
-        String token = getAccessTokenFromCookies(request.getCookies());
-
+        String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
+        String token = getAccessToken(authorizationHeader);
+//        String tokens = getAccessTokenFromCookies(request.getCookies());
+        System.out.println(token);
+        System.out.println(jwtTokenProvider.validateToken(token));
         if (jwtTokenProvider.validateToken(token)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -37,20 +39,20 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String getAccessTokenFromCookies(Cookie[] cookies) {
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (COOKIE_NAME.equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
-    }
+//    private String getAccessTokenFromCookies(Cookie[] cookies) {
+//        if (cookies != null) {
+//            for (Cookie cookie : cookies) {
+//                if (COOKIE_NAME.equals(cookie.getName())) {
+//                    return cookie.getValue();
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     private String getAccessToken(String authorizationHeader) {
         if (authorizationHeader != null && authorizationHeader.startsWith(TOKEN_PREFIX)) {
-            return authorizationHeader.substring(TOKEN_PREFIX.length());
+            return authorizationHeader.substring(TOKEN_PREFIX.length()).trim();
         }
         return null;
     }

@@ -1,6 +1,5 @@
 package com.milvus.vector_spring.config;
 
-import com.milvus.vector_spring.user.UserDetailService;
 import lombok.RequiredArgsConstructor;
 import com.milvus.vector_spring.config.jwt.JwtTokenProvider;
 import com.milvus.vector_spring.config.jwt.TokenAuthenticationFilter;
@@ -23,7 +22,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final UserDetailService userDetailService;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
