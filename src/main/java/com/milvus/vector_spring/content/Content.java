@@ -22,7 +22,7 @@ public class Content extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "content_key", nullable = false)
+    @Column(name = "content_key", nullable = false, unique = true)
     private String key;
 
     @Column(name = "title", nullable = false)
