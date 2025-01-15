@@ -33,6 +33,9 @@ public class Project extends BaseEntity {
     @Column(name = "open_ai_key", nullable = true)
     private String openAiKey;
 
+    @Column(name = "prompt", nullable = true)
+    private String prompt;
+
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Content> contents = new ArrayList<>();
 
@@ -48,11 +51,12 @@ public class Project extends BaseEntity {
     private User updatedBy;
 
     @Builder
-    public Project(Long id, String name, String key, String openAiKey, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
+    public Project(Long id, String name, String key, String openAiKey, String prompt, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
         this.id = id;
         this.name = name;
         this.key = key;
         this.openAiKey = openAiKey;
+        this.prompt = prompt;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.createdBy = createdBy;

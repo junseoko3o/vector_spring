@@ -7,6 +7,7 @@ import lombok.Data;
 public class ProjectUpdateRequestDto {
     private String name;
     private String openAiKey;
+    private String prompt;
 
     @NotNull
     private Long updatedUserId;

@@ -67,6 +67,7 @@ public class ProjectService {
                 .key(project.getKey())
                 .name(projectUpdateRequestDto.getName())
                 .openAiKey(secretKey)
+                .prompt(projectUpdateRequestDto.getPrompt())
                 .createdBy(project.getCreatedBy())
                 .createdAt(project.getCreatedAt())
                 .updatedBy(user)
