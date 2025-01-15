@@ -27,7 +27,7 @@ public class Project extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "project_key", nullable = false)
+    @Column(name = "project_key", nullable = false, unique = true)
     private String key;
 
     @Column(name = "open_ai_key", nullable = true)
