@@ -13,18 +13,22 @@ import io.milvus.v2.service.collection.request.CreateCollectionReq;
 import io.milvus.v2.service.collection.request.GetLoadStateReq;
 import io.milvus.v2.service.collection.request.HasCollectionReq;
 import io.milvus.v2.service.index.request.CreateIndexReq;
+import io.milvus.v2.service.rbac.request.CreateUserReq;
 import io.milvus.v2.service.vector.request.DeleteReq;
 import io.milvus.v2.service.vector.request.SearchReq;
 import io.milvus.v2.service.vector.request.UpsertReq;
 import io.milvus.v2.service.vector.request.data.BaseVector;
+import io.milvus.v2.service.vector.request.data.FloatVec;
 import io.milvus.v2.service.vector.response.DeleteResp;
 import io.milvus.v2.service.vector.response.SearchResp;
 import io.milvus.v2.service.vector.response.UpsertResp;
-import io.milvus.v2.service.vector.request.data.FloatVec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static io.milvus.v2.common.DataType.FloatVector;
 
@@ -37,13 +41,26 @@ public class MilvusService implements MilvusInterface {
     @Value("${collection.name}")
     private String collectionName;
 
+    @Value("${milvus.username}")
+    private String username;
+
+    @Value("${milvus.password}")
+    private String password;
+
     @Override
     public MilvusClientV2 connect() throws CustomException {
         ConnectConfig connectConfig = ConnectConfig.builder()
                 .uri(clusterEndpoint)
+                .token("root:Milvus")
                 .build();
         MilvusClientV2 client = new MilvusClientV2(connectConfig);
         System.out.println("Connected to Milvus at: " + clusterEndpoint);
+        CreateUserReq createUserReq = CreateUserReq.builder()
+                .userName(username)
+                .password(password)
+                .build();
+
+        client.createUser(createUserReq);
         return client;
     }
 
