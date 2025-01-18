@@ -54,7 +54,7 @@ public class ProjectService {
                 .updatedBy(user)
                 .build();
         Project savedProject = projectRepository.save(project);
-        milvusService.createSchema(savedProject.getId());
+        milvusService.createSchema(savedProject.getId(), projectCreateRequestDto.getDimension());
         return savedProject;
     }
 
@@ -95,7 +95,7 @@ public class ProjectService {
         if (isProjectKeyEmpty) {
             return encryptionService.encryptData(dtoKey);
         }
-        if (!isProjectKeyEmpty && !isDtoKeyEmpty) {
+        if (!isDtoKeyEmpty) {
             String decryptedProjectKey = encryptionService.decryptData(projectKey);
             if (decryptedProjectKey.equals(dtoKey)) {
                 return projectKey;

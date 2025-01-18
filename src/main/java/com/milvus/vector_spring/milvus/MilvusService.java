@@ -55,17 +55,17 @@ public class MilvusService implements MilvusInterface {
                 .build();
         MilvusClientV2 client = new MilvusClientV2(connectConfig);
         System.out.println("Connected to Milvus at: " + clusterEndpoint);
+        return client;
+    }
+
+    public void createSchema(Long dbKey, int dimension) {
+        MilvusClientV2 client = connect();
         CreateUserReq createUserReq = CreateUserReq.builder()
                 .userName(username)
                 .password(password)
                 .build();
 
         client.createUser(createUserReq);
-        return client;
-    }
-
-    public void createSchema(Long dbKey) {
-        MilvusClientV2 client = connect();
 
         CreateCollectionReq.CollectionSchema schema = client.createSchema();
         schema.addField(AddFieldReq.builder()
@@ -78,7 +78,7 @@ public class MilvusService implements MilvusInterface {
         schema.addField(AddFieldReq.builder()
                 .fieldName("vector")
                 .dataType(FloatVector)
-                .dimension(3072)
+                .dimension(dimension)
                 .build());
 
         schema.addField(AddFieldReq.builder()

@@ -12,6 +12,8 @@ public class ProjectCreateRequestDto {
 
     private String openAiKey;
 
+    private int dimension;
+
     @NotNull
     private Long createdUserId;
 }
