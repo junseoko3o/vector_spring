@@ -1,6 +1,6 @@
 package com.milvus.vector_spring.config.jwt;
 
-import com.milvus.vector_spring.common.RedisService;
+import com.milvus.vector_spring.common.service.RedisService;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserDetailService;
 import io.jsonwebtoken.*;

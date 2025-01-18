@@ -3,7 +3,7 @@ package com.milvus.vector_spring.auth;
 import com.milvus.vector_spring.auth.dto.UserLoginCheckResponseDto;
 import com.milvus.vector_spring.auth.dto.UserLoginRequestDto;
 import com.milvus.vector_spring.auth.dto.UserLoginResponseDto;
-import com.milvus.vector_spring.common.RedisService;
+import com.milvus.vector_spring.common.service.RedisService;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.config.jwt.JwtTokenProvider;

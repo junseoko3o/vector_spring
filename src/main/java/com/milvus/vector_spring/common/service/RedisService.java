@@ -1,4 +1,4 @@
-package com.milvus.vector_spring.common;
+package com.milvus.vector_spring.common.service;
 
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;

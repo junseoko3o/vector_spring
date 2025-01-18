@@ -4,7 +4,7 @@ import com.milvus.vector_spring.chat.dto.ChatRequestDto;
 import com.milvus.vector_spring.chat.dto.ChatResponseDto;
 import com.milvus.vector_spring.chat.dto.VectorSearchRankDto;
 import com.milvus.vector_spring.chat.dto.VectorSearchResponseDto;
-import com.milvus.vector_spring.common.EncryptionService;
+import com.milvus.vector_spring.common.service.EncryptionService;
 import com.milvus.vector_spring.content.Content;
 import com.milvus.vector_spring.content.ContentService;
 import com.milvus.vector_spring.content.dto.ContentResponseDto;

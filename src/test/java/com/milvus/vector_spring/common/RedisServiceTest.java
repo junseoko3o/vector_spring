@@ -1,5 +1,6 @@
 package com.milvus.vector_spring.common;
 
+import com.milvus.vector_spring.common.service.RedisService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

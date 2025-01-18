@@ -1,6 +1,6 @@
 package com.milvus.vector_spring.content;
 
-import com.milvus.vector_spring.common.EncryptionService;
+import com.milvus.vector_spring.common.service.EncryptionService;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;

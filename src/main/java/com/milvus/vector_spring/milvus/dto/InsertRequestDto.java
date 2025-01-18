@@ -9,16 +9,16 @@ import java.util.List;
 @Getter
 public class InsertRequestDto {
     @NotNull
-    private long id;
+    private final long id;
 
     @NotNull
-    private List<Float> vector;
+    private final List<Float> vector;
 
     @NotNull
-    private String title;
+    private final String title;
 
     @NotNull
-    private String answer;
+    private final String answer;
 
 
     @Builder

@@ -1,4 +1,4 @@
-package com.milvus.vector_spring.common;
+package com.milvus.vector_spring.common.service;
 
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
