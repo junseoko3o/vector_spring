@@ -41,6 +41,9 @@ public class MilvusService implements MilvusInterface {
     @Value("${collection.name}")
     private String collectionName;
 
+    @Value(("${milvus.token}"))
+    private String token;
+
     @Value("${milvus.username}")
     private String username;
 
@@ -51,7 +54,7 @@ public class MilvusService implements MilvusInterface {
     public MilvusClientV2 connect() throws CustomException {
         ConnectConfig connectConfig = ConnectConfig.builder()
                 .uri(clusterEndpoint)
-                .token("root:Milvus")
+                .token(token)
                 .build();
         MilvusClientV2 client = new MilvusClientV2(connectConfig);
         System.out.println("Connected to Milvus at: " + clusterEndpoint);
