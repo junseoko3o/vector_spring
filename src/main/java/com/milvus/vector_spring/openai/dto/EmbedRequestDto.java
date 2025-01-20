@@ -9,8 +9,14 @@ public class EmbedRequestDto {
     @NotNull
     private String embedText;
 
+    private int dimension;
+
+    private String embedModel;
+
     @Builder
-    public EmbedRequestDto(String embedText) {
+    public EmbedRequestDto(String embedText, int dimension, String embedModel) {
         this.embedText = embedText;
+        this.dimension = dimension;
+        this.embedModel = embedModel;
     }
 }

@@ -29,19 +29,19 @@ public class ChatOptionService {
                 data;
     }
 
-    public OpenAiChatResponseDto openAiChatResponse(String openAiKey, String prompt) {
+    public OpenAiChatResponseDto openAiChatResponse(String openAiKey, String prompt, String model) {
         List<OpenAiChatRequestDto.OpenAiMessageDto> messages = List.of(
                 new OpenAiChatRequestDto.OpenAiMessageDto("system", prompt)
         );
-        OpenAiChatRequestDto requestDto = new OpenAiChatRequestDto("gpt-4o", messages);
+        OpenAiChatRequestDto requestDto = new OpenAiChatRequestDto(model, messages);
         return openAiService.chat(openAiKey, requestDto);
     }
 
-    public OpenAiChatResponseDto onlyOpenAiAnswer(String openAiKey, String question) {
+    public OpenAiChatResponseDto onlyOpenAiAnswer(String openAiKey, String question, String model) {
         List<OpenAiChatRequestDto.OpenAiMessageDto> messages = List.of(
                 new OpenAiChatRequestDto.OpenAiMessageDto("user", question)
         );
-        OpenAiChatRequestDto requestDto = new OpenAiChatRequestDto("gpt-4o", messages);
+        OpenAiChatRequestDto requestDto = new OpenAiChatRequestDto(model, messages);
         return openAiService.chat(openAiKey, requestDto);
     }
 

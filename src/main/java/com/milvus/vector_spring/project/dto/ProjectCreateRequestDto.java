@@ -12,7 +12,11 @@ public class ProjectCreateRequestDto {
 
     private String openAiKey;
 
-    private int dimension;
+    private String embedModel;
+
+    private String basicModel;
+
+    private int dimensions;
 
     @NotNull
     private Long createdUserId;

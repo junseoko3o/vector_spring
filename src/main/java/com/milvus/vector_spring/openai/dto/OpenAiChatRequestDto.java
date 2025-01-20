@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OpenAiChatRequestDto {
-    private String model = "gpt-4o";
+    private String model;
 
     @NotNull
     private List<OpenAiMessageDto> messages;

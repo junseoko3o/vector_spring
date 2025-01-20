@@ -55,8 +55,8 @@ public class OpenAiService {
     public OpenAiEmbedResponseDto embedding(String openAiKey, EmbedRequestDto embedRequestDto) throws CustomException {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> requestBody = Map.of(
-                "model", "text-embedding-3-large",
-                "dimension", 3072,
+                "model", embedRequestDto.getEmbedModel(),
+                "dimension", embedRequestDto.getDimension(),
                 "input", embedRequestDto.getEmbedText()
         );
         try {
@@ -98,7 +98,7 @@ public class OpenAiService {
                 )
         );
         Map<String, Object> requestBody = Map.of(
-                "model", "gpt-4o-2024-08-06",
+                "model", openAiChatRequestDto.getModel(),
                 "messages", openAiChatRequestDto.getMessages(),
                 "response_format", responseFormat
         );

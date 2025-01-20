@@ -50,11 +50,14 @@ public class ProjectService {
                 .name(projectCreateRequestDto.getName())
                 .key(String.valueOf(UUID.randomUUID()))
                 .openAiKey(projectCreateRequestDto.getOpenAiKey() != null ? encryptionService.encryptData(projectCreateRequestDto.getOpenAiKey()) : null)
+                .embedModel(projectCreateRequestDto.getEmbedModel() != null ? projectCreateRequestDto.getEmbedModel() : null)
+                .basicModel(projectCreateRequestDto.getBasicModel() != null ? projectCreateRequestDto.getBasicModel() : null)
+                .dimensions(projectCreateRequestDto.getDimensions() != 0 ? projectCreateRequestDto.getDimensions() : null)
                 .createdBy(user)
                 .updatedBy(user)
                 .build();
         Project savedProject = projectRepository.save(project);
-        milvusService.createSchema(savedProject.getId(), projectCreateRequestDto.getDimension());
+        milvusService.createSchema(savedProject.getId(), projectCreateRequestDto.getDimensions());
         return savedProject;
     }
 
@@ -67,6 +70,9 @@ public class ProjectService {
                 .key(project.getKey())
                 .name(projectUpdateRequestDto.getName())
                 .openAiKey(secretKey)
+                .basicModel(projectUpdateRequestDto.getBasicModel())
+                .embedModel(projectUpdateRequestDto.getEmbedModel())
+                .dimensions(projectUpdateRequestDto.getDimensions())
                 .prompt(projectUpdateRequestDto.getPrompt())
                 .createdBy(project.getCreatedBy())
                 .createdAt(project.getCreatedAt())

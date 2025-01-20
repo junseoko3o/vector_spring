@@ -46,7 +46,7 @@ public class ChatService {
         VectorSearchResponseDto searchResponse = performVectorSearch(embedResponse);
         List<VectorSearchRankDto> rankList = mapSearchResultsToRankList(searchResponse);
         String prompt = project.getPrompt();
-        String finalAnswer = generateFinalAnswer(chatRequestDto.getText(), secretKey, rankList, searchResponse, prompt);
+        String finalAnswer = generateFinalAnswer(project, chatRequestDto.getText(), secretKey, rankList, searchResponse, prompt);
 
         Content content = contentService.findOneContentById(searchResponse.getFirstSearchId());
         LocalDateTime outputDateTime = LocalDateTime.now();
@@ -91,18 +91,19 @@ public class ChatService {
                 .toList();
     }
 
-    private String generateFinalAnswer(String text, String secretKey, List<VectorSearchRankDto> rankList, VectorSearchResponseDto searchResponse, String prompt) {
+    private String generateFinalAnswer(Project project, String text, String secretKey, List<VectorSearchRankDto> rankList, VectorSearchResponseDto searchResponse, String prompt) {
         if (!rankList.isEmpty() && rankList.get(0).getScore() >= 0.5) {
             if (prompt.isEmpty()) {
                 prompt = chatOptionService.prompt(text, searchResponse.getAnswers());
             }
             OpenAiChatResponseDto chatResponse = chatOptionService.openAiChatResponse(
                     secretKey,
-                    prompt
+                    prompt,
+                    project.getBasicModel()
             );
             return chatResponse.getChoices().get(0).getMessage().getContent();
         }
-        OpenAiChatResponseDto fallbackResponse = chatOptionService.onlyOpenAiAnswer(secretKey, text);
+        OpenAiChatResponseDto fallbackResponse = chatOptionService.onlyOpenAiAnswer(secretKey, text, project.getBasicModel());
         return fallbackResponse.getChoices().get(0).getMessage().getContent();
     }
 
