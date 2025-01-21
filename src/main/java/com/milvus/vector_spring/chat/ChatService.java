@@ -4,6 +4,8 @@ import com.milvus.vector_spring.chat.dto.ChatRequestDto;
 import com.milvus.vector_spring.chat.dto.ChatResponseDto;
 import com.milvus.vector_spring.chat.dto.VectorSearchRankDto;
 import com.milvus.vector_spring.chat.dto.VectorSearchResponseDto;
+import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
+import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.common.service.EncryptionService;
 import com.milvus.vector_spring.content.Content;
 import com.milvus.vector_spring.content.ContentService;
@@ -40,6 +42,9 @@ public class ChatService {
 
         validateUser(chatRequestDto.getUserId());
         Project project = getProject(chatRequestDto.getProjectKey());
+        if (project.getBasicModel().isEmpty()) {
+            throw new CustomException(ErrorStatus._REQUIRE_OPEN_AI_INFO);
+        }
         String secretKey = encryptionService.decryptData(project.getOpenAiKey());
 
         OpenAiEmbedResponseDto embedResponse = getEmbedding(secretKey, chatRequestDto.getText());
