@@ -27,7 +27,9 @@ public enum ErrorStatus implements BaseCode {
     _NOT_INVITED_USER(HttpStatus.BAD_REQUEST, "400", "초대되지 않은 유저"),
     _COOKIE_ENCODING_ERROR(HttpStatus.UNAUTHORIZED, "401", "쿠키 에러"),
     _EMPTY_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "401", "리프레시 토큰 없음"),
-    _INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "401", "토큰 유효하지 않음")
+    _INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "401", "토큰 유효하지 않음"),
+    _REQUIRE_OPEN_AI_KEY(HttpStatus.BAD_REQUEST, "400", "OpenAI 키 없다"),
+    _REQUIRE_OPEN_AI_INFO(HttpStatus.BAD_REQUEST, "400", "OpenAI 정보 기입해라")
     ;
 
 

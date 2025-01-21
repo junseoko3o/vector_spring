@@ -52,7 +52,7 @@ public class ProjectService {
                 .openAiKey(projectCreateRequestDto.getOpenAiKey() != null ? encryptionService.encryptData(projectCreateRequestDto.getOpenAiKey()) : null)
                 .embedModel(projectCreateRequestDto.getEmbedModel() != null ? projectCreateRequestDto.getEmbedModel() : null)
                 .basicModel(projectCreateRequestDto.getBasicModel() != null ? projectCreateRequestDto.getBasicModel() : null)
-                .dimensions(projectCreateRequestDto.getDimensions() != 0 ? projectCreateRequestDto.getDimensions() : null)
+                .dimensions(projectCreateRequestDto.getDimensions() != 0 ? projectCreateRequestDto.getDimensions() : 0)
                 .createdBy(user)
                 .updatedBy(user)
                 .build();

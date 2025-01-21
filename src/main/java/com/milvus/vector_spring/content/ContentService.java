@@ -44,7 +44,10 @@ public class ContentService {
         User user = userService.findOneUser(userId);
         Project project = projectService.findOneProjectByKey(contentCreateRequestDto.getProjectKey());
         if (project.getOpenAiKey().isEmpty()) {
-            throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
+            throw new CustomException(ErrorStatus._REQUIRE_OPEN_AI_KEY);
+        }
+        if (project.getEmbedModel().isEmpty() || project.getDimensions() == 0) {
+            throw new CustomException(ErrorStatus._REQUIRE_OPEN_AI_INFO);
         }
         String key = encryptionService.decryptData(project.getOpenAiKey());
         Content content = Content.builder()
