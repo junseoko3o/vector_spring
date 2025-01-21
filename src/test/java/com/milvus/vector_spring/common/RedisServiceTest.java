@@ -11,6 +11,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -90,7 +92,7 @@ class RedisServiceTest {
         redisService.setRedis(key, value, ttl);
 
         // Assert
-        verify(valueOperations, times(1)).set(key, value, ttl);
+        verify(valueOperations, times(1)).set(key, value, ttl, TimeUnit.SECONDS);
     }
 
     @Test
