@@ -14,6 +14,10 @@ public class ProjectResponseDto {
     private final Long id;
     private final String name;
     private final String key;
+    private String prompt;
+    private String embedModel;
+    private String basicModel;
+    private int dimensions;
     private final Long createdUserId;
     private final Long updatedUserId;
     private final LocalDateTime createdAt;
@@ -24,6 +28,10 @@ public class ProjectResponseDto {
                 .id(project.getId())
                 .name(project.getName())
                 .key(project.getKey())
+                .prompt(project.getPrompt())
+                .embedModel(project.getEmbedModel())
+                .basicModel(project.getBasicModel())
+                .dimensions(project.getDimensions())
                 .createdUserId(project.getCreatedBy().getId())
                 .updatedUserId(project.getUpdatedBy().getId())
                 .createdAt(project.getCreatedAt())

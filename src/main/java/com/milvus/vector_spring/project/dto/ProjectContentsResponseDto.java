@@ -12,7 +12,10 @@ public class ProjectContentsResponseDto {
     private Long id;
     private String name;
     private String key;
-    private String openAiKey;
+    private String prompt;
+    private String embedModel;
+    private String basicModel;
+    private int dimensions;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<ContentResponseDto> contents;
@@ -25,7 +28,10 @@ public class ProjectContentsResponseDto {
                 .id(project.getId())
                 .name(project.getName())
                 .key(project.getKey())
-                .openAiKey(project.getOpenAiKey())
+                .prompt(project.getPrompt())
+                .embedModel(project.getEmbedModel())
+                .basicModel(project.getBasicModel())
+                .dimensions(project.getDimensions())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .contents(contentList)

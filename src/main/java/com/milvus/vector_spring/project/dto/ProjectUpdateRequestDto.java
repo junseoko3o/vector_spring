@@ -1,5 +1,6 @@
 package com.milvus.vector_spring.project.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -13,5 +14,6 @@ public class ProjectUpdateRequestDto {
     private int dimensions;
 
     @NotNull
+    @NotBlank
     private Long updatedUserId;
 }
