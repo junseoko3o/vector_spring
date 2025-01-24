@@ -35,16 +35,23 @@ public class OpenAiLibraryService {
     }
 
     public ChatCompletion chat(OpenAiChatLibraryRequestDto openAiChatLibraryRequestDto)  {
-            String openAiKey = "";
-            ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-                    .addMessage(ChatCompletionUserMessageParam.builder()
-                            .role(JsonValue.from(openAiChatLibraryRequestDto.getRole()))
-                            .content(openAiChatLibraryRequestDto.getContent())
-                            .build())
-                    .model(findModel(openAiChatLibraryRequestDto.getModel()))
-                    .build();
-            System.out.println(params);
+        ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
+                .addMessage(ChatCompletionUserMessageParam.builder()
+                        .role(JsonValue.from(openAiChatLibraryRequestDto.getRole()))
+                        .content(openAiChatLibraryRequestDto.getContent())
+                        .build())
+                .model(findModel(openAiChatLibraryRequestDto.getModel()))
+                .build();
 
-            return connectOpenAI(openAiKey).chat().completions().create(params);
-        }
+        return connectOpenAI(openAiChatLibraryRequestDto.getOpenAiKey()).chat().completions().create(params);
     }
+
+    public CreateEmbeddingResponse embedding(String openAiKey, String input, long dimentions) {
+        EmbeddingCreateParams params = EmbeddingCreateParams.builder()
+                .model(EmbeddingModel.TEXT_EMBEDDING_3_LARGE)
+                .dimensions(dimentions)
+                .input(input)
+                .build();
+        return connectOpenAI(openAiKey).embeddings().create(params);
+    }
+}

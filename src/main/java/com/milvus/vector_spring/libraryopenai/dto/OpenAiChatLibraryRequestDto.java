@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class OpenAiChatLibraryRequestDto {
+    private String openAiKey;
     private String content;
     private Role role;
     private String model;
