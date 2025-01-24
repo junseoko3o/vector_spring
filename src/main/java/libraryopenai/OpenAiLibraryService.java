@@ -7,7 +7,7 @@ import com.openai.core.JsonValue;
 import com.openai.models.ChatCompletion;
 import com.openai.models.ChatCompletionCreateParams;
 import com.openai.models.ChatCompletionUserMessageParam;
-import com.openai.models.ChatModel;
+import libraryopenai.dto.OpenAiChatLibraryRequestDto;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,13 +20,13 @@ public class OpenAiLibraryService {
                 .build();
     }
 
-    public ChatCompletion chat(String openAiKey, OpenAiChatRequestDto openAiChatRequestDto) {
+    public ChatCompletion chat(String openAiKey, OpenAiChatLibraryRequestDto openAiChatLibraryRequestDto) {
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .addMessage(ChatCompletionUserMessageParam.builder()
-                        .role(JsonValue.from("user"))
-                        .content("")
+                        .role(JsonValue.from(openAiChatLibraryRequestDto.getRole()))
+                        .content(openAiChatLibraryRequestDto.getContent())
                         .build())
-                .model(ChatModel.CHATGPT_4O_LATEST)
+                .model(openAiChatLibraryRequestDto.getModel())
                 .build();
 
         return connectOpenAI(openAiKey).chat().completions().create(params);
