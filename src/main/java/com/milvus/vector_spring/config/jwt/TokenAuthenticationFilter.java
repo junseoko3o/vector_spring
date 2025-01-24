@@ -29,8 +29,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
         String token = getAccessToken(authorizationHeader);
 //        String tokens = getAccessTokenFromCookies(request.getCookies());
-        System.out.println(token);
-        System.out.println(jwtTokenProvider.validateToken(token));
         if (jwtTokenProvider.validateToken(token)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
