@@ -34,17 +34,21 @@ public class OpenAiLibraryService {
         };
     }
 
-    public ChatCompletion chat(OpenAiChatLibraryRequestDto openAiChatLibraryRequestDto)  {
-        ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-                .addMessage(ChatCompletionUserMessageParam.builder()
-                        .role(JsonValue.from(openAiChatLibraryRequestDto.getMessages().get(0).getRole()))
-                        .content(openAiChatLibraryRequestDto.getMessages().get(0).getContent())
-                        .build())
-                .model(findModel(openAiChatLibraryRequestDto.getModel()))
-                .build();
+    public ChatCompletion chat(OpenAiChatLibraryRequestDto openAiChatLibraryRequestDto) {
+        ChatCompletionCreateParams.Builder paramsBuilder = ChatCompletionCreateParams.builder();
 
+        for (OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto message : openAiChatLibraryRequestDto.getMessages()) {
+            paramsBuilder.addMessage(ChatCompletionUserMessageParam.builder()
+                    .role(JsonValue.from(message.getRole()))
+                    .content(message.getContent())
+                    .build());
+        }
+        ChatCompletionCreateParams params = paramsBuilder
+                .model(openAiChatLibraryRequestDto.getModel())
+                .build();
         return connectOpenAI(openAiChatLibraryRequestDto.getOpenAiKey()).chat().completions().create(params);
     }
+
 
     public CreateEmbeddingResponse embedding(String openAiKey, String input, long dimentions) {
         EmbeddingCreateParams params = EmbeddingCreateParams.builder()
