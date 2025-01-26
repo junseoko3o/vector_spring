@@ -43,8 +43,9 @@ public class OpenAiLibraryService {
                     .content(message.getContent())
                     .build());
         }
+        ChatModel model = findModel(openAiChatLibraryRequestDto.getModel());
         ChatCompletionCreateParams params = paramsBuilder
-                .model(openAiChatLibraryRequestDto.getModel())
+                .model(model)
                 .build();
         return connectOpenAI(openAiChatLibraryRequestDto.getOpenAiKey()).chat().completions().create(params);
     }
