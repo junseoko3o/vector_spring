@@ -37,8 +37,8 @@ public class OpenAiLibraryService {
     public ChatCompletion chat(OpenAiChatLibraryRequestDto openAiChatLibraryRequestDto)  {
         ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .addMessage(ChatCompletionUserMessageParam.builder()
-                        .role(JsonValue.from(openAiChatLibraryRequestDto.getRole()))
-                        .content(openAiChatLibraryRequestDto.getContent())
+                        .role(JsonValue.from(openAiChatLibraryRequestDto.getMessages().get(0).getRole()))
+                        .content(openAiChatLibraryRequestDto.getMessages().get(0).getContent())
                         .build())
                 .model(findModel(openAiChatLibraryRequestDto.getModel()))
                 .build();
