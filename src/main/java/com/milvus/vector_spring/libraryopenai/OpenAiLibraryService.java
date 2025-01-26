@@ -50,10 +50,10 @@ public class OpenAiLibraryService {
     }
 
 
-    public CreateEmbeddingResponse embedding(String openAiKey, String input, long dimentions) {
+    public CreateEmbeddingResponse embedding(String openAiKey, String input, long dimension) {
         EmbeddingCreateParams params = EmbeddingCreateParams.builder()
                 .model(EmbeddingModel.TEXT_EMBEDDING_3_LARGE)
-                .dimensions(dimentions)
+                .dimensions(dimension)
                 .input(input)
                 .build();
         return connectOpenAI(openAiKey).embeddings().create(params);
