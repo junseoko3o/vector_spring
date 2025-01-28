@@ -10,6 +10,7 @@ import com.milvus.vector_spring.common.service.EncryptionService;
 import com.milvus.vector_spring.content.Content;
 import com.milvus.vector_spring.content.ContentService;
 import com.milvus.vector_spring.content.dto.ContentResponseDto;
+import com.milvus.vector_spring.libraryopenai.OpenAiLibraryService;
 import com.milvus.vector_spring.openai.OpenAiService;
 import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
 import com.milvus.vector_spring.openai.dto.OpenAiChatResponseDto;
@@ -36,6 +37,7 @@ public class ChatService {
     private final ChatOptionService chatOptionService;
     private final EncryptionService encryptionService;
     private final MongoTemplate mongoTemplate;
+    private final OpenAiLibraryService openAiLibraryService;
 
     public ChatResponseDto chat(ChatRequestDto chatRequestDto) {
         LocalDateTime inputDateTime = LocalDateTime.now();
