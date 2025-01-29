@@ -74,6 +74,13 @@ public class ChatService {
         return projectService.findOneProjectByKey(projectKey);
     }
 
+    private OpenAiEmbedResponseDto getEmbedding(String secretKey, String text) {
+        EmbedRequestDto embedRequest = EmbedRequestDto.builder()
+                .embedText(text)
+                .build();
+        return openAiService.embedding(secretKey, embedRequest);
+    }
+
     private VectorSearchResponseDto performVectorSearch(CreateEmbeddingResponse embedResponse) {
         List<Float> floatList = embedResponse.data().get(0).embedding().stream()
                 .map(Double::floatValue)
