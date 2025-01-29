@@ -18,6 +18,7 @@ import com.milvus.vector_spring.openai.dto.OpenAiEmbedResponseDto;
 import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.user.UserService;
+import com.openai.models.CreateEmbeddingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +51,7 @@ public class ChatService {
         }
         String secretKey = encryptionService.decryptData(project.getOpenAiKey());
 
-        OpenAiEmbedResponseDto embedResponse = getEmbedding(secretKey, chatRequestDto.getText());
+        CreateEmbeddingResponse embedResponse = openAiLibraryService.embedding(secretKey, chatRequestDto.getText(), project.getDimensions());
         VectorSearchResponseDto searchResponse = performVectorSearch(embedResponse);
         List<VectorSearchRankDto> rankList = mapSearchResultsToRankList(searchResponse);
         String prompt = project.getPrompt();
@@ -72,15 +74,11 @@ public class ChatService {
         return projectService.findOneProjectByKey(projectKey);
     }
 
-    private OpenAiEmbedResponseDto getEmbedding(String secretKey, String text) {
-        EmbedRequestDto embedRequest = EmbedRequestDto.builder()
-                .embedText(text)
-                .build();
-        return openAiService.embedding(secretKey, embedRequest);
-    }
-
-    private VectorSearchResponseDto performVectorSearch(OpenAiEmbedResponseDto embedResponse) {
-        return chatOptionService.vectorSearchResult(embedResponse.getData().get(0).getEmbedding());
+    private VectorSearchResponseDto performVectorSearch(CreateEmbeddingResponse embedResponse) {
+        List<Float> floatList = embedResponse.data().get(0).embedding().stream()
+                .map(Double::floatValue)
+                .collect(Collectors.toList());
+        return chatOptionService.vectorSearchResult(floatList);
     }
 
     private List<VectorSearchRankDto> mapSearchResultsToRankList(VectorSearchResponseDto searchResponse) {
