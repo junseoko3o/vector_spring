@@ -11,6 +11,7 @@ import com.milvus.vector_spring.content.Content;
 import com.milvus.vector_spring.content.ContentService;
 import com.milvus.vector_spring.content.dto.ContentResponseDto;
 import com.milvus.vector_spring.libraryopenai.OpenAiLibraryService;
+import com.milvus.vector_spring.libraryopenai.dto.OpenAiChatLibraryRequestDto;
 import com.milvus.vector_spring.openai.OpenAiService;
 import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
 import com.milvus.vector_spring.openai.dto.OpenAiChatResponseDto;
@@ -18,12 +19,14 @@ import com.milvus.vector_spring.openai.dto.OpenAiEmbedResponseDto;
 import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.user.UserService;
+import com.openai.models.ChatCompletion;
 import com.openai.models.CreateEmbeddingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -104,10 +107,13 @@ public class ChatService {
     }
 
     private String generateFinalAnswer(Project project, String text, String secretKey, List<VectorSearchRankDto> rankList, VectorSearchResponseDto searchResponse, String prompt) {
+        var messages = new ArrayList<OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto>();
+        messages.add(new OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto("user", text));
         if (!rankList.isEmpty() && rankList.get(0).getScore() >= 0.5) {
             if (prompt.isEmpty()) {
                 prompt = chatOptionService.prompt(text, searchResponse.getAnswers());
             }
+            messages.add(new OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto("system", prompt));
             OpenAiChatResponseDto chatResponse = chatOptionService.openAiChatResponse(
                     secretKey,
                     prompt,
@@ -116,6 +122,13 @@ public class ChatService {
             return chatResponse.getChoices().get(0).getMessage().getContent();
         }
         OpenAiChatResponseDto fallbackResponse = chatOptionService.onlyOpenAiAnswer(secretKey, text, project.getBasicModel());
+
+        OpenAiChatLibraryRequestDto dto = OpenAiChatLibraryRequestDto.builder()
+                .model(project.getBasicModel())
+                .openAiKey(secretKey)
+                .messages(messages)
+                .build();
+        ChatCompletion test = openAiLibraryService.chat(dto);
         return fallbackResponse.getChoices().get(0).getMessage().getContent();
     }
 
