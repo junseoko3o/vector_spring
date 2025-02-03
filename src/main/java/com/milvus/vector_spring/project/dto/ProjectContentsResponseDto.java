@@ -15,7 +15,7 @@ public class ProjectContentsResponseDto {
     private String prompt;
     private String embedModel;
     private String basicModel;
-    private int dimensions;
+    private long dimensions;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<ContentResponseDto> contents;

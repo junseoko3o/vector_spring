@@ -43,7 +43,10 @@ public class Project extends BaseEntity {
     private String embedModel;
 
     @Column(name = "dimensions", nullable = true)
-    private int dimensions;
+    private long dimensions;
+
+    @Column(name = "total_token")
+    private int totalToken;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Content> contents = new ArrayList<>();
@@ -60,7 +63,7 @@ public class Project extends BaseEntity {
     private User updatedBy;
 
     @Builder
-    public Project(Long id, String name, String key, String openAiKey, String prompt, String basicModel, String embedModel, int dimensions, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
+    public Project(Long id, String name, String key, String openAiKey, String prompt, String basicModel, String embedModel, long dimensions, int totalToken, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
         this.id = id;
         this.name = name;
         this.key = key;
@@ -69,6 +72,7 @@ public class Project extends BaseEntity {
         this.basicModel = basicModel;
         this.embedModel = embedModel;
         this.dimensions = dimensions;
+        this.totalToken = totalToken;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.createdBy = createdBy;
@@ -78,5 +82,9 @@ public class Project extends BaseEntity {
     public void updateByUser(User updatedUser, User createdUser) {
         this.updatedBy = updatedUser;
         this.createdBy = createdUser;
+    }
+
+    public void updateTotalToken(int totalToken) {
+        this.totalToken = totalToken;
     }
 }

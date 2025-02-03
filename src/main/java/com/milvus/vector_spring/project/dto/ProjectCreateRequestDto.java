@@ -16,7 +16,7 @@ public class ProjectCreateRequestDto {
 
     private String basicModel;
 
-    private int dimensions;
+    private long dimensions;
 
     @NotNull
     @NotBlank

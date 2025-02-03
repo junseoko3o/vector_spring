@@ -17,7 +17,7 @@ public class ProjectResponseDto {
     private String prompt;
     private String embedModel;
     private String basicModel;
-    private int dimensions;
+    private long dimensions;
     private final Long createdUserId;
     private final Long updatedUserId;
     private final LocalDateTime createdAt;

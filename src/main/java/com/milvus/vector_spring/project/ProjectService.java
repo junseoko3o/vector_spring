@@ -53,11 +53,12 @@ public class ProjectService {
                 .embedModel(projectCreateRequestDto.getEmbedModel() != null ? projectCreateRequestDto.getEmbedModel() : null)
                 .basicModel(projectCreateRequestDto.getBasicModel() != null ? projectCreateRequestDto.getBasicModel() : null)
                 .dimensions(projectCreateRequestDto.getDimensions() != 0 ? projectCreateRequestDto.getDimensions() : 0)
+                .totalToken(0)
                 .createdBy(user)
                 .updatedBy(user)
                 .build();
         Project savedProject = projectRepository.save(project);
-        milvusService.createSchema(savedProject.getId(), projectCreateRequestDto.getDimensions());
+        milvusService.createSchema(savedProject.getId(), (int) projectCreateRequestDto.getDimensions());
         return savedProject;
     }
 
