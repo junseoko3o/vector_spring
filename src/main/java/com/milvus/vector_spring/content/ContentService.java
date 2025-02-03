@@ -5,18 +5,18 @@ import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
 import com.milvus.vector_spring.content.dto.ContentUpdateRequestDto;
+import com.milvus.vector_spring.libraryopenai.OpenAiLibraryService;
 import com.milvus.vector_spring.milvus.MilvusService;
 import com.milvus.vector_spring.milvus.dto.InsertRequestDto;
-import com.milvus.vector_spring.openai.OpenAiService;
-import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
-import com.milvus.vector_spring.openai.dto.OpenAiEmbedResponseDto;
 import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserService;
+import com.openai.models.CreateEmbeddingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,7 +27,7 @@ public class ContentService {
     private final ContentRepository contentRepository;
     private final UserService userService;
     private final ProjectService projectService;
-    private final OpenAiService openAiService;
+    private final OpenAiLibraryService openAiLibraryService;
     private final MilvusService milvusService;
     private final EncryptionService encryptionService;
 
@@ -58,7 +58,7 @@ public class ContentService {
                 .createdBy(user)
                 .updatedBy(user)
                 .build();;
-        OpenAiEmbedResponseDto embedResponseDto = fetchEmbedding(key, content.getAnswer(), project.getEmbedModel(), project.getDimensions());
+        CreateEmbeddingResponse embedResponseDto = fetchEmbedding(key, content.getAnswer(), project.getDimensions());
         Content savedContent = contentRepository.save(content);
         insertIntoMilvus(savedContent, embedResponseDto);
         return savedContent;
@@ -80,7 +80,7 @@ public class ContentService {
                 .build();
         String key = encryptionService.decryptData(project.getOpenAiKey());
         if(!content.getAnswer().equals(contentUpdateRequestDto.getAnswer())) {
-            OpenAiEmbedResponseDto embedResponseDto = fetchEmbedding(key, updateContent.getAnswer(), project.getEmbedModel(), project.getDimensions());
+            CreateEmbeddingResponse embedResponseDto = fetchEmbedding(key, updateContent.getAnswer(), project.getDimensions());
             insertIntoMilvus(updateContent, embedResponseDto);
             return contentRepository.save(updateContent);
         }
@@ -88,20 +88,20 @@ public class ContentService {
         return contentRepository.save(updateContent);
     }
 
-    private OpenAiEmbedResponseDto fetchEmbedding(String openAiKey, String answer, String model, int dimensions) throws CustomException {
-        EmbedRequestDto embedRequestDto = new EmbedRequestDto(
-                answer,
-                dimensions,
-                model
-        );
-        return openAiService.embedding(openAiKey, embedRequestDto);
+    private CreateEmbeddingResponse fetchEmbedding(String openAiKey, String answer, long dimensions) throws CustomException {
+        return openAiLibraryService.embedding(openAiKey, answer, dimensions);
     }
 
-    private void insertIntoMilvus(Content content, OpenAiEmbedResponseDto embedResponseDto) throws CustomException{
+    private void insertIntoMilvus(Content content, CreateEmbeddingResponse embedResponseDto) throws CustomException{
+        List<Double> doubleList = embedResponseDto.data().get(0).embedding();
+        List<Float> vector = new ArrayList<>();
+        for (Double value : doubleList) {
+            vector.add(value.floatValue());
+        }
         try {
             InsertRequestDto insertRequestDto = InsertRequestDto.builder()
                     .id(content.getId())
-                    .vector(embedResponseDto.getData().get(0).getEmbedding())
+                    .vector(vector)
                     .title(content.getTitle())
                     .answer(content.getAnswer())
                     .build();
