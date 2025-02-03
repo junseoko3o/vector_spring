@@ -16,6 +16,7 @@ import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.user.UserService;
 import com.openai.models.ChatCompletion;
+import com.openai.models.CompletionUsage;
 import com.openai.models.CreateEmbeddingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -53,13 +54,17 @@ public class ChatService {
         VectorSearchResponseDto searchResponse = performVectorSearch(embedResponse);
         List<VectorSearchRankDto> rankList = mapSearchResultsToRankList(searchResponse);
         String prompt = project.getPrompt();
-        String finalAnswer = generateFinalAnswer(project, chatRequestDto.getText(), secretKey, rankList, searchResponse, prompt);
+        ChatCompletion answer = generateFinalAnswer(project, chatRequestDto.getText(), secretKey, rankList, searchResponse, prompt);
+        String finalAnswer = answer.choices().get(0).message().content().orElse("");
 
         Content content = contentService.findOneContentById(searchResponse.getFirstSearchId());
         LocalDateTime outputDateTime = LocalDateTime.now();
-
+        long totalToken = embedResponse.usage().totalTokens() +
+                answer.usage().stream()
+                        .mapToLong(CompletionUsage::totalTokens)
+                        .sum();
+        projectService.plusTotalToken(project, totalToken);
         ChatResponseDto chatResponseDto = buildChatResponse(project, chatRequestDto, finalAnswer, inputDateTime, outputDateTime, searchResponse, content);
-
         mongoTemplate.save(chatRequestDto, "chat_response");
         return chatResponseDto;
     }
@@ -98,7 +103,7 @@ public class ChatService {
                 .toList();
     }
 
-    private String generateFinalAnswer(Project project, String text, String secretKey, List<VectorSearchRankDto> rankList, VectorSearchResponseDto searchResponse, String prompt) {
+    private ChatCompletion generateFinalAnswer(Project project, String text, String secretKey, List<VectorSearchRankDto> rankList, VectorSearchResponseDto searchResponse, String prompt) {
         var messages = new ArrayList<OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto>();
         messages.add(new OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto("user", text));
         OpenAiChatLibraryRequestDto dto = OpenAiChatLibraryRequestDto.builder()
@@ -111,11 +116,9 @@ public class ChatService {
                 prompt = chatOptionService.prompt(text, searchResponse.getAnswers());
             }
             messages.add(new OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto("system", prompt));
-            ChatCompletion chatResponse = openAiLibraryService.chat(dto);
-            return chatResponse.choices().get(0).message().content().orElse("");
+            return openAiLibraryService.chat(dto);
         }
-        ChatCompletion chatResponse = openAiLibraryService.chat(dto);
-        return chatResponse.choices().get(0).message().content().orElse("");
+        return openAiLibraryService.chat(dto);
     }
 
     private ChatResponseDto buildChatResponse(

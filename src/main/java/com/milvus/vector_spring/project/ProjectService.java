@@ -89,6 +89,12 @@ public class ProjectService {
         return "Deleted Success!";
     }
 
+    public void plusTotalToken(Project project, long totalToken) {
+        int currentTotal = project.getTotalToken();
+        project.updateTotalToken(currentTotal + totalToken);
+        projectRepository.save(project);
+    }
+
     private String resolveOpenAiKey(Project project, ProjectUpdateRequestDto projectUpdateRequestDto) {
         String projectKey = project.getOpenAiKey();
         String dtoKey = projectUpdateRequestDto.getOpenAiKey();
