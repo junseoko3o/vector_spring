@@ -12,10 +12,6 @@ import com.milvus.vector_spring.content.ContentService;
 import com.milvus.vector_spring.content.dto.ContentResponseDto;
 import com.milvus.vector_spring.libraryopenai.OpenAiLibraryService;
 import com.milvus.vector_spring.libraryopenai.dto.OpenAiChatLibraryRequestDto;
-import com.milvus.vector_spring.openai.OpenAiService;
-import com.milvus.vector_spring.openai.dto.EmbedRequestDto;
-import com.milvus.vector_spring.openai.dto.OpenAiChatResponseDto;
-import com.milvus.vector_spring.openai.dto.OpenAiEmbedResponseDto;
 import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.user.UserService;
@@ -38,7 +34,6 @@ public class ChatService {
     private final UserService userService;
     private final ProjectService projectService;
     private final ContentService contentService;
-    private final OpenAiService openAiService;
     private final ChatOptionService chatOptionService;
     private final EncryptionService encryptionService;
     private final MongoTemplate mongoTemplate;
@@ -54,7 +49,7 @@ public class ChatService {
         }
         String secretKey = encryptionService.decryptData(project.getOpenAiKey());
 
-        CreateEmbeddingResponse embedResponse = openAiLibraryService.embedding(secretKey, chatRequestDto.getText(), project.getDimensions());
+        CreateEmbeddingResponse embedResponse = getEmbedding(secretKey, chatRequestDto.getText(), project.getDimensions());
         VectorSearchResponseDto searchResponse = performVectorSearch(embedResponse);
         List<VectorSearchRankDto> rankList = mapSearchResultsToRankList(searchResponse);
         String prompt = project.getPrompt();
@@ -77,11 +72,8 @@ public class ChatService {
         return projectService.findOneProjectByKey(projectKey);
     }
 
-    private OpenAiEmbedResponseDto getEmbedding(String secretKey, String text) {
-        EmbedRequestDto embedRequest = EmbedRequestDto.builder()
-                .embedText(text)
-                .build();
-        return openAiService.embedding(secretKey, embedRequest);
+    private CreateEmbeddingResponse getEmbedding(String secretKey, String text, long dimension) {
+        return openAiLibraryService.embedding(secretKey, text, dimension);
     }
 
     private VectorSearchResponseDto performVectorSearch(CreateEmbeddingResponse embedResponse) {
@@ -109,27 +101,21 @@ public class ChatService {
     private String generateFinalAnswer(Project project, String text, String secretKey, List<VectorSearchRankDto> rankList, VectorSearchResponseDto searchResponse, String prompt) {
         var messages = new ArrayList<OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto>();
         messages.add(new OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto("user", text));
-        if (!rankList.isEmpty() && rankList.get(0).getScore() >= 0.5) {
-            if (prompt.isEmpty()) {
-                prompt = chatOptionService.prompt(text, searchResponse.getAnswers());
-            }
-            messages.add(new OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto("system", prompt));
-            OpenAiChatResponseDto chatResponse = chatOptionService.openAiChatResponse(
-                    secretKey,
-                    prompt,
-                    project.getBasicModel()
-            );
-            return chatResponse.getChoices().get(0).getMessage().getContent();
-        }
-        OpenAiChatResponseDto fallbackResponse = chatOptionService.onlyOpenAiAnswer(secretKey, text, project.getBasicModel());
-
         OpenAiChatLibraryRequestDto dto = OpenAiChatLibraryRequestDto.builder()
                 .model(project.getBasicModel())
                 .openAiKey(secretKey)
                 .messages(messages)
                 .build();
-        ChatCompletion test = openAiLibraryService.chat(dto);
-        return fallbackResponse.getChoices().get(0).getMessage().getContent();
+        if (!rankList.isEmpty() && rankList.get(0).getScore() >= 0.5) {
+            if (prompt.isEmpty()) {
+                prompt = chatOptionService.prompt(text, searchResponse.getAnswers());
+            }
+            messages.add(new OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto("system", prompt));
+            ChatCompletion chatResponse = openAiLibraryService.chat(dto);
+            return chatResponse.choices().get(0).message().content().orElse("");
+        }
+        ChatCompletion chatResponse = openAiLibraryService.chat(dto);
+        return chatResponse.choices().get(0).message().content().orElse("");
     }
 
     private ChatResponseDto buildChatResponse(
