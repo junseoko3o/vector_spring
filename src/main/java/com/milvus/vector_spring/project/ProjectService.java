@@ -90,7 +90,7 @@ public class ProjectService {
     }
 
     public void plusTotalToken(Project project, long totalToken) {
-        int currentTotal = project.getTotalToken();
+        long currentTotal = project.getTotalToken();
         project.updateTotalToken(currentTotal + totalToken);
         projectRepository.save(project);
     }
