@@ -29,7 +29,10 @@ public enum ErrorStatus implements BaseCode {
     _EMPTY_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "401", "리프레시 토큰 없음"),
     _INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "401", "토큰 유효하지 않음"),
     _REQUIRE_OPEN_AI_KEY(HttpStatus.BAD_REQUEST, "400", "OpenAI 키 없다"),
-    _REQUIRE_OPEN_AI_INFO(HttpStatus.BAD_REQUEST, "400", "OpenAI 정보 기입해라")
+    _REQUIRE_OPEN_AI_INFO(HttpStatus.BAD_REQUEST, "400", "OpenAI 정보 기입해라"),
+    _TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED,"401", "Token is required"),
+    _INVALID_TOKEN_FORMAT(HttpStatus.UNAUTHORIZED, "401", "Invalid token format"),
+    _INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "401", "Invalid token"),
     ;
 
 

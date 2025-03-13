@@ -6,6 +6,7 @@ import com.milvus.vector_spring.user.UserDetailService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +34,7 @@ public class JwtTokenProvider {
 
     private final RedisService redisService;
     private final UserDetailService userDetailService;
+    private final HttpServletRequest request;
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
@@ -74,7 +76,9 @@ public class JwtTokenProvider {
         );
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken() {
+        String getToken = request.getHeader("Authorization");
+        String token = extractAccessToken(getToken);
         try {
             Jwts.parser()
                     .verifyWith(this.getSigningKey())
@@ -85,6 +89,26 @@ public class JwtTokenProvider {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public boolean validateRefreshToken(User user) {
+        String token = redisService.getRedis(
+                "refreshToken:" + user.getEmail()
+        );
+        try {
+            Jwts.parser()
+                    .verifyWith(this.getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private String extractAccessToken(String token) {
+        return token.replace("Bearer ", "");
     }
 
     public Authentication getAuthentication(String token) {
@@ -102,7 +126,10 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
-    public Claims expiredTokenGetPayload(String token) {
+
+
+    public Claims expiredTokenGetPayload() {
+        String token = getAccessToken();
         try {
             return Jwts.parser()
                     .verifyWith(this.getSigningKey())
@@ -116,7 +143,14 @@ public class JwtTokenProvider {
         }
     }
 
-    public Long getUserId(String token) {
+    public String getAccessToken() {
+        String getToken = request.getHeader("Authorization");
+        return extractAccessToken(getToken);
+    }
+
+    public Long getUserId() {
+        String getToken = request.getHeader("Authorization");
+        String token = extractAccessToken(getToken);
         Claims claims = getClaims(token);
         return claims.get("userId", Long.class);
     }

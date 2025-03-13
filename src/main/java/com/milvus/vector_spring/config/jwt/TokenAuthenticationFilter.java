@@ -1,10 +1,9 @@
 package com.milvus.vector_spring.config.jwt;
 
+import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.Authentication;
@@ -29,7 +28,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
         String token = getAccessToken(authorizationHeader);
 //        String tokens = getAccessTokenFromCookies(request.getCookies());
-        if (jwtTokenProvider.validateToken(token)) {
+        if (jwtTokenProvider.validateToken()) {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

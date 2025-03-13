@@ -48,21 +48,18 @@ public class AuthService {
         );
     }
 
-    public UserLoginCheckResponseDto loginCheck(String token) {
-        String accessToken = extractAccessToken(token);
-
-        if (jwtTokenProvider.validateToken(accessToken)) {
-            return createResponseWithValidAccessToken(accessToken);
+    public UserLoginCheckResponseDto loginCheck() {
+        if (jwtTokenProvider.validateToken()) {
+            return createResponseWithValidAccessToken();
         }
 
-        return handleExpiredAccessToken(accessToken);
+        return handleExpiredAccessToken();
     }
 
-    public void logout(String accessToken) {
-        String extractedAccessToken = extractAccessToken(accessToken);
-
-        if (jwtTokenProvider.validateToken(extractedAccessToken)) {
-            Claims claims = jwtTokenProvider.getClaims(extractedAccessToken);
+    public void logout() {
+        if (jwtTokenProvider.validateToken()) {
+            String token = jwtTokenProvider.getAccessToken();
+            Claims claims = jwtTokenProvider.getClaims(token);
             Long userId = claims.get("userId", Long.class);
             User user = userService.findOneUser(userId);
 
@@ -73,13 +70,12 @@ public class AuthService {
         }
     }
 
-    private String extractAccessToken(String token) {
-        return token.replace("Bearer ", "");
-    }
 
-    private UserLoginCheckResponseDto createResponseWithValidAccessToken(String accessToken) {
-        Long userId = jwtTokenProvider.getUserId(accessToken);
+
+    private UserLoginCheckResponseDto createResponseWithValidAccessToken() {
+        Long userId = jwtTokenProvider.getUserId();
         User user = userService.findOneUser(userId);
+        String accessToken = jwtTokenProvider.getAccessToken();
         return UserLoginCheckResponseDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -88,12 +84,11 @@ public class AuthService {
                 .build();
     }
 
-    private UserLoginCheckResponseDto handleExpiredAccessToken(String accessToken) {
-        Claims claims = jwtTokenProvider.expiredTokenGetPayload(accessToken);
+    private UserLoginCheckResponseDto handleExpiredAccessToken() {
+        Claims claims = jwtTokenProvider.expiredTokenGetPayload();
         User user = userService.findOneUser(claims.get("userId", Long.class));
 
-        String refreshToken = redisService.getRedis("refreshToken:" + user.getEmail());
-        validateRefreshToken(refreshToken);
+        validateRefreshToken(user);
         String newAccessToken = jwtTokenProvider.generateAccessToken(user);
         return UserLoginCheckResponseDto.builder()
                 .id(user.getId())
@@ -103,8 +98,8 @@ public class AuthService {
                 .build();
     }
 
-    private void validateRefreshToken(String refreshToken) {
-        if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
+    private void validateRefreshToken(User user) {
+        if (user == null || !jwtTokenProvider.validateRefreshToken(user)) {
             throw new CustomException(ErrorStatus._EMPTY_REFRESH_TOKEN);
         }
     }

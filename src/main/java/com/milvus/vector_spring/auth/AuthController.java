@@ -3,9 +3,7 @@ package com.milvus.vector_spring.auth;
 import com.milvus.vector_spring.auth.dto.UserLoginCheckResponseDto;
 import com.milvus.vector_spring.auth.dto.UserLoginRequestDto;
 import com.milvus.vector_spring.auth.dto.UserLoginResponseDto;
-import com.milvus.vector_spring.util.CookieUtil;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.milvus.vector_spring.common.annotation.RequireToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -26,15 +24,15 @@ public class AuthController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<UserLoginCheckResponseDto> loginCheck(@RequestHeader("Authorization") String token) {
-//        String token = CookieUtil.getCookie(request, "accessToken");
-        return ResponseEntity.ok(authService.loginCheck(token));
+    @RequireToken
+    public ResponseEntity<UserLoginCheckResponseDto> loginCheck() {
+        return ResponseEntity.ok(authService.loginCheck());
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> logout() {
 //        String token = CookieUtil.getCookie(request, "accessToken");
-        authService.logout(token);
+        authService.logout();
 //        CookieUtil.deleteCookie(response, "accessToken" );
         return ResponseEntity.ok("로그아웃 완료!");
     }
