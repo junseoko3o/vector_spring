@@ -58,7 +58,7 @@ public class AuthService {
 
     public void logout() {
         if (jwtTokenProvider.validateToken()) {
-            String token = jwtTokenProvider.getAccessToken();
+            String token = jwtTokenProvider.getToken();
             Claims claims = jwtTokenProvider.getClaims(token);
             Long userId = claims.get("userId", Long.class);
             User user = userService.findOneUser(userId);
@@ -75,7 +75,7 @@ public class AuthService {
     private UserLoginCheckResponseDto createResponseWithValidAccessToken() {
         Long userId = jwtTokenProvider.getUserId();
         User user = userService.findOneUser(userId);
-        String accessToken = jwtTokenProvider.getAccessToken();
+        String accessToken = jwtTokenProvider.getToken();
         return UserLoginCheckResponseDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())

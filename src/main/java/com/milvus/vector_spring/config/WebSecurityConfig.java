@@ -1,7 +1,7 @@
 package com.milvus.vector_spring.config;
 
-import lombok.RequiredArgsConstructor;
 import com.milvus.vector_spring.config.jwt.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 import com.milvus.vector_spring.config.jwt.TokenAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

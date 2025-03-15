@@ -1,5 +1,7 @@
 package com.milvus.vector_spring.config.jwt;
 
+import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
+import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.common.service.RedisService;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserDetailService;
@@ -126,10 +128,8 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
-
-
     public Claims expiredTokenGetPayload() {
-        String token = getAccessToken();
+        String token = getToken();
         try {
             return Jwts.parser()
                     .verifyWith(this.getSigningKey())
@@ -139,18 +139,18 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         } catch (JwtException e) {
-            throw new IllegalArgumentException("Invalid token", e);
+            throw new CustomException(ErrorStatus._INVALID_ACCESS_TOKEN);
         }
     }
 
-    public String getAccessToken() {
+    public String getToken() {
         String getToken = request.getHeader("Authorization");
         return extractAccessToken(getToken);
     }
 
+
     public Long getUserId() {
-        String getToken = request.getHeader("Authorization");
-        String token = extractAccessToken(getToken);
+        String token = getToken();
         Claims claims = getClaims(token);
         return claims.get("userId", Long.class);
     }
