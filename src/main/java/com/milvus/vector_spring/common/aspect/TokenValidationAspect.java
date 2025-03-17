@@ -40,6 +40,15 @@ public class TokenValidationAspect {
             if (args.length > 0 && args[0] instanceof String) {
                 args[0] = token;
             }
+//          Cookie[] cookies;
+//        String tokens = getAccessTokenFromCookies(request.getCookies());
+//        if (cookies != null) {
+//            for (Cookie cookie : cookies) {
+//                if (COOKIE_NAME.equals(cookie.getName())) {
+//                    return cookie.getValue();
+//                }
+//            }
+//        }
 
             return joinPoint.proceed(args);
         } catch (CustomException e) {
