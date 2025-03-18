@@ -44,7 +44,7 @@ public class WebSecurityConfig {
 
         http
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/auth/login", "/user/sign-up", "/openchat").permitAll()
+                    .requestMatchers("/auth/check", "/auth/login", "/user/sign-up", "/openchat").permitAll()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(

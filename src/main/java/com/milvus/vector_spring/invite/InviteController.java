@@ -1,5 +1,6 @@
 package com.milvus.vector_spring.invite;
 
+import com.milvus.vector_spring.common.annotation.RequireToken;
 import com.milvus.vector_spring.invite.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,17 +17,20 @@ public class InviteController {
     private final InviteService inviteService;
 
     @PostMapping()
+    @RequireToken
     public ResponseEntity<InviteResponseDto> inviteUser(@Validated @RequestBody InviteUserRequestDto inviteUserRequestDto) {
         Invite invite = inviteService.inviteUser(inviteUserRequestDto);
         return ResponseEntity.ok(InviteResponseDto.inviteResponseDto(invite));
     }
 
     @PostMapping("/list")
+    @RequireToken
     public List<CombinedProjectListResponseDto> invitedProjectAndCreateProjectList(@Validated @RequestBody InvitedProjectMyProjectRequestDto invitedProjectMyProjectRequestDto) {
         return inviteService.invitedProjectAndCreateProjectList(invitedProjectMyProjectRequestDto);
     }
 
     @GetMapping("/list")
+    @RequireToken
     public InvitedProjectUserResponseDto invitedProjectUserList(@RequestParam("key") String projectKey) {
         List<Invite> invitedList = inviteService.findByInvitedProjectUserList(projectKey);
         return invitedList.stream()
@@ -44,12 +48,14 @@ public class InviteController {
     }
 
     @PostMapping("/change/master")
+    @RequireToken
     public String changeMasterUser(@Validated @RequestBody UpdateMasterUserRequestDto updateMasterUserRequestDto) {
         inviteService.updateMasterUser(updateMasterUserRequestDto);
         return "Finish change to " + updateMasterUserRequestDto.getChangeMasterUser() + "!!";
     }
 
     @DeleteMapping("/banish")
+    @RequireToken
     public String banishUser(@Validated @RequestBody BanishUserRequestDto banishUserRequestDto) {
         return inviteService.banishUserFromProject(banishUserRequestDto);
     }
