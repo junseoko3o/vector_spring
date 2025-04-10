@@ -1,8 +1,9 @@
 package com.milvus.vector_spring.config;
 
 import com.milvus.vector_spring.config.jwt.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
 import com.milvus.vector_spring.config.jwt.TokenAuthenticationFilter;
+import com.milvus.vector_spring.user.UserDetailService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class WebSecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserDetailService userDetailService;
 
     @Bean
     public WebSecurityCustomizer configure() {
@@ -48,7 +50,7 @@ public class WebSecurityConfig {
                     .anyRequest().authenticated()
             )
             .addFilterBefore(
-                    new TokenAuthenticationFilter(jwtTokenProvider),
+                    new TokenAuthenticationFilter(jwtTokenProvider, userDetailService),
                     UsernamePasswordAuthenticationFilter.class
             );
 
@@ -61,7 +63,7 @@ public class WebSecurityConfig {
 
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
-        return new TokenAuthenticationFilter(jwtTokenProvider);
+        return new TokenAuthenticationFilter(jwtTokenProvider, userDetailService);
     }
 
     @Bean

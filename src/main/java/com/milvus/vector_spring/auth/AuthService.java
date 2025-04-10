@@ -48,14 +48,6 @@ public class AuthService {
         );
     }
 
-    public UserLoginCheckResponseDto loginCheck() {
-        if (jwtTokenProvider.validateToken()) {
-            return createResponseWithValidAccessToken();
-        }
-
-        return handleExpiredAccessToken();
-    }
-
     public void logout() {
         if (jwtTokenProvider.validateToken()) {
             String token = jwtTokenProvider.getToken();
@@ -67,40 +59,6 @@ public class AuthService {
             redisService.deleteRedis(redisKey);
         } else {
             throw new CustomException(ErrorStatus._INVALID_ACCESS_TOKEN);
-        }
-    }
-
-
-
-    private UserLoginCheckResponseDto createResponseWithValidAccessToken() {
-        Long userId = jwtTokenProvider.getUserId();
-        User user = userService.findOneUser(userId);
-        String accessToken = jwtTokenProvider.getToken();
-        return UserLoginCheckResponseDto.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .accessToken(accessToken)
-                .loginAt(user.getLoginAt())
-                .build();
-    }
-
-    private UserLoginCheckResponseDto handleExpiredAccessToken() {
-        Claims claims = jwtTokenProvider.expiredTokenGetPayload();
-        User user = userService.findOneUser(claims.get("userId", Long.class));
-
-        validateRefreshToken(user);
-        String newAccessToken = jwtTokenProvider.generateAccessToken(user);
-        return UserLoginCheckResponseDto.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .accessToken(newAccessToken)
-                .loginAt(user.getLoginAt())
-                .build();
-    }
-
-    private void validateRefreshToken(User user) {
-        if (user == null || !jwtTokenProvider.validateRefreshToken(user)) {
-            throw new CustomException(ErrorStatus._EMPTY_REFRESH_TOKEN);
         }
     }
 }

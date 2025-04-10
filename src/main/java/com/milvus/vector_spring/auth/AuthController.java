@@ -1,6 +1,5 @@
 package com.milvus.vector_spring.auth;
 
-import com.milvus.vector_spring.auth.dto.UserLoginCheckResponseDto;
 import com.milvus.vector_spring.auth.dto.UserLoginRequestDto;
 import com.milvus.vector_spring.auth.dto.UserLoginResponseDto;
 import com.milvus.vector_spring.common.annotation.RequireToken;
@@ -19,11 +18,6 @@ public class AuthController {
     public ResponseEntity<UserLoginResponseDto> login(@Validated @RequestBody UserLoginRequestDto userLoginRequestDto) {
         UserLoginResponseDto userLoginResponseDto = authService.login(userLoginRequestDto);
         return ResponseEntity.ok(userLoginResponseDto);
-    }
-
-    @GetMapping("/check")
-    public ResponseEntity<UserLoginCheckResponseDto> loginCheck() {
-        return ResponseEntity.ok(authService.loginCheck());
     }
 
     @GetMapping("/logout")

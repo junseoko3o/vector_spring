@@ -33,6 +33,7 @@ public enum ErrorStatus implements BaseCode {
     _TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED,"401", "Token is required"),
     _INVALID_TOKEN_FORMAT(HttpStatus.UNAUTHORIZED, "401", "Invalid token format"),
     _INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "401", "Invalid token"),
+    _EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "401", "Expired refresh token"),
     ;
 
 
