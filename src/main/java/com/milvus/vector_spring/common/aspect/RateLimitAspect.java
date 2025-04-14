@@ -30,10 +30,9 @@ public class RateLimitAspect {
         String key = "rate_limit: " + ip;
 
         String currentCount = redisTemplate.opsForValue().get(key);
-        if (currentCount != null && Integer.parseInt(currentCount) < MAX_REQUESTS) {
+        if (currentCount != null && Integer.parseInt(currentCount) >= MAX_REQUESTS) {
             throw new RuntimeException("횟수 초과");
         }
-
         redisTemplate.opsForValue().increment(key, 1);
 
         if(currentCount == null) {
