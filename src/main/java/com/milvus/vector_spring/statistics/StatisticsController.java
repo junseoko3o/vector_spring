@@ -1,11 +1,9 @@
 package com.milvus.vector_spring.statistics;
 
 import com.milvus.vector_spring.statistics.dto.MongoChatResponse;
+import com.milvus.vector_spring.statistics.dto.MongoFindDataDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,5 +16,10 @@ public class StatisticsController {
     @PostMapping("/{projectKey}")
     public List<MongoChatResponse> getByProjectKey(@PathVariable("projectKey") String projectKey) {
         return statisticsService.findByProjectKey(projectKey);
+    }
+
+    @PostMapping()
+    public List<MongoChatResponse> getByProjectKey(@RequestBody MongoFindDataDto mongoFindDataDto) {
+        return statisticsService.findByProjectKeyAndSessionId(mongoFindDataDto);
     }
 }
