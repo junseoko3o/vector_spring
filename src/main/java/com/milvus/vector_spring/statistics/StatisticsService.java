@@ -34,4 +34,8 @@ public class StatisticsService {
         return mongoTemplate.find(query, MongoChatResponse.class);
     }
 
+    public List<MongoChatResponse> findAllLog() {
+         return mongoTemplate.findAll(MongoChatResponse.class);
+    }
+
 }

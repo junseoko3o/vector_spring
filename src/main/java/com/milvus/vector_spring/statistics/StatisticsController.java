@@ -22,4 +22,9 @@ public class StatisticsController {
     public List<MongoChatResponse> getByProjectKey(@RequestBody MongoFindDataDto mongoFindDataDto) {
         return statisticsService.findByProjectKeyAndSessionId(mongoFindDataDto);
     }
+
+    @GetMapping()
+    public List<MongoChatResponse> getAllLogs() {
+        return statisticsService.findAllLog();
+    }
 }
