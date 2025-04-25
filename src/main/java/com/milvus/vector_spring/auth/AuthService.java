@@ -1,17 +1,17 @@
 package com.milvus.vector_spring.auth;
 
-import com.milvus.vector_spring.auth.dto.UserLoginCheckResponseDto;
 import com.milvus.vector_spring.auth.dto.UserLoginRequestDto;
 import com.milvus.vector_spring.auth.dto.UserLoginResponseDto;
-import com.milvus.vector_spring.common.service.RedisService;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
+import com.milvus.vector_spring.common.service.RedisService;
 import com.milvus.vector_spring.config.jwt.JwtTokenProvider;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserDetailService;
 import com.milvus.vector_spring.user.UserRepository;
 import com.milvus.vector_spring.user.UserService;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +28,7 @@ public class AuthService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisService redisService;
     private final UserService userService;
+    private final HttpServletRequest request;
 
     public UserLoginResponseDto login(UserLoginRequestDto userLoginRequestDto) {
         User user = userDetailService.loadUserByUsername(userLoginRequestDto.getEmail());
@@ -50,7 +51,7 @@ public class AuthService {
 
     public void logout() {
         if (jwtTokenProvider.validateToken()) {
-            String token = jwtTokenProvider.getToken();
+            String token = jwtTokenProvider.getToken(request.getHeader("Authorization"));
             Claims claims = jwtTokenProvider.getClaims(token);
             Long userId = claims.get("userId", Long.class);
             User user = userService.findOneUser(userId);

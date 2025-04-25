@@ -143,14 +143,12 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getToken() {
-        String getToken = request.getHeader("Authorization");
-        return extractAccessToken(getToken);
+    public String getToken(String token) {
+        return extractAccessToken(token);
     }
 
 
-    public Long getUserId() {
-        String token = getToken();
+    public Long getUserId(String token) {
         Claims claims = getClaims(token);
         return claims.get("userId", Long.class);
     }
