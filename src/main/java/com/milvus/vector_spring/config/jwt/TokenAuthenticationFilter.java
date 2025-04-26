@@ -45,16 +45,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-//    private String getAccessTokenFromCookies(Cookie[] cookies) {
-//        if (cookies != null) {
-//            for (Cookie cookie : cookies) {
-//                if (COOKIE_NAME.equals(cookie.getName())) {
-//                    return cookie.getValue();
-//                }
-//            }
-//        }
-//        return null;
-//    }
+
 
     private String getAccessToken(String authorizationHeader) {
         if (authorizationHeader != null && authorizationHeader.startsWith(TOKEN_PREFIX)) {
@@ -70,7 +61,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private void handleExpiredAccessToken(HttpServletRequest request, HttpServletResponse response) {
         try {
-            Claims claims = jwtTokenProvider.expiredTokenGetPayload();
+            Claims claims = jwtTokenProvider.expiredTokenGetPayload(request.getHeader(HEADER_AUTHORIZATION));
             String email = claims.get("email", String.class);
             User user = userDetailService.loadUserByUsername(email);
 

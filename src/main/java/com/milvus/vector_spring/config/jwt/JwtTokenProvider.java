@@ -128,8 +128,7 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
-    public Claims expiredTokenGetPayload() {
-        String token = getToken();
+    public Claims expiredTokenGetPayload(String token) {
         try {
             return Jwts.parser()
                     .verifyWith(this.getSigningKey())
