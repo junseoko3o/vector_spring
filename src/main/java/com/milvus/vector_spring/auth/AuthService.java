@@ -50,8 +50,8 @@ public class AuthService {
     }
 
     public void logout() {
-        if (jwtTokenProvider.validateToken()) {
-            String token = jwtTokenProvider.getToken(request.getHeader("Authorization"));
+        String token = getToken();
+        if (jwtTokenProvider.validateToken(token)) {
             Claims claims = jwtTokenProvider.getClaims(token);
             Long userId = claims.get("userId", Long.class);
             User user = userService.findOneUser(userId);
@@ -61,5 +61,10 @@ public class AuthService {
         } else {
             throw new CustomException(ErrorStatus._INVALID_ACCESS_TOKEN);
         }
+    }
+
+    private String getToken() {
+        String token = request.getHeader("Authorization");
+        return token.replace("Bearer ", "");
     }
 }

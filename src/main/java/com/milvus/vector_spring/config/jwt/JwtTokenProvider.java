@@ -78,9 +78,7 @@ public class JwtTokenProvider {
         );
     }
 
-    public boolean validateToken() {
-        String getToken = request.getHeader("Authorization");
-        String token = extractAccessToken(getToken);
+    public boolean validateToken(String token) {
         try {
             Jwts.parser()
                     .verifyWith(this.getSigningKey())
@@ -107,10 +105,6 @@ public class JwtTokenProvider {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    private String extractAccessToken(String token) {
-        return token.replace("Bearer ", "");
     }
 
     public Authentication getAuthentication(String token) {
@@ -141,11 +135,6 @@ public class JwtTokenProvider {
             throw new CustomException(ErrorStatus._INVALID_ACCESS_TOKEN);
         }
     }
-
-    public String getToken(String token) {
-        return extractAccessToken(token);
-    }
-
 
     public Long getUserId(String token) {
         Claims claims = getClaims(token);
