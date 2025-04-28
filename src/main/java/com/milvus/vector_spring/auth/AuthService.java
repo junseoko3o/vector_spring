@@ -63,6 +63,19 @@ public class AuthService {
         }
     }
 
+    public UserLoginResponseDto check() {
+        String token = getToken();
+        Claims claims = jwtTokenProvider.getClaims(token);
+        User user = userService.findOneUser(claims.get("userId", Long.class));
+        return new UserLoginResponseDto(
+                user.getId(),
+                user.getEmail(),
+                user.getUsername(),
+                token,
+                user.getLoginAt()
+        );
+    }
+
     private String getToken() {
         String token = request.getHeader("Authorization");
         return token.replace("Bearer ", "");
