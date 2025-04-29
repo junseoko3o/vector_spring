@@ -13,6 +13,8 @@ import com.milvus.vector_spring.user.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -50,17 +52,22 @@ public class AuthService {
     }
 
     public void logout() {
-        String token = getToken();
-        if (jwtTokenProvider.validateToken(token)) {
-            Claims claims = jwtTokenProvider.getClaims(token);
-            Long userId = claims.get("userId", Long.class);
-            User user = userService.findOneUser(userId);
-
-            String redisKey = "refreshToken:" + user.getEmail();
-            redisService.deleteRedis(redisKey);
-        } else {
+//        String token = getToken();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
             throw new CustomException(ErrorStatus._INVALID_ACCESS_TOKEN);
         }
+        User user = (User) authentication.getPrincipal();
+//        if (jwtTokenProvider.validateToken(token)) {
+//            Claims claims = jwtTokenProvider.getClaims(token);
+//            Long userId = claims.get("userId", Long.class);
+//            User user = userService.findOneUser(userId);
+
+        String redisKey = "refreshToken:" + user.getEmail();
+        redisService.deleteRedis(redisKey);
+//        } else {
+//            throw new CustomException(ErrorStatus._INVALID_ACCESS_TOKEN);
+//        }
     }
 
     public UserLoginResponseDto check() {
