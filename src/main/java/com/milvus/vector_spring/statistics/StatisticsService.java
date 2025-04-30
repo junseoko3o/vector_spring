@@ -28,7 +28,8 @@ public class StatisticsService {
         Query query = new Query(
                 new Criteria().andOperator(
                         Criteria.where("projectKey").is(mongoFindDataDto.getProjectKey()),
-                        Criteria.where("sessionId").is(mongoFindDataDto.getSessionId())
+                        Criteria.where("sessionId").is(mongoFindDataDto.getSessionId()),
+                        Criteria.where("createdAt").gte(mongoFindDataDto.getStartDate()).lte(mongoFindDataDto.getEndDate())
                 )
         );
         return mongoTemplate.find(query, MongoChatResponse.class);
