@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -25,11 +27,16 @@ public class StatisticsService {
     }
 
     public List<MongoChatResponse> findByProjectKeyAndSessionId(MongoFindDataDto mongoFindDataDto) {
+        ZoneId kstZoneId = ZoneId.of("Asia/Seoul");
+
+        Date startDateUtc = Date.from(mongoFindDataDto.getStartDate().atZone(kstZoneId).toInstant());
+        Date endDateUtc = Date.from(mongoFindDataDto.getEndDate().atZone(kstZoneId).toInstant());
+
         Query query = new Query(
                 new Criteria().andOperator(
                         Criteria.where("projectKey").is(mongoFindDataDto.getProjectKey()),
                         Criteria.where("sessionId").is(mongoFindDataDto.getSessionId()),
-                        Criteria.where("createdAt").gte(mongoFindDataDto.getStartDate()).lte(mongoFindDataDto.getEndDate())
+                        Criteria.where("createdAt").gte(startDateUtc).lte(endDateUtc)
                 )
         );
         return mongoTemplate.find(query, MongoChatResponse.class);
