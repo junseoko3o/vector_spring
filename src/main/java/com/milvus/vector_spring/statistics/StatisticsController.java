@@ -19,7 +19,7 @@ public class StatisticsController {
     }
 
     @PostMapping()
-    public List<MongoChatResponse> getByProjectKey(@RequestBody MongoFindDataDto mongoFindDataDto) {
+    public List<MongoChatResponse> getBySessionId(@RequestBody MongoFindDataDto mongoFindDataDto) {
         return statisticsService.findByProjectKeyAndSessionId(mongoFindDataDto);
     }
 
