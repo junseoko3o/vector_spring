@@ -3,7 +3,6 @@ package com.milvus.vector_spring.statistics;
 import com.milvus.vector_spring.statistics.dto.MongoChatResponse;
 import com.milvus.vector_spring.statistics.dto.MongoFindDataDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -18,9 +17,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class StatisticsService {
-    @Value("${spring.data.mongodb.database}")
-    private String databaseName;
-
     private final MongoTemplate mongoTemplate;
 
     private static final ZoneId KST_ZONE_ID = ZoneId.of("Asia/Seoul");
