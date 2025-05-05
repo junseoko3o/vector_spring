@@ -12,20 +12,20 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OpenAiZodResponseDto {
 
-    private final List<Res> res;
+    private final List<ZodResponse> res;
     private final OpenAiUsageResponseDto usage;
 
-    public OpenAiZodResponseDto(List<Res> res, OpenAiUsageResponseDto usage) {
+    public OpenAiZodResponseDto(List<ZodResponse> res, OpenAiUsageResponseDto usage) {
         this.res = res;
         this.usage = usage;
     }
 
     @Getter
-    public static class Res {
+    public static class ZodResponse {
         private final String title;
         private final String answer;
 
-        public Res(@JsonProperty("title") String title, @JsonProperty("answer") String answer) {
+        public ZodResponse(@JsonProperty("title") String title, @JsonProperty("answer") String answer) {
             this.title = title;
             this.answer = answer;
         }
@@ -39,7 +39,7 @@ public class OpenAiZodResponseDto {
         if (contentNode.isTextual()) {
             try {
                 JsonNode contentJson = objectMapper.readTree(contentNode.asText());
-                List<Res> res = objectMapper.convertValue(contentJson.get("res"), List.class);
+                List<ZodResponse> res = objectMapper.convertValue(contentJson.get("res"), List.class);
                 OpenAiUsageResponseDto usage = objectMapper.convertValue(jsonNode.get("usage"), OpenAiUsageResponseDto.class);
                 return new OpenAiZodResponseDto(res, usage);
             } catch (Exception e) {

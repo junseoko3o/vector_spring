@@ -36,8 +36,8 @@ public class Project extends BaseEntity {
     @Column(name = "prompt", nullable = true)
     private String prompt;
 
-    @Column(name = "basic_model", nullable = true)
-    private String basicModel;
+    @Column(name = "chat_model", nullable = true)
+    private String chatModel;
 
     @Column(name = "embed_model", nullable = true)
     private String embedModel;
@@ -63,13 +63,13 @@ public class Project extends BaseEntity {
     private User updatedBy;
 
     @Builder
-    public Project(Long id, String name, String key, String openAiKey, String prompt, String basicModel, String embedModel, long dimensions, long totalToken, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
+    public Project(Long id, String name, String key, String openAiKey, String prompt, String chatModel, String embedModel, long dimensions, long totalToken, LocalDateTime createdAt, LocalDateTime updatedAt, User createdBy, User updatedBy) {
         this.id = id;
         this.name = name;
         this.key = key;
         this.openAiKey = openAiKey;
         this.prompt = prompt;
-        this.basicModel = basicModel;
+        this.chatModel = chatModel;
         this.embedModel = embedModel;
         this.dimensions = dimensions;
         this.totalToken = totalToken;

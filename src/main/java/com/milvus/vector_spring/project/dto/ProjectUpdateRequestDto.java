@@ -10,7 +10,7 @@ public class ProjectUpdateRequestDto {
     private String openAiKey;
     private String prompt;
     private String embedModel;
-    private String basicModel;
+    private String chatModel;
     private long dimensions;
 
     @NotNull

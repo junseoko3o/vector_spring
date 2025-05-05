@@ -14,7 +14,7 @@ public class ProjectContentsResponseDto {
     private String key;
     private String prompt;
     private String embedModel;
-    private String basicModel;
+    private String chatModel;
     private long dimensions;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -30,7 +30,7 @@ public class ProjectContentsResponseDto {
                 .key(project.getKey())
                 .prompt(project.getPrompt())
                 .embedModel(project.getEmbedModel())
-                .basicModel(project.getBasicModel())
+                .chatModel(project.getChatModel())
                 .dimensions(project.getDimensions())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())

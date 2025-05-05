@@ -1,7 +1,6 @@
 package com.milvus.vector_spring.project.dto;
 
 import com.milvus.vector_spring.project.Project;
-import com.milvus.vector_spring.user.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,7 +15,7 @@ public class ProjectResponseDto {
     private final String key;
     private String prompt;
     private String embedModel;
-    private String basicModel;
+    private String chatModel;
     private long dimensions;
     private final Long createdUserId;
     private final Long updatedUserId;
@@ -30,7 +29,7 @@ public class ProjectResponseDto {
                 .key(project.getKey())
                 .prompt(project.getPrompt())
                 .embedModel(project.getEmbedModel())
-                .basicModel(project.getBasicModel())
+                .chatModel(project.getChatModel())
                 .dimensions(project.getDimensions())
                 .createdUserId(project.getCreatedBy().getId())
                 .updatedUserId(project.getUpdatedBy().getId())

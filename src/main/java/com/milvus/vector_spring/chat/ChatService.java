@@ -45,7 +45,7 @@ public class ChatService {
 
         validateUser(chatRequestDto.getUserId());
         Project project = getProject(chatRequestDto.getProjectKey());
-        if (project.getOpenAiKey().isEmpty() && project.getBasicModel().isEmpty()) {
+        if (project.getOpenAiKey().isEmpty() && project.getChatModel().isEmpty()) {
             throw new CustomException(ErrorStatus._REQUIRE_OPEN_AI_INFO);
         }
         String secretKey = encryptionService.decryptData(project.getOpenAiKey());
@@ -107,7 +107,7 @@ public class ChatService {
         var messages = new ArrayList<OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto>();
         messages.add(new OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto("user", text));
         OpenAiChatLibraryRequestDto dto = OpenAiChatLibraryRequestDto.builder()
-                .model(project.getBasicModel())
+                .model(project.getChatModel())
                 .openAiKey(secretKey)
                 .messages(messages)
                 .build();
