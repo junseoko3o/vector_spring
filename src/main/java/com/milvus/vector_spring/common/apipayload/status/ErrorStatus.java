@@ -11,47 +11,41 @@ import java.util.Arrays;
 @Getter
 @AllArgsConstructor
 public enum ErrorStatus implements BaseCode {
-    _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "Server Error. Send Mail"),
-    _DUPLICATE_USER_EMAIL(HttpStatus.BAD_REQUEST, "400", "Duplicate User Email."),
-    _NOT_FOUND_USER(HttpStatus.NOT_FOUND, "400", "User Not Found."),
-    _NOT_PASSWORD_MATCHES(HttpStatus.BAD_REQUEST, "400", "Different Password."),
-    _NOT_FOUND_PROJECT(HttpStatus.NOT_FOUND, "400", "Not Found Project."),
-    _DATABASE_ERROR(HttpStatus.BAD_REQUEST, "400", "Database Error."),
-    _SQL_ERROR(HttpStatus.BAD_REQUEST, "400", "SQL Error."),
-    _MILVUS_DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "Milvus Error."),
-    _OPEN_AI_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "Open AI Error."),
-    _NOT_FOUND_CONTENT(HttpStatus.NOT_FOUND, "400", "Not Found Content."),
-    _DECRYPTION_ERROR(HttpStatus.BAD_REQUEST, "400", "Decryption Error."),
-    _ENCRYPTION_ERROR(HttpStatus.BAD_REQUEST, "400", "Encryption Error."),
-    _OPEN_AI_KEY_ERROR(HttpStatus.UNAUTHORIZED, "403", "Invalid OpenAi Key."),
-    _NOT_INVITED_USER(HttpStatus.BAD_REQUEST, "400", "Not Invited."),
-    _COOKIE_ENCODING_ERROR(HttpStatus.UNAUTHORIZED, "401", "Cookie Encoding Error."),
-    _EMPTY_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "401", "Not Found Refresh Token."),
-    _INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "401", "Invalid Access Token."),
-    _REQUIRE_OPEN_AI_KEY(HttpStatus.BAD_REQUEST, "400", "Not Found Open AI Key."),
-    _REQUIRE_OPEN_AI_INFO(HttpStatus.BAD_REQUEST, "400", "Open AI Info Error."),
-    _TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED,"401", "Token is required"),
-    _INVALID_TOKEN_FORMAT(HttpStatus.UNAUTHORIZED, "401", "Invalid token format"),
-    _INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "401", "Invalid token"),
-    _EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "401", "Expired refresh token"),
-    ;
-
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Server Error. Send Mail"),
+    DUPLICATE_USER_EMAIL(HttpStatus.BAD_REQUEST, "Duplicate User Email."),
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND, "User Not Found."),
+    NOT_PASSWORD_MATCHES(HttpStatus.BAD_REQUEST, "Different Password."),
+    NOT_FOUND_PROJECT(HttpStatus.NOT_FOUND, "Not Found Project."),
+    DATABASE_ERROR(HttpStatus.BAD_REQUEST, "Database Error."),
+    SQL_ERROR(HttpStatus.BAD_REQUEST, "SQL Error."),
+    MILVUS_DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Milvus Error."),
+    OPEN_AI_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Open AI Error."),
+    NOT_FOUND_CONTENT(HttpStatus.NOT_FOUND, "Not Found Content."),
+    DECRYPTION_ERROR(HttpStatus.BAD_REQUEST, "Decryption Error."),
+    ENCRYPTION_ERROR(HttpStatus.BAD_REQUEST, "Encryption Error."),
+    OPEN_AI_KEY_ERROR(HttpStatus.UNAUTHORIZED, "Invalid OpenAi Key."),
+    NOT_INVITED_USER(HttpStatus.BAD_REQUEST, "Not Invited."),
+    COOKIE_ENCODING_ERROR(HttpStatus.UNAUTHORIZED, "Cookie Encoding Error."),
+    EMPTY_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Not Found Refresh Token."),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid Access Token."),
+    REQUIRE_OPEN_AI_KEY(HttpStatus.BAD_REQUEST, "Not Found Open AI Key."),
+    REQUIRE_OPEN_AI_INFO(HttpStatus.BAD_REQUEST, "Open AI Info Error."),
+    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "Token is required"),
+    INVALID_TOKEN_FORMAT(HttpStatus.UNAUTHORIZED, "Invalid token format"),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid token"),
+    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Expired refresh token");
 
     private final HttpStatus httpStatus;
-    private final String statusCode;
     private final String message;
 
-    public static ErrorStatus getErrorStatus(String findMessage) {
-        return Arrays.stream(values())
-                .filter(errorStatus -> errorStatus.message.equals(findMessage))
-                .findAny()
-                .orElse(ErrorStatus._INTERNAL_SERVER_ERROR);
+    public String getStatusCode() {
+        return String.valueOf(httpStatus.value());
     }
 
     @Override
     public ResponseDto getReasonHttpStatus() {
         return ResponseDto.builder()
-                .statusCode(statusCode)
+                .statusCode(getStatusCode())
                 .message(message)
                 .httpStatus(httpStatus)
                 .build();

@@ -2,6 +2,7 @@ package com.milvus.vector_spring.common.apipayload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.milvus.vector_spring.common.apipayload.dto.ResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,14 +13,15 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonPropertyOrder({"statusCode", "message"})
-public class ApiResponse<T> implements Serializable {
+public class ApiResponse implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String statusCode;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String message;
 
-    public static ApiResponse<String> fail(BaseCode errorCode) {
-        return new ApiResponse<>(errorCode.getReasonHttpStatus().getStatusCode(), errorCode.getReasonHttpStatus().getMessage());
+    public static ApiResponse fail(BaseCode errorCode) {
+        ResponseDto reason = errorCode.getReasonHttpStatus();
+        return new ApiResponse(reason.getStatusCode(), reason.getMessage());
     }
 }
