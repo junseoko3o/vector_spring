@@ -11,7 +11,7 @@ import java.util.Arrays;
 @Getter
 @AllArgsConstructor
 public enum ErrorStatus implements BaseCode {
-    _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "Server Error."),
+    _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "Server Error. Send Mail"),
     _DUPLICATE_USER_EMAIL(HttpStatus.BAD_REQUEST, "400", "Duplicate User Email."),
     _NOT_FOUND_USER(HttpStatus.NOT_FOUND, "400", "User Not Found."),
     _NOT_PASSWORD_MATCHES(HttpStatus.BAD_REQUEST, "400", "Different Password."),
