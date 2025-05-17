@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-import java.util.Arrays;
-
 @Getter
 @AllArgsConstructor
 public enum ErrorStatus implements BaseCode {
@@ -33,7 +31,8 @@ public enum ErrorStatus implements BaseCode {
     TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "Token is required"),
     INVALID_TOKEN_FORMAT(HttpStatus.UNAUTHORIZED, "Invalid token format"),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid token"),
-    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Expired refresh token");
+    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Expired refresh token"),
+    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Invalid password.");
 
     private final HttpStatus httpStatus;
     private final String message;
