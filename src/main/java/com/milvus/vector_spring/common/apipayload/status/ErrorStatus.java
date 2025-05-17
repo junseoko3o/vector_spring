@@ -31,6 +31,7 @@ public enum ErrorStatus implements BaseCode {
     TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "Token is required"),
     INVALID_TOKEN_FORMAT(HttpStatus.UNAUTHORIZED, "Invalid token format"),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "Invalid token"),
+    EMAIL_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "Email not registered."),
     EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Expired refresh token"),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Invalid password.");
 
