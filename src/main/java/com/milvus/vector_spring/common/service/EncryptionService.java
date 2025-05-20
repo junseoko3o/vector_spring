@@ -42,7 +42,7 @@ public class EncryptionService {
 
             return Base64.getEncoder().encodeToString(encryptedWithIv);
         } catch (Exception e) {
-            throw new CustomException(ErrorStatus._ENCRYPTION_ERROR);
+            throw new CustomException(ErrorStatus.ENCRYPTION_ERROR);
         }
     }
 
@@ -65,7 +65,7 @@ public class EncryptionService {
 
             return new String(decryptedData, StandardCharsets.UTF_8);
         } catch (Exception e) {
-            throw new CustomException(ErrorStatus._DECRYPTION_ERROR);
+            throw new CustomException(ErrorStatus.DECRYPTION_ERROR);
         }
     }
 }

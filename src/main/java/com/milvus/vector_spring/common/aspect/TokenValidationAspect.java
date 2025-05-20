@@ -22,7 +22,7 @@ public class TokenValidationAspect {
             String token = extractToken(request);
 
             if (!isValidToken(token)) {
-                throw new CustomException(ErrorStatus._INVALID_TOKEN);
+                throw new CustomException(ErrorStatus.INVALID_TOKEN);
             }
 
             Object[] args = joinPoint.getArgs();
@@ -34,14 +34,14 @@ public class TokenValidationAspect {
         } catch (CustomException e) {
             throw e;
         } catch (Throwable e) {
-            throw new CustomException(ErrorStatus._INTERNAL_SERVER_ERROR);
+            throw new CustomException(ErrorStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     private HttpServletRequest getCurrentHttpRequest() {
         ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attrs == null) {
-            throw new CustomException(ErrorStatus._INTERNAL_SERVER_ERROR);
+            throw new CustomException(ErrorStatus.INTERNAL_SERVER_ERROR);
         }
         return attrs.getRequest();
     }
@@ -50,11 +50,11 @@ public class TokenValidationAspect {
         String header = request.getHeader("Authorization");
 
         if (header == null || header.isEmpty()) {
-            throw new CustomException(ErrorStatus._TOKEN_NOT_FOUND);
+            throw new CustomException(ErrorStatus.TOKEN_NOT_FOUND);
         }
 
         if (!header.startsWith("Bearer ")) {
-            throw new CustomException(ErrorStatus._INVALID_TOKEN_FORMAT);
+            throw new CustomException(ErrorStatus.INVALID_TOKEN_FORMAT);
         }
 
         return header.substring(7);

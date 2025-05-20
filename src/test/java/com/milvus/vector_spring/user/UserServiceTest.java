@@ -89,7 +89,7 @@ class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(java.util.Optional.empty());
 
         CustomException exception = assertThrows(CustomException.class, () -> userService.updateUser(1L, updateRequestDto));
-        assertEquals(ErrorStatus._NOT_FOUND_USER, exception.getBaseCode());
+        assertEquals(ErrorStatus.NOT_FOUND_USER, exception.getBaseCode());
         verify(userRepository, times(1)).findById(1L);
     }
 
@@ -99,7 +99,7 @@ class UserServiceTest {
         when(userRepository.findByEmail(signUpRequestDto.getEmail())).thenReturn(java.util.Optional.of(user));
 
         CustomException exception = assertThrows(CustomException.class, () -> userService.signUpUser(signUpRequestDto));
-        assertEquals(ErrorStatus._DUPLICATE_USER_EMAIL, exception.getBaseCode());
+        assertEquals(ErrorStatus.DUPLICATE_USER_EMAIL, exception.getBaseCode());
         verify(userRepository, times(1)).findByEmail(signUpRequestDto.getEmail());
     }
 }

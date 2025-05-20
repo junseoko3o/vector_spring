@@ -23,23 +23,23 @@ public class InviteService {
 
     private Invite findInviteIndexForBanish(Project project, String basnishEmail) {
         return inviteRepository.findByProjectAndReceivedEmail(project, basnishEmail)
-                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_INVITED_USER));
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_INVITED_USER));
     }
 
     private List<Invite> findByReceivedEmail(String receivedEmail) {
         return inviteRepository.findByReceivedEmail(receivedEmail)
-                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_INVITED_USER));
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_INVITED_USER));
     }
 
     public List<Invite> findByInvitedProjectUserList(String projectKey) {
         Project project = projectService.findOneProjectByKey(projectKey);
         return inviteRepository.findByProject(project)
-                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_PROJECT));
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_PROJECT));
     }
 
     private List<Invite> findByCreatedByAndProject(User user, Project project) {
         return inviteRepository.findByCreatedByAndProject(user, project)
-                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_INVITED_USER));
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_INVITED_USER));
     }
 
     public List<CombinedProjectListResponseDto> invitedProjectAndCreateProjectList(InvitedProjectMyProjectRequestDto invitedProjectMyProjectRequestDto) {

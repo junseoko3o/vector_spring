@@ -130,7 +130,7 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         } catch (JwtException e) {
-            throw new CustomException(ErrorStatus._INVALID_ACCESS_TOKEN);
+            throw new CustomException(ErrorStatus.INVALID_ACCESS_TOKEN);
         }
     }
 

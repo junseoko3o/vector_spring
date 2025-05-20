@@ -46,7 +46,7 @@ public class ChatService {
         validateUser(chatRequestDto.getUserId());
         Project project = getProject(chatRequestDto.getProjectKey());
         if (project.getOpenAiKey().isEmpty() && project.getChatModel().isEmpty()) {
-            throw new CustomException(ErrorStatus._REQUIRE_OPEN_AI_INFO);
+            throw new CustomException(ErrorStatus.REQUIRE_OPEN_AI_INFO);
         }
         String secretKey = encryptionService.decryptData(project.getOpenAiKey());
 

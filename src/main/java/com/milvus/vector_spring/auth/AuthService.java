@@ -35,7 +35,7 @@ public class AuthService {
     public UserLoginResponseDto login(UserLoginRequestDto userLoginRequestDto) {
         User user = userDetailService.loadUserByUsername(userLoginRequestDto.getEmail());
         if (!bCryptPasswordEncoder.matches(userLoginRequestDto.getPassword(), user.getPassword())) {
-            throw new CustomException(ErrorStatus._NOT_PASSWORD_MATCHES);
+            throw new CustomException(ErrorStatus.NOT_PASSWORD_MATCHES);
         };
         user.updateLoginAt(LocalDateTime.now());
         User savedUser = userRepository.save(user);
@@ -55,7 +55,7 @@ public class AuthService {
 //        String token = getToken();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new CustomException(ErrorStatus._INVALID_ACCESS_TOKEN);
+            throw new CustomException(ErrorStatus.INVALID_ACCESS_TOKEN);
         }
         User user = (User) authentication.getPrincipal();
 //        if (jwtTokenProvider.validateToken(token)) {

@@ -15,6 +15,6 @@ public class UserDetailService implements UserDetailsService {
     @Override
     public User loadUserByUsername(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorStatus._INTERNAL_SERVER_ERROR));
+                .orElseThrow(() -> new CustomException(ErrorStatus.INTERNAL_SERVER_ERROR));
     }
 }

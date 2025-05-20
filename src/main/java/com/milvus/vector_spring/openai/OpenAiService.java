@@ -48,7 +48,7 @@ public class OpenAiService {
 
             return objectMapper.readValue(res, OpenAiChatResponseDto.class);
         } catch (Exception e) {
-            throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
+            throw new CustomException(ErrorStatus.OPEN_AI_ERROR);
         }
     }
 
@@ -67,7 +67,7 @@ public class OpenAiService {
                     .block();
             return objectMapper.readValue(res, OpenAiEmbedResponseDto.class);
         } catch (Exception e) {
-            throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
+            throw new CustomException(ErrorStatus.OPEN_AI_ERROR);
         }
     }
 
@@ -111,7 +111,7 @@ public class OpenAiService {
                     .block();
             return objectMapper.readValue(res, OpenAiZodResponseDto.class);
         } catch (Exception e) {
-            throw new CustomException(ErrorStatus._OPEN_AI_ERROR);
+            throw new CustomException(ErrorStatus.OPEN_AI_ERROR);
         }
     }
 }

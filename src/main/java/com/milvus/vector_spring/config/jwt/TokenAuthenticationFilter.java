@@ -66,7 +66,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             User user = userDetailService.loadUserByUsername(email);
 
             if (!jwtTokenProvider.validateRefreshToken(user)) {
-                throw new CustomException(ErrorStatus._EXPIRED_REFRESH_TOKEN);
+                throw new CustomException(ErrorStatus.EXPIRED_REFRESH_TOKEN);
             }
 
             String newAccessToken = jwtTokenProvider.generateAccessToken(user);

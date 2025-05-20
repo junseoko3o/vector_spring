@@ -37,17 +37,17 @@ public class ContentService {
 
     public Content findOneContentById(Long id) throws CustomException{
         return contentRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorStatus._NOT_FOUND_CONTENT)
+                () -> new CustomException(ErrorStatus.NOT_FOUND_CONTENT)
         );
     }
     public Content createContent(long userId, ContentCreateRequestDto contentCreateRequestDto) throws CustomException {
         User user = userService.findOneUser(userId);
         Project project = projectService.findOneProjectByKey(contentCreateRequestDto.getProjectKey());
         if (project.getOpenAiKey().isEmpty()) {
-            throw new CustomException(ErrorStatus._REQUIRE_OPEN_AI_KEY);
+            throw new CustomException(ErrorStatus.REQUIRE_OPEN_AI_INFO);
         }
         if (project.getEmbedModel().isEmpty() || project.getDimensions() == 0) {
-            throw new CustomException(ErrorStatus._REQUIRE_OPEN_AI_INFO);
+            throw new CustomException(ErrorStatus.REQUIRE_OPEN_AI_INFO);
         }
         String key = encryptionService.decryptData(project.getOpenAiKey());
         Content content = Content.builder()
@@ -107,7 +107,7 @@ public class ContentService {
                     .build();
             milvusService.upsertCollection(insertRequestDto.getId(), insertRequestDto);
         } catch (Exception e) {
-            throw new CustomException(ErrorStatus._MILVUS_DATABASE_ERROR);
+            throw new CustomException(ErrorStatus.MILVUS_DATABASE_ERROR);
         }
     }
 }

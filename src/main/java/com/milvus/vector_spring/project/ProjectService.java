@@ -29,13 +29,13 @@ public class ProjectService {
 
     public Project findOneProject(Long id) {
         return projectRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorStatus._NOT_FOUND_PROJECT)
+                () -> new CustomException(ErrorStatus.NOT_FOUND_PROJECT)
         );
     }
 
     public Project findOneProjectByKey(String key) {
         return projectRepository.findProjectByKey(key).orElseThrow(
-                () -> new CustomException(ErrorStatus._NOT_FOUND_PROJECT)
+                () -> new CustomException(ErrorStatus.NOT_FOUND_PROJECT)
         );
     }
 

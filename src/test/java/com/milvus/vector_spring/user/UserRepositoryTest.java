@@ -76,10 +76,10 @@ class UserRepositoryTest {
     @DisplayName("유저 단일 조회")
     void findOneUserTestById() {
         User findUser = userRepository.findByEmail(userSignUpRequestDto.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_USER));
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_USER));
 
         assertThatThrownBy(() -> userRepository.findByEmail("notexist@email.com")
-                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_USER)))
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_USER)))
                 .isInstanceOf(CustomException.class);
         assertThat(findUser).isNotNull();
 
@@ -89,7 +89,7 @@ class UserRepositoryTest {
     @DisplayName("유저 이름 수정")
     void updateUserName() {
         User user = userRepository.findByEmail(userSignUpRequestDto.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_USER));
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_USER));
         UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(
                 "changeName",
                 "change@email.com"

@@ -20,12 +20,12 @@ public class UserService {
 
     public User findOneUser(Long id) {
          return userRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_USER));
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_USER));
     }
 
     private void duplicateEmailCheck(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
-            throw new CustomException(ErrorStatus._DUPLICATE_USER_EMAIL);
+            throw new CustomException(ErrorStatus.DUPLICATE_USER_EMAIL);
         });
     }
 
@@ -37,7 +37,7 @@ public class UserService {
 
     public User findOneUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorStatus._NOT_FOUND_USER));
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_USER));
     }
 
     public User signUpUser(UserSignUpRequestDto userSignUpRequestDto) {
