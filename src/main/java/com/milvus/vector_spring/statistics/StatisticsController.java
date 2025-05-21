@@ -18,12 +18,12 @@ public class StatisticsController {
         return statisticsService.findByProjectKey(projectKey);
     }
 
-    @PostMapping()
+    @PostMapping("/sessionId")
     public List<MongoChatResponse> getBySessionId(@RequestBody MongoFindDataDto mongoFindDataDto) {
         return statisticsService.findByProjectKeyAndSessionId(mongoFindDataDto);
     }
 
-    @GetMapping()
+    @GetMapping("/all")
     public List<MongoChatResponse> getAllLogs() {
         return statisticsService.findAllLog();
     }
