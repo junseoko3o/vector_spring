@@ -37,12 +37,14 @@ public class UserController {
     }
 
     @PostMapping("/update/{id}")
+    @RequireToken
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable() Long id, @Validated @RequestBody UserUpdateRequestDto userUpdateRequestDto) throws CustomException {
         User user = userService.updateUser(id, userUpdateRequestDto);
         return ResponseEntity.ok(UserResponseDto.userResponseDto(user));
     }
 
     @GetMapping("/project/{id}")
+    @RequireToken
     public UserProjectsResponseDto getUser(@PathVariable("id") Long id) throws CustomException {
         return userService.fineOneUserWithProjects(id);
     }
