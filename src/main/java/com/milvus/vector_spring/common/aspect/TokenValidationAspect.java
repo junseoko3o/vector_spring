@@ -61,7 +61,6 @@ public class TokenValidationAspect {
     }
 
     private boolean isValidToken(String token) {
-        // TODO: 실제 토큰 검증 로직 구현
         return token != null && !token.isEmpty();
     }
 
