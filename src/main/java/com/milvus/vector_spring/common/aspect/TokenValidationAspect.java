@@ -1,23 +1,32 @@
 package com.milvus.vector_spring.common.aspect;
 
-import com.milvus.vector_spring.common.annotation.RequireToken;
+import com.milvus.vector_spring.common.annotation.NoAuthRequired;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.lang.reflect.Method;
 
 @Aspect
 @Component
 public class TokenValidationAspect {
 
-    @Around("@annotation(requireToken)")
-    public Object validateToken(ProceedingJoinPoint joinPoint, RequireToken requireToken) {
+    @Around("execution(* com.milvus.vector_spring..*Controller.*(..))")
+    public Object validateToken(ProceedingJoinPoint joinPoint) {
         try {
+            Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
+
+            if (method.isAnnotationPresent(NoAuthRequired.class)) {
+                return joinPoint.proceed();
+            }
+
             HttpServletRequest request = getCurrentHttpRequest();
             String token = extractToken(request);
 
@@ -25,12 +34,8 @@ public class TokenValidationAspect {
                 throw new CustomException(ErrorStatus.INVALID_TOKEN);
             }
 
-            Object[] args = joinPoint.getArgs();
-            if (args.length > 0 && args[0] instanceof String) {
-                args[0] = token;
-            }
+            return joinPoint.proceed();
 
-            return joinPoint.proceed(args);
         } catch (CustomException e) {
             throw e;
         } catch (Throwable e) {
@@ -63,14 +68,4 @@ public class TokenValidationAspect {
     private boolean isValidToken(String token) {
         return token != null && !token.isEmpty();
     }
-
-    //          Cookie[] cookies;
-//        String tokens = getAccessTokenFromCookies(request.getCookies());
-//        if (cookies != null) {
-//            for (Cookie cookie : cookies) {
-//                if (COOKIE_NAME.equals(cookie.getName())) {
-//                    return cookie.getValue();
-//                }
-//            }
-//        }
 }

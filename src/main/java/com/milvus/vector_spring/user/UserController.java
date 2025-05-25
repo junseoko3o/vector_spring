@@ -1,6 +1,6 @@
 package com.milvus.vector_spring.user;
 
-import com.milvus.vector_spring.common.annotation.RequireToken;
+import com.milvus.vector_spring.common.annotation.NoAuthRequired;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.user.dto.UserProjectsResponseDto;
 import com.milvus.vector_spring.user.dto.UserResponseDto;
@@ -22,7 +22,6 @@ public class UserController {
     }
 
     @GetMapping()
-    @RequireToken
     public List<UserResponseDto> findAllUser() {
         List<User> users = userService.findAllUser();
         return users.stream()
@@ -31,20 +30,19 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
+    @NoAuthRequired
     public ResponseEntity<UserResponseDto> signUpUser(@Validated @RequestBody UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
         User user = userService.signUpUser(userSignUpRequestDto);
         return ResponseEntity.ok(UserResponseDto.userResponseDto(user));
     }
 
     @PostMapping("/update/{id}")
-    @RequireToken
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable() Long id, @Validated @RequestBody UserUpdateRequestDto userUpdateRequestDto) throws CustomException {
         User user = userService.updateUser(id, userUpdateRequestDto);
         return ResponseEntity.ok(UserResponseDto.userResponseDto(user));
     }
 
     @GetMapping("/project/{id}")
-    @RequireToken
     public UserProjectsResponseDto getUser(@PathVariable("id") Long id) throws CustomException {
         return userService.fineOneUserWithProjects(id);
     }

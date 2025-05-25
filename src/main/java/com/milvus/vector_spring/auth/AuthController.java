@@ -2,7 +2,7 @@ package com.milvus.vector_spring.auth;
 
 import com.milvus.vector_spring.auth.dto.UserLoginRequestDto;
 import com.milvus.vector_spring.auth.dto.UserLoginResponseDto;
-import com.milvus.vector_spring.common.annotation.RequireToken;
+import com.milvus.vector_spring.common.annotation.NoAuthRequired;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -15,20 +15,20 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
+    @NoAuthRequired
     public ResponseEntity<UserLoginResponseDto> login(@Validated @RequestBody UserLoginRequestDto userLoginRequestDto) {
         UserLoginResponseDto userLoginResponseDto = authService.login(userLoginRequestDto);
         return ResponseEntity.ok(userLoginResponseDto);
     }
 
     @GetMapping("/logout")
-    @RequireToken
+    @NoAuthRequired
     public ResponseEntity<String> logout() {
         authService.logout();
         return ResponseEntity.ok("로그아웃 완료!");
     }
 
     @GetMapping("/check")
-    @RequireToken
     public ResponseEntity<UserLoginResponseDto> check() {
         UserLoginResponseDto userCheck = authService.check();
         return ResponseEntity.ok(userCheck);
