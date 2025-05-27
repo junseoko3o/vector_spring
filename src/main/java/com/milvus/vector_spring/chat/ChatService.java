@@ -12,6 +12,7 @@ import com.milvus.vector_spring.content.ContentService;
 import com.milvus.vector_spring.content.dto.ContentResponseDto;
 import com.milvus.vector_spring.libraryopenai.OpenAiLibraryService;
 import com.milvus.vector_spring.libraryopenai.dto.OpenAiChatLibraryRequestDto;
+import com.milvus.vector_spring.openai.dto.OpenAiChatResponseDto;
 import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.user.UserService;
@@ -67,6 +68,10 @@ public class ChatService {
         ChatResponseDto chatResponseDto = buildChatResponse(project, chatRequestDto, finalAnswer, inputDateTime, outputDateTime, searchResponse, content);
         mongoTemplate.save(chatRequestDto, "chat_response");
         return chatResponseDto;
+    }
+
+    public OpenAiChatResponseDto testChat(String question) {
+        return chatOptionService.onlyOpenAiAnswer("",question,"");
     }
 
     private void validateUser(Long userId) {
