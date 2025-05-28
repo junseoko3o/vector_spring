@@ -22,7 +22,6 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
-    @NoAuthRequired
     public ResponseEntity<String> logout() {
         authService.logout();
         return ResponseEntity.ok("로그아웃 완료!");
