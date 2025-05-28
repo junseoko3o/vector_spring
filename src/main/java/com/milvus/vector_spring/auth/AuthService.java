@@ -84,7 +84,16 @@ public class AuthService {
     }
 
     private String getToken() {
+        String newToken = (String) request.getAttribute("newAccessToken");
+        if (newToken != null) {
+            return newToken;
+        }
+
         String token = request.getHeader("Authorization");
-        return token.replace("Bearer ", "");
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.substring(7);
+        }
+
+        return null;
     }
 }

@@ -61,20 +61,21 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private void handleExpiredAccessToken(HttpServletRequest request, HttpServletResponse response) {
         try {
-            Claims claims = jwtTokenProvider.expiredTokenGetPayload(request.getHeader(HEADER_AUTHORIZATION));
+            String token = getAccessToken(request.getHeader(HEADER_AUTHORIZATION));
+            Claims claims = jwtTokenProvider.expiredTokenGetPayload(token);
             String email = claims.get("email", String.class);
             User user = userDetailService.loadUserByUsername(email);
-
             if (!jwtTokenProvider.validateRefreshToken(user)) {
                 throw new CustomException(ErrorStatus.EXPIRED_REFRESH_TOKEN);
             }
 
             String newAccessToken = jwtTokenProvider.generateAccessToken(user);
             setAuthentication(newAccessToken);
+            response.setHeader("newAccessToken", newAccessToken);
+            request.setAttribute("newAccessToken", newAccessToken);
 
-            response.setHeader("New-Access-Token", newAccessToken);
 
-        } catch (CustomException e) {
+        } catch (Exception e) {
             throw new RuntimeException("토큰이 유효하지 않습니다. 다시 로그인해주세요.");
         }
     }
