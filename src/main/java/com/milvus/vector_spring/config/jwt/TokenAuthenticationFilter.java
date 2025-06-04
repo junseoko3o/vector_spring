@@ -23,6 +23,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailService userDetailService;
     private final static String HEADER_AUTHORIZATION = "Authorization";
     private final static String TOKEN_PREFIX = "Bearer";
+    private final static String NEW_ACCESS_TOKEN = "newAccessToken";
 //    private final static String COOKIE_NAME = "accessToken";
 
     @Override
@@ -44,8 +45,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
-
-
 
     private String getAccessToken(String authorizationHeader) {
         if (authorizationHeader != null && authorizationHeader.startsWith(TOKEN_PREFIX)) {
@@ -71,8 +70,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
             String newAccessToken = jwtTokenProvider.generateAccessToken(user);
             setAuthentication(newAccessToken);
-            response.setHeader("newAccessToken", newAccessToken);
-            request.setAttribute("newAccessToken", newAccessToken);
+            response.setHeader(NEW_ACCESS_TOKEN, newAccessToken);
+            request.setAttribute(NEW_ACCESS_TOKEN, newAccessToken);
 
 
         } catch (Exception e) {
