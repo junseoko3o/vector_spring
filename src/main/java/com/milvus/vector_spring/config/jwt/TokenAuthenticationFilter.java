@@ -75,7 +75,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 
         } catch (Exception e) {
-            throw new RuntimeException("토큰이 유효하지 않습니다. 다시 로그인해주세요.");
+            throw new CustomException(ErrorStatus.INVALID_ACCESS_TOKEN);
         }
     }
 }
