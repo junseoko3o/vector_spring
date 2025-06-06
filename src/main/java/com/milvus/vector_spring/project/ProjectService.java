@@ -5,6 +5,7 @@ import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.milvus.MilvusService;
 import com.milvus.vector_spring.project.dto.ProjectCreateRequestDto;
+import com.milvus.vector_spring.project.dto.ProjectDeleteRequestDto;
 import com.milvus.vector_spring.project.dto.ProjectUpdateRequestDto;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserService;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -82,8 +84,11 @@ public class ProjectService {
         return projectRepository.save(updateProject);
     }
 
-    public String deleteProject(String key) {
-        Project project = findOneProjectByKey(key);
+    public String deleteProject(ProjectDeleteRequestDto projectDeleteRequestDto) {
+        Project project = findOneProjectByKey(projectDeleteRequestDto.getKey());
+        if (!Objects.equals(project.getCreatedBy().getId(), projectDeleteRequestDto.getUserId())) {
+            throw new CustomException(ErrorStatus.NOT_PROJECT_CREATE_USER);
+        }
         milvusService.deleteCollection(project.getId());
         projectRepository.delete(project);
         return "Deleted Success!";
