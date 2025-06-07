@@ -34,7 +34,7 @@ public enum ErrorStatus implements BaseCode {
     EMAIL_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "Email not registered."),
     EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Expired refresh token"),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Invalid password."),
-    NOT_PROJECT_CREATE_USER(HttpStatus.UNAUTHORIZED, "Not Proejct Create User."),
+    NOT_PROJECT_MASTER_USER(HttpStatus.UNAUTHORIZED, "Not Project Master User."),
     EMBEDDING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create embedding.");
 
     private final HttpStatus httpStatus;

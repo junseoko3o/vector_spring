@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -66,7 +67,9 @@ public class InviteService {
         User invitedUser = userService.findOneUser(inviteUserRequestDto.getInviteId());
         User receivedUser = userService.findOneUserByEmail(inviteUserRequestDto.getReceiveEmail());
         Project project = projectService.findOneProjectByKey(inviteUserRequestDto.getProjectKey());
-
+        if (!Objects.equals(invitedUser.getId(), project.getCreatedBy().getId())) {
+            throw new CustomException(ErrorStatus.NOT_PROJECT_MASTER_USER);
+        }
         Invite invite = Invite.builder()
                 .receivedEmail(receivedUser.getEmail())
                 .createdBy(invitedUser)
@@ -77,9 +80,12 @@ public class InviteService {
     }
 
     public String banishUserFromProject(BanishUserRequestDto banishUserRequestDto) {
+        User MasterUserEmail = userService.findOneUserByEmail(banishUserRequestDto.getMasterUserEmail());
         User banishUserEmail = userService.findOneUserByEmail(banishUserRequestDto.getBanishedEmail());
         Project project = projectService.findOneProjectByKey(banishUserRequestDto.getProjectKey());
-
+        if (!Objects.equals(MasterUserEmail.getId(), project.getCreatedBy().getId())) {
+         throw new CustomException(ErrorStatus.NOT_PROJECT_MASTER_USER);
+        }
         Invite invite = findInviteIndexForBanish(project, banishUserEmail.getEmail());
         inviteRepository.delete(invite);
         return "Banish User!";

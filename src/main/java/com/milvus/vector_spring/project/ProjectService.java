@@ -87,7 +87,7 @@ public class ProjectService {
     public String deleteProject(ProjectDeleteRequestDto projectDeleteRequestDto) {
         Project project = findOneProjectByKey(projectDeleteRequestDto.getKey());
         if (!Objects.equals(project.getCreatedBy().getId(), projectDeleteRequestDto.getUserId())) {
-            throw new CustomException(ErrorStatus.NOT_PROJECT_CREATE_USER);
+            throw new CustomException(ErrorStatus.NOT_PROJECT_MASTER_USER);
         }
         milvusService.deleteCollection(project.getId());
         projectRepository.delete(project);
