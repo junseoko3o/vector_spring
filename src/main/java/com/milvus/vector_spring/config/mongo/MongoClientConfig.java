@@ -1,4 +1,4 @@
-package com.milvus.vector_spring.config;
+package com.milvus.vector_spring.config.mongo;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
