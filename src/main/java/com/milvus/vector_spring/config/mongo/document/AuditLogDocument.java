@@ -7,12 +7,16 @@ import java.time.LocalDateTime;
 
 @Document(collection = "audit_logs")
 public class AuditLogDocument {
+    public enum ActionType {
+        CREATE, UPDATE, DELETE
+    }
 
     @Id
     private String id;
 
-    private String username;
-    private String action;
+    private String sessionId;
+    private String email;
+    private ActionType action;
     private String method;
     private String parameters;
     private LocalDateTime timestamp;
