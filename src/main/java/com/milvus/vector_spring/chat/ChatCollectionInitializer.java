@@ -46,5 +46,22 @@
                 System.out.println("chat_responses collection initialized.");
             };
         }
+//       implementation 'com.kjetland:mbknor-jackson-jsonschema_2.13:1.0.39'
+//        return args -> {
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            JsonSchemaGenerator schemaGen = new JsonSchemaGenerator(objectMapper);
+//            com.fasterxml.jackson.databind.JsonNode jsonSchema = schemaGen.generateJsonSchema(ChatResponseDocument.class);
+//
+//            Document validator = new Document("$jsonSchema", Document.parse(jsonSchema.toString()));
+//
+//            try {
+//                mongoTemplate.getDb().runCommand(new Document("create", "chat_response")
+//                        .append("validator", validator));
+//                System.out.println("chat_response collection initialized with validation.");
+//            } catch (Exception e) {
+//                System.out.println("Collection may already exist or error occurred: " + e.getMessage());
+//            }
+//        };
+//        }
     }
 
