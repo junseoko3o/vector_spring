@@ -1,9 +1,6 @@
 package com.milvus.vector_spring.project;
 
-import com.milvus.vector_spring.project.dto.ProjectContentsResponseDto;
-import com.milvus.vector_spring.project.dto.ProjectCreateRequestDto;
-import com.milvus.vector_spring.project.dto.ProjectResponseDto;
-import com.milvus.vector_spring.project.dto.ProjectUpdateRequestDto;
+import com.milvus.vector_spring.project.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -57,8 +54,8 @@ public class ProjectController {
     }
 
     @DeleteMapping()
-    public ResponseEntity<String> deleteProject(@RequestParam String key) {
-        String deleteProject = projectService.deleteProject(key);
+    public ResponseEntity<String> deleteProject(@RequestBody ProjectDeleteRequestDto projectDeleteRequestDto) {
+        String deleteProject = projectService.deleteProject(projectDeleteRequestDto);
         return ResponseEntity.ok(deleteProject);
     }
 }
