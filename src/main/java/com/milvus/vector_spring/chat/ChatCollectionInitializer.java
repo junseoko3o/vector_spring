@@ -19,7 +19,7 @@
                 String collectionName = "chat_response";
 
                 if (!mongoTemplate.collectionExists(collectionName)) {
-                    Document validator = new Document("$jsonSchema", new Document()
+                    Document jsonSchema = new Document()
                             .append("bsonType", "object")
                             .append("required", Arrays.asList("sessionId", "input", "output"))
                             .append("properties", new Document()
@@ -31,11 +31,10 @@
                                     .append("outputDateTime", new Document("bsonType", "date"))
                                     .append("content", new Document("bsonType", "object"))
                                     .append("rank", new Document("bsonType", "array"))
-                            )
-                    );
+                            );
 
                     ValidationOptions validationOptions = new ValidationOptions()
-                            .validator(new Document("$jsonSchema", validator));
+                            .validator(new Document("$jsonSchema", jsonSchema));
 
 
                     MongoDatabase db = mongoTemplate.getDb();
