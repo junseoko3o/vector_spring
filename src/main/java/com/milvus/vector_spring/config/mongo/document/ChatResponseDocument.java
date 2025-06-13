@@ -1,15 +1,15 @@
 package com.milvus.vector_spring.config.mongo.document;
 
-import lombok.AllArgsConstructor;
+import com.milvus.vector_spring.chat.dto.VectorSearchRankDto;
+import com.milvus.vector_spring.content.Content;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
+@Data
 @Document(collection = "chat_response")
 public class ChatResponseDocument {
 
@@ -21,21 +21,23 @@ public class ChatResponseDocument {
     private String input;
     private String output;
     private String vectorOutput;
-    private Map<String, Object> content;
-
+    private Content content;
     private LocalDateTime inputDateTime;
     private LocalDateTime outputDateTime;
+    private List<VectorSearchRankDto> rank;
 
-    private List<Rank> rank;
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Rank {
-        private String answer;
-        private String title;
-        private double score;
-        private int id;
+    public ChatResponseDocument(String sessionId, String input, String output,
+                                String vectorOutput, LocalDateTime inputDateTime,
+                                LocalDateTime outputDateTime, Content content,
+                                List<VectorSearchRankDto> rank) {
+        this.sessionId = sessionId;
+        this.input = input;
+        this.output = output;
+        this.vectorOutput = vectorOutput;
+        this.inputDateTime = inputDateTime;
+        this.outputDateTime = outputDateTime;
+        this.content = content;
+        this.rank = rank;
     }
 }
 

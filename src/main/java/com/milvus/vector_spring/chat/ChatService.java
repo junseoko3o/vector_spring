@@ -7,6 +7,7 @@ import com.milvus.vector_spring.chat.dto.VectorSearchResponseDto;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.common.service.EncryptionService;
+import com.milvus.vector_spring.config.mongo.document.ChatResponseDocument;
 import com.milvus.vector_spring.content.Content;
 import com.milvus.vector_spring.content.ContentService;
 import com.milvus.vector_spring.content.dto.ContentResponseDto;
@@ -66,7 +67,7 @@ public class ChatService {
                         .sum();
         projectService.plusTotalToken(project, totalToken);
         ChatResponseDto chatResponseDto = buildChatResponse(project, chatRequestDto, finalAnswer, inputDateTime, outputDateTime, searchResponse, content);
-        mongoTemplate.save(chatRequestDto, "chat_response");
+        saveChatResponse(chatRequestDto, finalAnswer, embedResponse, inputDateTime, outputDateTime, content, rankList);
         return chatResponseDto;
     }
 
@@ -141,5 +142,29 @@ public class ChatService {
                 searchResponse.getSearch(),
                 ContentResponseDto.contentResponseDto(content)
         );
+    }
+
+    private ChatResponseDocument saveChatResponse(
+            ChatRequestDto chatRequestDto,
+            String finalAnswer,
+            CreateEmbeddingResponse embedResponse,
+            LocalDateTime inputDateTime,
+            LocalDateTime outputDateTime,
+            Content content,
+            List<VectorSearchRankDto> rankList
+    ) {
+        ChatResponseDocument doc = new ChatResponseDocument(
+                chatRequestDto.getSessionId(),
+                chatRequestDto.getText(),
+                finalAnswer,
+                embedResponse.data().get(0).toString(),
+                inputDateTime,
+                outputDateTime,
+                content,
+                rankList
+        );
+
+
+        return mongoTemplate.save(doc);
     }
 }

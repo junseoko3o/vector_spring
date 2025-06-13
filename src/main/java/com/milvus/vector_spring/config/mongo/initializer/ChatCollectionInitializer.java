@@ -1,4 +1,4 @@
-    package com.milvus.vector_spring.chat;
+    package com.milvus.vector_spring.config.mongo.initializer;
 
     import com.mongodb.client.MongoDatabase;
     import com.mongodb.client.model.ValidationOptions;
