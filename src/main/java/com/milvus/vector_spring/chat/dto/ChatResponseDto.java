@@ -1,6 +1,6 @@
 package com.milvus.vector_spring.chat.dto;
 
-import com.milvus.vector_spring.content.dto.ContentResponseDto;
+import com.milvus.vector_spring.content.Content;
 import io.milvus.v2.service.vector.response.SearchResp;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +20,7 @@ public class ChatResponseDto {
     private String input;
     private String output;
     private String vectorOutput;
-    private ContentResponseDto content;
+    private Content content;
     private LocalDateTime inputDateTime;
     private LocalDateTime outputDateTime;
     private List<VectorSearchRankDto> rank;
@@ -29,7 +29,7 @@ public class ChatResponseDto {
             String projectKey, String sessionId,
             String input, String output,
             LocalDateTime inputDateTime, LocalDateTime outputDateTime,
-            SearchResp search, ContentResponseDto content) {
+            SearchResp search, Content content) {
         List<VectorSearchRankDto> rankList = search.getSearchResults().stream()
                 .flatMap(List::stream)
                 .map(result -> {

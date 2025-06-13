@@ -10,25 +10,23 @@ import com.milvus.vector_spring.common.service.EncryptionService;
 import com.milvus.vector_spring.config.mongo.document.ChatResponseDocument;
 import com.milvus.vector_spring.content.Content;
 import com.milvus.vector_spring.content.ContentService;
-import com.milvus.vector_spring.content.dto.ContentResponseDto;
 import com.milvus.vector_spring.libraryopenai.OpenAiLibraryService;
 import com.milvus.vector_spring.libraryopenai.dto.OpenAiChatLibraryRequestDto;
 import com.milvus.vector_spring.openai.dto.OpenAiChatResponseDto;
 import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.user.UserService;
-import com.openai.models.ChatCompletion;
-import com.openai.models.CompletionUsage;
-import com.openai.models.CreateEmbeddingResponse;
+import com.openai.models.chat.completions.ChatCompletion;
+import com.openai.models.completions.CompletionUsage;
+import com.openai.models.embeddings.CreateEmbeddingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -56,10 +54,11 @@ public class ChatService {
         VectorSearchResponseDto searchResponse = performVectorSearch(embedResponse);
         List<VectorSearchRankDto> rankList = mapSearchResultsToRankList(searchResponse);
         String prompt = project.getPrompt();
-        ChatCompletion answer = generateFinalAnswer(project, chatRequestDto.getText(), secretKey, rankList, searchResponse, prompt);
+        ChatCompletion answer = generateFinalAnswer(project.getChatModel(), chatRequestDto.getText(), secretKey, rankList, searchResponse, prompt);
         String finalAnswer = answer.choices().get(0).message().content().orElse("");
-
-        Content content = contentService.findOneContentById(searchResponse.getFirstSearchId());
+        Content content = Optional.ofNullable(searchResponse.getFirstSearchId())
+                .flatMap(contentService::findOneContentByContentId)
+                .orElse(null);
         LocalDateTime outputDateTime = LocalDateTime.now();
         long totalToken = embedResponse.usage().totalTokens() +
                 answer.usage().stream()
@@ -67,7 +66,7 @@ public class ChatService {
                         .sum();
         projectService.plusTotalToken(project, totalToken);
         ChatResponseDto chatResponseDto = buildChatResponse(project, chatRequestDto, finalAnswer, inputDateTime, outputDateTime, searchResponse, content);
-        saveChatResponse(chatRequestDto, finalAnswer, embedResponse, inputDateTime, outputDateTime, content, rankList);
+        saveChatResponse(chatRequestDto, finalAnswer, inputDateTime, outputDateTime, content, rankList);
         return chatResponseDto;
     }
 
@@ -88,9 +87,7 @@ public class ChatService {
     }
 
     private VectorSearchResponseDto performVectorSearch(CreateEmbeddingResponse embedResponse) {
-        List<Float> floatList = embedResponse.data().get(0).embedding().stream()
-                .map(Double::floatValue)
-                .collect(Collectors.toList());
+        List<Float> floatList = embedResponse.data().get(0).embedding();
         return chatOptionService.vectorSearchResult(floatList);
     }
 
@@ -109,24 +106,28 @@ public class ChatService {
                 .toList();
     }
 
-    private ChatCompletion generateFinalAnswer(Project project, String text, String secretKey, List<VectorSearchRankDto> rankList, VectorSearchResponseDto searchResponse, String prompt) {
-        var messages = new ArrayList<OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto>();
-        messages.add(new OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto("user", text));
-        OpenAiChatLibraryRequestDto dto = OpenAiChatLibraryRequestDto.builder()
-                .model(project.getChatModel())
-                .openAiKey(secretKey)
-                .messages(messages)
-                .build();
-        if (!rankList.isEmpty() && rankList.get(0).getScore() >= 0.5) {
-            if (prompt.isEmpty()) {
-                prompt = chatOptionService.prompt(text, searchResponse.getAnswers());
-            }
-            messages.add(new OpenAiChatLibraryRequestDto.OpenAiLibaryMessageDto("system", prompt));
-            return openAiLibraryService.chat(dto);
-        }
-        return openAiLibraryService.chat(dto);
-    }
+    private ChatCompletion generateFinalAnswer(String chatModel, String text, String secretKey, List<VectorSearchRankDto> rankList, VectorSearchResponseDto searchResponse, String prompt) {
+        try {
+            OpenAiChatLibraryRequestDto dto = OpenAiChatLibraryRequestDto.builder()
+                    .model(chatModel)
+                    .openAiKey(secretKey)
+                    .userMessages(text)
+                    .build();
 
+            if (!rankList.isEmpty() && rankList.get(0).getScore() >= 0.5) {
+                if (prompt.isEmpty()) {
+                    prompt = chatOptionService.prompt(text, searchResponse.getAnswers());
+                    OpenAiChatLibraryRequestDto.builder().systemMesasges(prompt);
+                }
+                return openAiLibraryService.chat(dto);
+            }
+            return openAiLibraryService.chat(dto);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new CustomException(ErrorStatus.OPEN_AI_ERROR);
+        }
+    }
     private ChatResponseDto buildChatResponse(
             Project project, ChatRequestDto chatRequestDto, String finalAnswer,
             LocalDateTime inputDateTime, LocalDateTime outputDateTime,
@@ -140,27 +141,33 @@ public class ChatService {
                 inputDateTime,
                 outputDateTime,
                 searchResponse.getSearch(),
-                ContentResponseDto.contentResponseDto(content)
+                content
         );
     }
 
     private ChatResponseDocument saveChatResponse(
             ChatRequestDto chatRequestDto,
             String finalAnswer,
-            CreateEmbeddingResponse embedResponse,
             LocalDateTime inputDateTime,
             LocalDateTime outputDateTime,
             Content content,
             List<VectorSearchRankDto> rankList
     ) {
+        ChatResponseDocument.SimpleContentDto simpleContent = Optional.ofNullable(content)
+                .map(c -> new ChatResponseDocument.SimpleContentDto(
+                        c.getId(),
+                        c.getKey(),
+                        c.getTitle(),
+                        c.getAnswer()
+                ))
+                .orElse(new ChatResponseDocument.SimpleContentDto(null, null, null, null));
         ChatResponseDocument doc = new ChatResponseDocument(
                 chatRequestDto.getSessionId(),
                 chatRequestDto.getText(),
                 finalAnswer,
-                embedResponse.data().get(0).toString(),
                 inputDateTime,
                 outputDateTime,
-                content,
+                simpleContent,
                 rankList
         );
 

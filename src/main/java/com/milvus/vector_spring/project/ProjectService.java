@@ -1,8 +1,8 @@
 package com.milvus.vector_spring.project;
 
-import com.milvus.vector_spring.common.service.EncryptionService;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
+import com.milvus.vector_spring.common.service.EncryptionService;
 import com.milvus.vector_spring.milvus.MilvusService;
 import com.milvus.vector_spring.project.dto.ProjectCreateRequestDto;
 import com.milvus.vector_spring.project.dto.ProjectDeleteRequestDto;
@@ -11,6 +11,7 @@ import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -46,8 +47,10 @@ public class ProjectService {
         return projectRepository.findOneProjectWithContents(key);
     }
 
+    @Transactional
     public Project createProject(ProjectCreateRequestDto projectCreateRequestDto) {
         User user = userService.findOneUser(projectCreateRequestDto.getCreatedUserId());
+        System.out.println(encryptionService.encryptData(projectCreateRequestDto.getOpenAiKey()));
         Project project = Project.builder()
                 .name(projectCreateRequestDto.getName())
                 .key(String.valueOf(UUID.randomUUID()))

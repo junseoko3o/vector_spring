@@ -30,7 +30,7 @@ public class Project extends BaseEntity {
     @Column(name = "project_key", nullable = false, unique = true)
     private String key;
 
-    @Column(name = "open_ai_key", nullable = true)
+    @Column(name = "open_ai_key", nullable = true, length = 1024)
     private String openAiKey;
 
     @Column(name = "prompt", nullable = true)

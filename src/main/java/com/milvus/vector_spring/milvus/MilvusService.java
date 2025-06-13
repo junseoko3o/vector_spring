@@ -30,8 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static io.milvus.v2.common.DataType.FloatVector;
-
 @Service
 public class MilvusService implements MilvusInterface {
 
@@ -63,51 +61,65 @@ public class MilvusService implements MilvusInterface {
 
     public void createSchema(Long dbKey, int dimension) {
         MilvusClientV2 client = connect();
-        CreateUserReq createUserReq = CreateUserReq.builder()
-                .userName(username)
-                .password(password)
-                .build();
+        try {
+            CreateUserReq createUserReq = CreateUserReq.builder()
+                    .userName(username)
+                    .password(password)
+                    .build();
 
-        client.createUser(createUserReq);
+            try {
+                client.createUser(createUserReq);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                if (!e.getMessage().contains("user already exists")) {
+                    throw e;
+                }
+            }
 
-        CreateCollectionReq.CollectionSchema schema = client.createSchema();
-        schema.addField(AddFieldReq.builder()
-                .fieldName("id")
-                .dataType(DataType.Int64)
-                .isPrimaryKey(true)
-                .autoID(false)
-                .build());
+            CreateCollectionReq.CollectionSchema schema = client.createSchema();
+            schema.addField(AddFieldReq.builder()
+                    .fieldName("id")
+                    .dataType(DataType.Int64)
+                    .isPrimaryKey(true)
+                    .autoID(false)
+                    .build());
 
-        schema.addField(AddFieldReq.builder()
-                .fieldName("vector")
-                .dataType(FloatVector)
-                .dimension(dimension)
-                .build());
+            schema.addField(AddFieldReq.builder()
+                    .fieldName("vector")
+                    .dataType(DataType.FloatVector)
+                    .dimension(dimension)
+                    .build());
 
-        schema.addField(AddFieldReq.builder()
-                .fieldName("title")
-                .dataType(DataType.VarChar)
-                .maxLength(128)
-                .build());
+            schema.addField(AddFieldReq.builder()
+                    .fieldName("title")
+                    .dataType(DataType.VarChar)
+                    .maxLength(128)
+                    .build());
 
-        schema.addField(AddFieldReq.builder()
-                .fieldName("answer")
-                .dataType(DataType.VarChar)
-                .maxLength(3092)
-                .build());
+            schema.addField(AddFieldReq.builder()
+                    .fieldName("answer")
+                    .dataType(DataType.VarChar)
+                    .maxLength(3092)
+                    .build());
 
-        String collectionCustomName = String.format(collectionName, dbKey);
-        List<IndexParam> indexParamList = createIndex(collectionCustomName);
-        CreateCollectionReq createCollectionReq = CreateCollectionReq.builder()
-                .collectionName(collectionCustomName)
-                .collectionSchema(schema)
-                .indexParams(indexParamList)
-                .build();
-        client.createCollection(createCollectionReq);
+            String collectionCustomName = String.format(collectionName, dbKey);
+            List<IndexParam> indexParamList = createIndex(collectionCustomName);
+            CreateCollectionReq createCollectionReq = CreateCollectionReq.builder()
+                    .collectionName(collectionCustomName)
+                    .collectionSchema(schema)
+                    .indexParams(indexParamList)
+                    .build();
 
-        GetLoadStateReq getLoadStateReq = loadCollection(collectionCustomName);
-        client.getLoadState(getLoadStateReq);
+            client.createCollection(createCollectionReq);
+
+            GetLoadStateReq getLoadStateReq = loadCollection(collectionCustomName);
+            client.getLoadState(getLoadStateReq);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Schema creation failed: " + e.getMessage(), e);
+        }
     }
+
 
     private List<IndexParam> createIndex(String collectionName) {
         IndexParam indexParamForVectorField = IndexParam.builder()

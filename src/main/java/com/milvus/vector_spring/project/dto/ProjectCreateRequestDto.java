@@ -19,6 +19,5 @@ public class ProjectCreateRequestDto {
     private long dimensions;
 
     @NotNull
-    @NotBlank
     private Long createdUserId;
 }

@@ -1,7 +1,7 @@
 package com.milvus.vector_spring.config.mongo.document;
 
 import com.milvus.vector_spring.chat.dto.VectorSearchRankDto;
-import com.milvus.vector_spring.content.Content;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,20 +20,27 @@ public class ChatResponseDocument {
     private String projectKey;
     private String input;
     private String output;
-    private String vectorOutput;
-    private Content content;
+    private SimpleContentDto content;
     private LocalDateTime inputDateTime;
     private LocalDateTime outputDateTime;
     private List<VectorSearchRankDto> rank;
 
+    @Data
+    @AllArgsConstructor
+    public static class SimpleContentDto {
+        private Long id;
+        private String key;
+        private String title;
+        private String answer;
+    }
+
     public ChatResponseDocument(String sessionId, String input, String output,
-                                String vectorOutput, LocalDateTime inputDateTime,
-                                LocalDateTime outputDateTime, Content content,
+                                LocalDateTime inputDateTime,
+                                LocalDateTime outputDateTime, SimpleContentDto content,
                                 List<VectorSearchRankDto> rank) {
         this.sessionId = sessionId;
         this.input = input;
         this.output = output;
-        this.vectorOutput = vectorOutput;
         this.inputDateTime = inputDateTime;
         this.outputDateTime = outputDateTime;
         this.content = content;

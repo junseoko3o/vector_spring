@@ -1,8 +1,8 @@
 package com.milvus.vector_spring.content;
 
-import com.milvus.vector_spring.common.service.EncryptionService;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
+import com.milvus.vector_spring.common.service.EncryptionService;
 import com.milvus.vector_spring.content.dto.ContentCreateRequestDto;
 import com.milvus.vector_spring.content.dto.ContentUpdateRequestDto;
 import com.milvus.vector_spring.libraryopenai.OpenAiLibraryService;
@@ -12,12 +12,12 @@ import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserService;
-import com.openai.models.CreateEmbeddingResponse;
+import com.openai.models.embeddings.CreateEmbeddingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -39,6 +39,10 @@ public class ContentService {
         return contentRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorStatus.NOT_FOUND_CONTENT)
         );
+    }
+
+    public Optional<Content> findOneContentByContentId(Long id) throws CustomException {
+        return contentRepository.findById(id);
     }
     public Content createContent(long userId, ContentCreateRequestDto contentCreateRequestDto) throws CustomException {
         User user = userService.findOneUser(userId);
@@ -93,15 +97,11 @@ public class ContentService {
     }
 
     private void insertIntoMilvus(Content content, CreateEmbeddingResponse embedResponseDto) throws CustomException{
-        List<Double> doubleList = embedResponseDto.data().get(0).embedding();
-        List<Float> vector = new ArrayList<>();
-        for (Double value : doubleList) {
-            vector.add(value.floatValue());
-        }
+        List<Float> doubleList = embedResponseDto.data().get(0).embedding();
         try {
             InsertRequestDto insertRequestDto = InsertRequestDto.builder()
                     .id(content.getId())
-                    .vector(vector)
+                    .vector(doubleList)
                     .title(content.getTitle())
                     .answer(content.getAnswer())
                     .build();

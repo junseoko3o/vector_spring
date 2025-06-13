@@ -17,13 +17,13 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping()
-    private ChatResponseDto search(@RequestBody ChatRequestDto chatRequestDto) {
+    public ChatResponseDto search(@RequestBody ChatRequestDto chatRequestDto) {
         return chatService.chat(chatRequestDto);
     }
 
     @PostMapping("/test")
     @RateLimit
-    private OpenAiChatResponseDto testSearch(@RequestBody String question) {
+    public OpenAiChatResponseDto testSearch(@RequestBody String question) {
         return chatService.testChat(question);
     }
 }
