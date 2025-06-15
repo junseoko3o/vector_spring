@@ -52,22 +52,13 @@ public class AuthService {
     }
 
     public void logout() {
-//        String token = getToken();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new CustomException(ErrorStatus.INVALID_ACCESS_TOKEN);
         }
         User user = (User) authentication.getPrincipal();
-//        if (jwtTokenProvider.validateToken(token)) {
-//            Claims claims = jwtTokenProvider.getClaims(token);
-//            Long userId = claims.get("userId", Long.class);
-//            User user = userService.findOneUser(userId);
-
         String redisKey = "refreshToken:" + user.getEmail();
         redisService.deleteRedis(redisKey);
-//        } else {
-//            throw new CustomException(ErrorStatus._INVALID_ACCESS_TOKEN);
-//        }
     }
 
     public UserLoginResponseDto check() {
@@ -95,6 +86,6 @@ public class AuthService {
             return token.substring(7);
         }
 
-        return null;
+        throw new CustomException(ErrorStatus.INVALID_ACCESS_TOKEN);
     }
 }

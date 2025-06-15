@@ -58,7 +58,6 @@ public class OpenAiLibraryService {
                     .chat()
                     .completions()
                     .create(params);
-
         } catch (Exception e) {
             System.err.println("OpenAI chat 호출 중 오류 발생: " + e.getMessage());
             throw new CustomException(ErrorStatus.OPEN_AI_ERROR);

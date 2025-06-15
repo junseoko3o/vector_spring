@@ -43,14 +43,14 @@ public class ChatService {
     public ChatResponseDto chat(ChatRequestDto chatRequestDto) {
         LocalDateTime inputDateTime = LocalDateTime.now();
 
-        validateUser(chatRequestDto.getUserId());
-        Project project = getProject(chatRequestDto.getProjectKey());
+        userService.findOneUser(chatRequestDto.getUserId());
+        Project project = projectService.findOneProjectByKey(chatRequestDto.getProjectKey());
         if (project.getOpenAiKey().isEmpty() && project.getChatModel().isEmpty()) {
             throw new CustomException(ErrorStatus.REQUIRE_OPEN_AI_INFO);
         }
         String secretKey = encryptionService.decryptData(project.getOpenAiKey());
 
-        CreateEmbeddingResponse embedResponse = getEmbedding(secretKey, chatRequestDto.getText(), project.getDimensions());
+        CreateEmbeddingResponse embedResponse = openAiLibraryService.embedding(secretKey, chatRequestDto.getText(), project.getDimensions());
         VectorSearchResponseDto searchResponse = performVectorSearch(embedResponse);
         List<VectorSearchRankDto> rankList = mapSearchResultsToRankList(searchResponse);
         String prompt = project.getPrompt();
@@ -68,22 +68,6 @@ public class ChatService {
         ChatResponseDto chatResponseDto = buildChatResponse(project, chatRequestDto, finalAnswer, inputDateTime, outputDateTime, searchResponse, content);
         saveChatResponse(chatRequestDto, finalAnswer, inputDateTime, outputDateTime, content, rankList);
         return chatResponseDto;
-    }
-
-    public OpenAiChatResponseDto testChat(String question) {
-        return chatOptionService.onlyOpenAiAnswer("",question,"");
-    }
-
-    private void validateUser(Long userId) {
-        userService.findOneUser(userId);
-    }
-
-    private Project getProject(String projectKey) {
-        return projectService.findOneProjectByKey(projectKey);
-    }
-
-    private CreateEmbeddingResponse getEmbedding(String secretKey, String text, long dimension) {
-        return openAiLibraryService.embedding(secretKey, text, dimension);
     }
 
     private VectorSearchResponseDto performVectorSearch(CreateEmbeddingResponse embedResponse) {
@@ -122,12 +106,12 @@ public class ChatService {
                 return openAiLibraryService.chat(dto);
             }
             return openAiLibraryService.chat(dto);
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new CustomException(ErrorStatus.OPEN_AI_ERROR);
         }
     }
+
     private ChatResponseDto buildChatResponse(
             Project project, ChatRequestDto chatRequestDto, String finalAnswer,
             LocalDateTime inputDateTime, LocalDateTime outputDateTime,
@@ -145,7 +129,7 @@ public class ChatService {
         );
     }
 
-    private ChatResponseDocument saveChatResponse(
+    private void saveChatResponse(
             ChatRequestDto chatRequestDto,
             String finalAnswer,
             LocalDateTime inputDateTime,
@@ -172,6 +156,10 @@ public class ChatService {
         );
 
 
-        return mongoTemplate.save(doc);
+        mongoTemplate.save(doc);
+    }
+
+    public OpenAiChatResponseDto testChat(String question) {
+        return chatOptionService.onlyOpenAiAnswer("",question,"");
     }
 }
