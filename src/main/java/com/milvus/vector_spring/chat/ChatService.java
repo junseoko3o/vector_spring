@@ -90,22 +90,26 @@ public class ChatService {
                 .toList();
     }
 
-    private ChatCompletion generateFinalAnswer(String chatModel, String text, String secretKey, List<VectorSearchRankDto> rankList, VectorSearchResponseDto searchResponse, String prompt) {
+    private ChatCompletion generateFinalAnswer(
+            String chatModel, String text, String secretKey,
+            List<VectorSearchRankDto> rankList, VectorSearchResponseDto searchResponse, String prompt) {
+
         try {
+            String systemPrompt = prompt;
+            boolean hasValidRank = !rankList.isEmpty() && rankList.get(0).getScore() >= 0.5;
+            if (prompt == null || prompt.isEmpty()) {
+                systemPrompt = hasValidRank
+                        ? chatOptionService.prompt(text, rankList.stream().map(VectorSearchRankDto::getAnswer).toList())
+                        : chatOptionService.prompt(text, searchResponse.getAnswers());
+            }
             OpenAiChatLibraryRequestDto dto = OpenAiChatLibraryRequestDto.builder()
                     .model(chatModel)
                     .openAiKey(secretKey)
                     .userMessages(text)
+                    .systemMesasges(systemPrompt)
                     .build();
-
-            if (!rankList.isEmpty() && rankList.get(0).getScore() >= 0.5) {
-                if (prompt.isEmpty()) {
-                    prompt = chatOptionService.prompt(text, searchResponse.getAnswers());
-                    OpenAiChatLibraryRequestDto.builder().systemMesasges(prompt);
-                }
-                return openAiLibraryService.chat(dto);
-            }
             return openAiLibraryService.chat(dto);
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new CustomException(ErrorStatus.OPEN_AI_ERROR);
