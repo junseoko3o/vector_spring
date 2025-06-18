@@ -16,10 +16,12 @@ import com.milvus.vector_spring.openai.dto.OpenAiChatResponseDto;
 import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.user.UserService;
+import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.completions.CompletionUsage;
 import com.openai.models.embeddings.CreateEmbeddingResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ChatService {
+
+    @Value("${open.ai.key}")
+    private String openAiKey;
 
     private final UserService userService;
     private final ProjectService projectService;
@@ -164,6 +169,6 @@ public class ChatService {
     }
 
     public OpenAiChatResponseDto testChat(String question) {
-        return chatOptionService.onlyOpenAiAnswer("",question,"");
+        return chatOptionService.onlyOpenAiAnswer(openAiKey, question, String.valueOf(ChatModel.GPT_4_1));
     }
 }
