@@ -50,7 +50,6 @@ public class ProjectService {
     @Transactional
     public Project createProject(ProjectCreateRequestDto projectCreateRequestDto) {
         User user = userService.findOneUser(projectCreateRequestDto.getCreatedUserId());
-        System.out.println(encryptionService.encryptData(projectCreateRequestDto.getOpenAiKey()));
         Project project = Project.builder()
                 .name(projectCreateRequestDto.getName())
                 .key(String.valueOf(UUID.randomUUID()))
