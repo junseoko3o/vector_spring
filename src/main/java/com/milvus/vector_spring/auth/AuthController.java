@@ -5,6 +5,7 @@ import com.milvus.vector_spring.auth.dto.UserLoginResponseDto;
 import com.milvus.vector_spring.common.annotation.NoAuthRequired;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    @NoAuthRequired
+    @NoAuthRequired()
     public ResponseEntity<UserLoginResponseDto> login(@Validated @RequestBody UserLoginRequestDto userLoginRequestDto) {
         UserLoginResponseDto userLoginResponseDto = authService.login(userLoginRequestDto);
         return ResponseEntity.ok(userLoginResponseDto);
@@ -31,5 +32,11 @@ public class AuthController {
     public ResponseEntity<UserLoginResponseDto> check() {
         UserLoginResponseDto userCheck = authService.check();
         return ResponseEntity.ok(userCheck);
+    }
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public String test() {
+        return "넌 어드민";
     }
 }

@@ -47,6 +47,7 @@ public class UserService {
                 .email(userSignUpRequestDto.getEmail())
                 .username(userSignUpRequestDto.getUsername())
                 .password(encoder.encode(userSignUpRequestDto.getPassword()))
+                .role("ROLE_USER")
                 .build();
         return userRepository.save(user);
     }

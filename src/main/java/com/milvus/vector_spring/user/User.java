@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
@@ -36,6 +37,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "password")
     private String password;
 
+    @Column(name= "role")
+    private String role;
+
     @Column(name = "login_at")
     private LocalDateTime loginAt;
 
@@ -55,11 +59,12 @@ public class User extends BaseEntity implements UserDetails {
     private List<Invite> invites = new ArrayList<>();
 
     @Builder
-    public User(Long id, String email, String username, String password, LocalDateTime loginAt) {
+    public User(Long id, String email, String username, String password, String role, LocalDateTime loginAt) {
         this.id = id;
         this.email = email;
         this.username = username;
         this.password = password;
+        this.role = role;
         this.loginAt = loginAt;
     }
 
@@ -69,7 +74,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority(this.role));
     }
 
     @Override

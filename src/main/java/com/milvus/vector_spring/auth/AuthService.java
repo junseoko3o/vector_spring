@@ -46,6 +46,7 @@ public class AuthService {
                 savedUser.getId(),
                 savedUser.getEmail(),
                 savedUser.getUsername(),
+                savedUser.getRole(),
                 accessToken,
                 savedUser.getLoginAt()
         );
@@ -69,6 +70,7 @@ public class AuthService {
                 user.getId(),
                 user.getEmail(),
                 user.getUsername(),
+                user.getRole(),
                 token,
                 user.getLoginAt()
         );

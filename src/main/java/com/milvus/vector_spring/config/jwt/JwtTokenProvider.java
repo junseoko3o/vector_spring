@@ -52,6 +52,7 @@ public class JwtTokenProvider {
                 .and()
                 .subject(user.getEmail())
                 .subject(user.getId().toString())
+                .subject(user.getRole())
                 .issuedAt(java.sql.Timestamp.valueOf(now))
                 .expiration(java.sql.Timestamp.valueOf(expiryDate))
                 .claims(userToMap(user))
@@ -145,6 +146,7 @@ public class JwtTokenProvider {
         userMap.put("userId", user.getId());
         userMap.put("email", user.getEmail());
         userMap.put("userName", user.getUsername());
+        userMap.put("role", user.getRole());
 
         return userMap;
     }
