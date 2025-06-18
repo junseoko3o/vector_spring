@@ -29,7 +29,7 @@ public class OpenAiLibraryService {
             case "GPT_4O_MINI" -> ChatModel.GPT_4O_MINI;
             case "GPT_4O" -> ChatModel.GPT_4O;
             case "GPT_4_1" -> ChatModel.GPT_4_1;
-            default -> throw new IllegalArgumentException("Unknown model: " + model);
+            default -> throw new CustomException(ErrorStatus.UNKNOWING_MODEL);
         };
     }
 
@@ -37,7 +37,7 @@ public class OpenAiLibraryService {
         return switch (model) {
             case "GPT_EMBED_LARGE" -> EmbeddingModel.TEXT_EMBEDDING_3_LARGE;
             case "GPT_EMBED_SMALL" -> EmbeddingModel.TEXT_EMBEDDING_3_SMALL;
-            default -> throw new IllegalArgumentException("Unknown model: " + model);
+            default -> throw new CustomException(ErrorStatus.UNKNOWING_MODEL);
         };
     }
 
@@ -65,11 +65,15 @@ public class OpenAiLibraryService {
     }
 
     public CreateEmbeddingResponse embedding(String openAiKey, String input, long dimension) {
-        EmbeddingCreateParams params = EmbeddingCreateParams.builder()
-                .model(EmbeddingModel.TEXT_EMBEDDING_3_LARGE)
-                .dimensions(dimension)
-                .input(input)
-                .build();
-        return connectOpenAI(openAiKey).embeddings().create(params);
+        try {
+            EmbeddingCreateParams params = EmbeddingCreateParams.builder()
+                    .model(EmbeddingModel.TEXT_EMBEDDING_3_LARGE)
+                    .dimensions(dimension)
+                    .input(input)
+                    .build();
+            return connectOpenAI(openAiKey).embeddings().create(params);
+        } catch (Exception e) {
+            throw new CustomException(ErrorStatus.OPENAI_EMBEDDING_ERROR);
+        }
     }
 }

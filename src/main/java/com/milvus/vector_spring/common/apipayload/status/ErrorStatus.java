@@ -35,7 +35,14 @@ public enum ErrorStatus implements BaseCode {
     EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Expired refresh token"),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "Invalid password."),
     NOT_PROJECT_MASTER_USER(HttpStatus.UNAUTHORIZED, "Not Project Master User."),
-    EMBEDDING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create embedding.");
+    EMBEDDING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to create embedding."),
+    UNKNOWING_MODEL(HttpStatus.BAD_REQUEST, "Unknown GPT Model."),
+    MILVUS_SCHEMA_CREATE_ERROR(HttpStatus.BAD_REQUEST, "Schema Create Error."),
+    MILVUS_INDEX_CREATE_ERROR(HttpStatus.BAD_REQUEST, "Index Create Error."),
+    MILVUS_UPSERT_ERROR(HttpStatus.BAD_REQUEST, "Upsert Error."),
+    MILVUS_DELETE_ERROR(HttpStatus.BAD_REQUEST, "Delete Error."),
+    MILVUS_VECTOR_SEARCH_ERROR(HttpStatus.BAD_REQUEST, "Vector Search Error."),
+    OPENAI_EMBEDDING_ERROR(HttpStatus.BAD_REQUEST, "OpenAi Embedding Error.");
 
     private final HttpStatus httpStatus;
     private final String message;

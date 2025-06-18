@@ -2,6 +2,7 @@ package com.milvus.vector_spring.milvus;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.milvus.dto.InsertRequestDto;
 import io.milvus.v2.client.ConnectConfig;
@@ -67,15 +68,10 @@ public class MilvusService implements MilvusInterface {
                     .password(password)
                     .build();
 
-            try {
+            List<String> users = client.listUsers();
+            if (!users.contains(username)) {
                 client.createUser(createUserReq);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                if (!e.getMessage().contains("user already exists")) {
-                    throw e;
-                }
             }
-
             CreateCollectionReq.CollectionSchema schema = client.createSchema();
             schema.addField(AddFieldReq.builder()
                     .fieldName("id")
@@ -116,27 +112,31 @@ public class MilvusService implements MilvusInterface {
             client.getLoadState(getLoadStateReq);
 
         } catch (Exception e) {
-            throw new RuntimeException("Schema creation failed: " + e.getMessage(), e);
+            throw new CustomException(ErrorStatus.MILVUS_SCHEMA_CREATE_ERROR);
         }
     }
 
 
     private List<IndexParam> createIndex(String collectionName) {
-        IndexParam indexParamForVectorField = IndexParam.builder()
-                .fieldName("vector")
-                .indexType(IndexParam.IndexType.HNSW)
-                .metricType(IndexParam.MetricType.COSINE)
-                .extraParams(Map.of("efConstruction", 100, "M", 16))
-                .build();
+        try {
+            IndexParam indexParamForVectorField = IndexParam.builder()
+                    .fieldName("vector")
+                    .indexType(IndexParam.IndexType.HNSW)
+                    .metricType(IndexParam.MetricType.COSINE)
+                    .extraParams(Map.of("efConstruction", 100, "M", 16))
+                    .build();
 
-        List<IndexParam> indexParamList = new ArrayList<>();
-        indexParamList.add(indexParamForVectorField);
+            List<IndexParam> indexParamList = new ArrayList<>();
+            indexParamList.add(indexParamForVectorField);
 
-        CreateIndexReq.builder()
-                .collectionName(collectionName)
-                .indexParams(indexParamList)
-                .build();
-        return indexParamList;
+            CreateIndexReq.builder()
+                    .collectionName(collectionName)
+                    .indexParams(indexParamList)
+                    .build();
+            return indexParamList;
+        } catch (Exception e) {
+            throw new CustomException(ErrorStatus.MILVUS_INDEX_CREATE_ERROR);
+        }
     }
 
     private GetLoadStateReq loadCollection(String collectionName) {
@@ -161,29 +161,37 @@ public class MilvusService implements MilvusInterface {
         MilvusClientV2 client = connect();
         JsonObject dataObject = new JsonObject();
         JsonArray vectorArray = new JsonArray();
-        for (Float v : insertRequestDto.getVector()) {
-            vectorArray.add(v);
-        }
-        dataObject.addProperty("id", id);
-        dataObject.add("vector", vectorArray);
-        dataObject.addProperty("title", insertRequestDto.getTitle());
-        dataObject.addProperty("answer", insertRequestDto.getAnswer());
+        try {
+            for (Float v : insertRequestDto.getVector()) {
+                vectorArray.add(v);
+            }
+            dataObject.addProperty("id", id);
+            dataObject.add("vector", vectorArray);
+            dataObject.addProperty("title", insertRequestDto.getTitle());
+            dataObject.addProperty("answer", insertRequestDto.getAnswer());
 
-        List<JsonObject> data = Arrays.asList(dataObject);
-        UpsertReq upsertReq = UpsertReq.builder()
-                .collectionName(collectionName)
-                .data(data)
-                .build();
-        return client.upsert(upsertReq);
+            List<JsonObject> data = Arrays.asList(dataObject);
+            UpsertReq upsertReq = UpsertReq.builder()
+                    .collectionName(collectionName)
+                    .data(data)
+                    .build();
+            return client.upsert(upsertReq);
+        } catch (Exception e) {
+            throw new CustomException(ErrorStatus.MILVUS_UPSERT_ERROR);
+        }
     }
 
     public DeleteResp deleteCollection(long id) {
-        MilvusClientV2 client = connect();
-        DeleteReq deleteReq = DeleteReq.builder()
-                .collectionName(collectionName)
-                .filter("id in [" + id + "]")
-                .build();
-        return client.delete(deleteReq);
+        try {
+            MilvusClientV2 client = connect();
+            DeleteReq deleteReq = DeleteReq.builder()
+                    .collectionName(collectionName)
+                    .filter("id in [" + id + "]")
+                    .build();
+            return client.delete(deleteReq);
+        } catch (Exception e) {
+            throw new CustomException(ErrorStatus.MILVUS_DELETE_ERROR);
+        }
     }
 
     public Boolean hasCollection() {
@@ -196,19 +204,24 @@ public class MilvusService implements MilvusInterface {
 
     public SearchResp vectorSearch(List<Float> vectorData) {
         MilvusClientV2 client = connect();
-        List<BaseVector> baseVectors = new ArrayList<>();
-        if (vectorData != null) {
-            List<Float> floatList = new ArrayList<>(vectorData);
-            baseVectors.add(new FloatVec(floatList));
-        }List<String> fields = Arrays.asList("title", "answer");
-        SearchReq searchReq = SearchReq.builder()
-                .collectionName(collectionName)
-                .data(baseVectors)
-                .topK(5)
-                .searchParams(Map.of("metric_type", "COSINE", "efConstruction", 100, "M", 16))
-                .outputFields(fields)
-                .build();
+        try {
+            List<BaseVector> baseVectors = new ArrayList<>();
+            if (vectorData != null) {
+                List<Float> floatList = new ArrayList<>(vectorData);
+                baseVectors.add(new FloatVec(floatList));
+            }
+            List<String> fields = Arrays.asList("title", "answer");
+            SearchReq searchReq = SearchReq.builder()
+                    .collectionName(collectionName)
+                    .data(baseVectors)
+                    .topK(5)
+                    .searchParams(Map.of("metric_type", "COSINE", "efConstruction", 100, "M", 16))
+                    .outputFields(fields)
+                    .build();
 
-        return client.search(searchReq);
+            return client.search(searchReq);
+        } catch (Exception e) {
+            throw new CustomException(ErrorStatus.MILVUS_VECTOR_SEARCH_ERROR);
+        }
     }
 }
