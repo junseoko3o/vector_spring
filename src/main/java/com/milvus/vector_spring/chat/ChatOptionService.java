@@ -45,8 +45,8 @@ public class ChatOptionService {
         return openAiService.chat(openAiKey, requestDto);
     }
 
-    public VectorSearchResponseDto vectorSearchResult(List<Float> vector) {
-        SearchResp search = milvusService.vectorSearch(vector);
+    public VectorSearchResponseDto vectorSearchResult(List<Float> vector, Long dbKey) {
+        SearchResp search = milvusService.vectorSearch(vector, dbKey);
         Long id = (Long) search.getSearchResults().stream()
                 .findFirst()
                 .flatMap(results -> results.stream().findFirst())

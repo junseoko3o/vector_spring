@@ -64,7 +64,7 @@ public class ContentService {
                 .build();;
         CreateEmbeddingResponse embedResponseDto = fetchEmbedding(key, content.getAnswer(), project.getDimensions());
         Content savedContent = contentRepository.save(content);
-        insertIntoMilvus(savedContent, embedResponseDto);
+        insertIntoMilvus(savedContent, embedResponseDto, project.getId());
         return savedContent;
     }
 
@@ -85,7 +85,7 @@ public class ContentService {
         String key = encryptionService.decryptData(project.getOpenAiKey());
         if(!content.getAnswer().equals(contentUpdateRequestDto.getAnswer())) {
             CreateEmbeddingResponse embedResponseDto = fetchEmbedding(key, updateContent.getAnswer(), project.getDimensions());
-            insertIntoMilvus(updateContent, embedResponseDto);
+            insertIntoMilvus(updateContent, embedResponseDto, project.getId());
             return contentRepository.save(updateContent);
         }
 
@@ -96,7 +96,7 @@ public class ContentService {
         return openAiLibraryService.embedding(openAiKey, answer, dimensions);
     }
 
-    private void insertIntoMilvus(Content content, CreateEmbeddingResponse embedResponseDto) throws CustomException{
+    private void insertIntoMilvus(Content content, CreateEmbeddingResponse embedResponseDto, Long dbKey) throws CustomException{
         List<Float> doubleList = embedResponseDto.data().get(0).embedding();
         try {
             InsertRequestDto insertRequestDto = InsertRequestDto.builder()
@@ -105,7 +105,7 @@ public class ContentService {
                     .title(content.getTitle())
                     .answer(content.getAnswer())
                     .build();
-            milvusService.upsertCollection(insertRequestDto.getId(), insertRequestDto);
+            milvusService.upsertCollection(insertRequestDto.getId(), insertRequestDto, dbKey);
         } catch (Exception e) {
             throw new CustomException(ErrorStatus.MILVUS_DATABASE_ERROR);
         }

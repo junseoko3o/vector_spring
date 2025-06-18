@@ -51,7 +51,7 @@ public class ChatService {
         String secretKey = encryptionService.decryptData(project.getOpenAiKey());
 
         CreateEmbeddingResponse embedResponse = openAiLibraryService.embedding(secretKey, chatRequestDto.getText(), project.getDimensions());
-        VectorSearchResponseDto searchResponse = performVectorSearch(embedResponse);
+        VectorSearchResponseDto searchResponse = performVectorSearch(embedResponse, project.getId());
         List<VectorSearchRankDto> rankList = mapSearchResultsToRankList(searchResponse);
         String prompt = project.getPrompt();
         ChatCompletion answer = generateFinalAnswer(project.getChatModel(), chatRequestDto.getText(), secretKey, rankList, searchResponse, prompt);
@@ -70,9 +70,9 @@ public class ChatService {
         return chatResponseDto;
     }
 
-    private VectorSearchResponseDto performVectorSearch(CreateEmbeddingResponse embedResponse) {
+    private VectorSearchResponseDto performVectorSearch(CreateEmbeddingResponse embedResponse, Long dbKey) {
         List<Float> floatList = embedResponse.data().get(0).embedding();
-        return chatOptionService.vectorSearchResult(floatList);
+        return chatOptionService.vectorSearchResult(floatList, dbKey);
     }
 
     private List<VectorSearchRankDto> mapSearchResultsToRankList(VectorSearchResponseDto searchResponse) {

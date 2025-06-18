@@ -63,6 +63,11 @@ public class MilvusService implements MilvusInterface {
     public void createSchema(Long dbKey, int dimension) {
         MilvusClientV2 client = connect();
         try {
+            List<String> existingCollections = client.listCollections().getCollectionNames();
+            if (existingCollections.contains(collectionName + dbKey)) {
+                throw new CustomException(ErrorStatus.MILVUS_COLLECTION_ALREADY_EXISTS);
+            }
+
             CreateUserReq createUserReq = CreateUserReq.builder()
                     .userName(username)
                     .password(password)
@@ -97,18 +102,16 @@ public class MilvusService implements MilvusInterface {
                     .dataType(DataType.VarChar)
                     .maxLength(3092)
                     .build());
-
-            String collectionCustomName = String.format(collectionName, dbKey);
-            List<IndexParam> indexParamList = createIndex(collectionCustomName);
+            List<IndexParam> indexParamList = createIndex(collectionName + dbKey);
             CreateCollectionReq createCollectionReq = CreateCollectionReq.builder()
-                    .collectionName(collectionCustomName)
+                    .collectionName(collectionName + dbKey)
                     .collectionSchema(schema)
                     .indexParams(indexParamList)
                     .build();
 
             client.createCollection(createCollectionReq);
 
-            GetLoadStateReq getLoadStateReq = loadCollection(collectionCustomName);
+            GetLoadStateReq getLoadStateReq = loadCollection(collectionName + dbKey);
             client.getLoadState(getLoadStateReq);
 
         } catch (Exception e) {
@@ -145,11 +148,11 @@ public class MilvusService implements MilvusInterface {
                 .build();
     }
 
-    public boolean checkCollectionLoadState() {
+    public boolean checkCollectionLoadState(Long dbKey) {
         MilvusClientV2 client = connect();
 
         GetLoadStateReq loadStateReq = GetLoadStateReq.builder()
-                .collectionName(collectionName)
+                .collectionName(collectionName + dbKey)
                 .build();
 
         Boolean res = client.getLoadState(loadStateReq);
@@ -157,7 +160,7 @@ public class MilvusService implements MilvusInterface {
         return res;
     }
 
-    public UpsertResp upsertCollection(long id, InsertRequestDto insertRequestDto) {
+    public UpsertResp upsertCollection(long id, InsertRequestDto insertRequestDto, Long dbKey) {
         MilvusClientV2 client = connect();
         JsonObject dataObject = new JsonObject();
         JsonArray vectorArray = new JsonArray();
@@ -172,7 +175,7 @@ public class MilvusService implements MilvusInterface {
 
             List<JsonObject> data = Arrays.asList(dataObject);
             UpsertReq upsertReq = UpsertReq.builder()
-                    .collectionName(collectionName)
+                    .collectionName(collectionName + dbKey)
                     .data(data)
                     .build();
             return client.upsert(upsertReq);
@@ -185,7 +188,7 @@ public class MilvusService implements MilvusInterface {
         try {
             MilvusClientV2 client = connect();
             DeleteReq deleteReq = DeleteReq.builder()
-                    .collectionName(collectionName)
+                    .collectionName(collectionName + id)
                     .filter("id in [" + id + "]")
                     .build();
             return client.delete(deleteReq);
@@ -202,7 +205,7 @@ public class MilvusService implements MilvusInterface {
         return client.hasCollection(hasCollectionReq);
     }
 
-    public SearchResp vectorSearch(List<Float> vectorData) {
+    public SearchResp vectorSearch(List<Float> vectorData, Long dbKey) {
         MilvusClientV2 client = connect();
         try {
             List<BaseVector> baseVectors = new ArrayList<>();
@@ -212,7 +215,7 @@ public class MilvusService implements MilvusInterface {
             }
             List<String> fields = Arrays.asList("title", "answer");
             SearchReq searchReq = SearchReq.builder()
-                    .collectionName(collectionName)
+                    .collectionName(collectionName + dbKey)
                     .data(baseVectors)
                     .topK(5)
                     .searchParams(Map.of("metric_type", "COSINE", "efConstruction", 100, "M", 16))

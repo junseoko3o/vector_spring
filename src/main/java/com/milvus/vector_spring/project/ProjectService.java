@@ -58,6 +58,7 @@ public class ProjectService {
                 .embedModel(projectCreateRequestDto.getEmbedModel() != null ? projectCreateRequestDto.getEmbedModel() : null)
                 .chatModel(projectCreateRequestDto.getChatModel() != null ? projectCreateRequestDto.getChatModel() : null)
                 .dimensions(projectCreateRequestDto.getDimensions() != 0 ? projectCreateRequestDto.getDimensions() : 0)
+                .prompt(projectCreateRequestDto.getPrompt() != null ? projectCreateRequestDto.getPrompt() : null)
                 .totalToken(0)
                 .createdBy(user)
                 .updatedBy(user)

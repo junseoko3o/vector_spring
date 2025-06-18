@@ -16,6 +16,8 @@ public class ProjectCreateRequestDto {
 
     private String chatModel;
 
+    private String prompt;
+
     private long dimensions;
 
     @NotNull

@@ -41,6 +41,7 @@ public enum ErrorStatus implements BaseCode {
     MILVUS_INDEX_CREATE_ERROR(HttpStatus.BAD_REQUEST, "Index Create Error."),
     MILVUS_UPSERT_ERROR(HttpStatus.BAD_REQUEST, "Upsert Error."),
     MILVUS_DELETE_ERROR(HttpStatus.BAD_REQUEST, "Delete Error."),
+    MILVUS_COLLECTION_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Collection Already Exists."),
     MILVUS_VECTOR_SEARCH_ERROR(HttpStatus.BAD_REQUEST, "Vector Search Error."),
     OPENAI_EMBEDDING_ERROR(HttpStatus.BAD_REQUEST, "OpenAi Embedding Error.");
 
