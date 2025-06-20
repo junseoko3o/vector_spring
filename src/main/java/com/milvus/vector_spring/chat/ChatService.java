@@ -48,51 +48,63 @@ public class ChatService {
     public ChatResponseDto chat(ChatRequestDto chatRequestDto) {
         LocalDateTime inputDateTime = LocalDateTime.now();
 
-        userService.findOneUser(chatRequestDto.getUserId());
-        Project project = projectService.findOneProjectByKey(chatRequestDto.getProjectKey());
-        if (project.getOpenAiKey().isEmpty() && project.getChatModel().isEmpty()) {
-            throw new CustomException(ErrorStatus.REQUIRE_OPEN_AI_INFO);
-        }
-        String secretKey = encryptionService.decryptData(project.getOpenAiKey());
+        try {
+            userService.findOneUser(chatRequestDto.getUserId());
+            Project project = projectService.findOneProjectByKey(chatRequestDto.getProjectKey());
+            if (project.getOpenAiKey().isEmpty() && project.getChatModel().isEmpty()) {
+                throw new CustomException(ErrorStatus.REQUIRE_OPEN_AI_INFO);
+            }
+            String secretKey = encryptionService.decryptData(project.getOpenAiKey());
 
-        CreateEmbeddingResponse embedResponse = openAiLibraryService.embedding(secretKey, chatRequestDto.getText(), project.getDimensions());
-        VectorSearchResponseDto searchResponse = performVectorSearch(embedResponse, project.getId());
-        List<VectorSearchRankDto> rankList = mapSearchResultsToRankList(searchResponse);
-        String prompt = project.getPrompt();
-        ChatCompletion answer = generateFinalAnswer(project.getChatModel(), chatRequestDto.getText(), secretKey, rankList, searchResponse, prompt);
-        String finalAnswer = answer.choices().get(0).message().content().orElse("");
-        Content content = Optional.ofNullable(searchResponse.getFirstSearchId())
-                .flatMap(contentService::findOneContentByContentId)
-                .orElse(null);
-        LocalDateTime outputDateTime = LocalDateTime.now();
-        long totalToken = embedResponse.usage().totalTokens() +
-                answer.usage().stream()
-                        .mapToLong(CompletionUsage::totalTokens)
-                        .sum();
-        projectService.plusTotalToken(project, totalToken);
-        ChatResponseDto chatResponseDto = buildChatResponse(project, chatRequestDto, finalAnswer, inputDateTime, outputDateTime, searchResponse, content);
-        saveChatResponse(chatRequestDto, finalAnswer, inputDateTime, outputDateTime, content, rankList);
-        return chatResponseDto;
+            CreateEmbeddingResponse embedResponse = openAiLibraryService.embedding(secretKey, chatRequestDto.getText(), project.getDimensions());
+            VectorSearchResponseDto searchResponse = performVectorSearch(embedResponse, project.getId());
+            List<VectorSearchRankDto> rankList = mapSearchResultsToRankList(searchResponse);
+            String prompt = project.getPrompt();
+            ChatCompletion answer = generateFinalAnswer(project.getChatModel(), chatRequestDto.getText(), secretKey, rankList, searchResponse, prompt);
+            String finalAnswer = answer.choices().get(0).message().content().orElse("");
+            Content content = Optional.ofNullable(searchResponse.getFirstSearchId())
+                    .flatMap(contentService::findOneContentByContentId)
+                    .orElse(null);
+            LocalDateTime outputDateTime = LocalDateTime.now();
+            long totalToken = embedResponse.usage().totalTokens() +
+                    answer.usage().stream()
+                            .mapToLong(CompletionUsage::totalTokens)
+                            .sum();
+            projectService.plusTotalToken(project, totalToken);
+            ChatResponseDto chatResponseDto = buildChatResponse(project, chatRequestDto, finalAnswer, inputDateTime, outputDateTime, searchResponse, content);
+            saveChatResponse(chatRequestDto, finalAnswer, inputDateTime, outputDateTime, content, rankList);
+            return chatResponseDto;
+        } catch (Exception e) {
+            throw new CustomException(ErrorStatus.OPEN_AI_ERROR);
+        }
     }
 
     private VectorSearchResponseDto performVectorSearch(CreateEmbeddingResponse embedResponse, Long dbKey) {
-        List<Float> floatList = embedResponse.data().get(0).embedding();
-        return chatOptionService.vectorSearchResult(floatList, dbKey);
+        try {
+            List<Float> floatList = embedResponse.data().get(0).embedding();
+            return chatOptionService.vectorSearchResult(floatList, dbKey);
+        } catch (Exception e) {
+            throw new CustomException(ErrorStatus.DATA_PARSE_ERROR);
+        }
     }
 
     private List<VectorSearchRankDto> mapSearchResultsToRankList(VectorSearchResponseDto searchResponse) {
-        return searchResponse.getSearch().getSearchResults().stream()
-                .flatMap(List::stream)
-                .map(result -> {
-                    Map<String, Object> entity = result.getEntity();
-                    return VectorSearchRankDto.builder()
-                            .answer((String) entity.get("answer"))
-                            .title((String) entity.get("title"))
-                            .score(result.getScore())
-                            .id((Long) result.getId())
-                            .build();
-                })
-                .toList();
+        try {
+            return searchResponse.getSearch().getSearchResults().stream()
+                    .flatMap(List::stream)
+                    .map(result -> {
+                        Map<String, Object> entity = result.getEntity();
+                        return VectorSearchRankDto.builder()
+                                .answer((String) entity.get("answer"))
+                                .title((String) entity.get("title"))
+                                .score(result.getScore())
+                                .id((Long) result.getId())
+                                .build();
+                    })
+                    .toList();
+        } catch (Exception e) {
+            throw new CustomException(ErrorStatus.DATA_PARSE_ERROR);
+        }
     }
 
     private ChatCompletion generateFinalAnswer(

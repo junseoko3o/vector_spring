@@ -43,6 +43,7 @@ public enum ErrorStatus implements BaseCode {
     MILVUS_DELETE_ERROR(HttpStatus.BAD_REQUEST, "Delete Error."),
     MILVUS_COLLECTION_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Collection Already Exists."),
     MILVUS_VECTOR_SEARCH_ERROR(HttpStatus.BAD_REQUEST, "Vector Search Error."),
+    DATA_PARSE_ERROR(HttpStatus.BAD_REQUEST, "Data Parse Error."),
     OPENAI_EMBEDDING_ERROR(HttpStatus.BAD_REQUEST, "OpenAi Embedding Error.");
 
     private final HttpStatus httpStatus;
