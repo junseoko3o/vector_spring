@@ -1,9 +1,11 @@
 package com.milvus.vector_spring.user.dto;
 
 import jakarta.validation.constraints.Email;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class UserUpdateRequestDto {
     private String username;
 
