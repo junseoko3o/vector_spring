@@ -8,8 +8,8 @@ import com.milvus.vector_spring.common.service.RedisService;
 import com.milvus.vector_spring.config.jwt.JwtTokenProvider;
 import com.milvus.vector_spring.user.User;
 import com.milvus.vector_spring.user.UserDetailService;
+import com.milvus.vector_spring.user.UserQueryService;
 import com.milvus.vector_spring.user.UserRepository;
-import com.milvus.vector_spring.user.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final RedisService redisService;
-    private final UserService userService;
+    private final UserQueryService userQueryService;
     private final HttpServletRequest request;
 
     public UserLoginResponseDto login(UserLoginRequestDto userLoginRequestDto) {
@@ -65,7 +65,7 @@ public class AuthService {
     public UserLoginResponseDto check() {
         String token = getToken();
         Claims claims = jwtTokenProvider.getClaims(token);
-        User user = userService.findOneUser(claims.get("userId", Long.class));
+        User user = userQueryService.findOneUser(claims.get("userId", Long.class));
         return new UserLoginResponseDto(
                 user.getId(),
                 user.getEmail(),

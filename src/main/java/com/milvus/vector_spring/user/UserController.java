@@ -15,15 +15,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private final UserService userService;
+    private final UserQueryService userQueryService;
+    private final UserCommandService userCommandService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserQueryService userQueryService, UserCommandService userCommandService) {
+        this.userQueryService = userQueryService;
+        this.userCommandService = userCommandService;
     }
+
 
     @GetMapping()
     public List<UserResponseDto> findAllUser() {
-        List<User> users = userService.findAllUser();
+        List<User> users = userQueryService.findAllUser();
         return users.stream()
                 .map(UserResponseDto::userResponseDto)
                 .toList();
@@ -32,18 +35,18 @@ public class UserController {
     @PostMapping("/sign-up")
     @NoAuthRequired
     public ResponseEntity<UserResponseDto> signUpUser(@Validated @RequestBody UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
-        User user = userService.signUpUser(userSignUpRequestDto);
+        User user = userCommandService.signUpUser(userSignUpRequestDto);
         return ResponseEntity.ok(UserResponseDto.userResponseDto(user));
     }
 
     @PostMapping("/update/{id}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable() Long id, @Validated @RequestBody UserUpdateRequestDto userUpdateRequestDto) throws CustomException {
-        User user = userService.updateUser(id, userUpdateRequestDto);
+        User user = userCommandService.updateUser(id, userUpdateRequestDto);
         return ResponseEntity.ok(UserResponseDto.userResponseDto(user));
     }
 
     @GetMapping("/project/{id}")
     public UserProjectsResponseDto getUser(@PathVariable("id") Long id) throws CustomException {
-        return userService.fineOneUserWithProjects(id);
+        return userQueryService.fineOneUserWithProjects(id);
     }
 }
