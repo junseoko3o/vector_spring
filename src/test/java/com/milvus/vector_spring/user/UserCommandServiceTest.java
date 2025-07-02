@@ -3,11 +3,10 @@ package com.milvus.vector_spring.user;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -20,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserCommandServiceImplTest {
+class UserCommandServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -28,12 +27,16 @@ class UserCommandServiceImplTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    @InjectMocks
     private UserCommandServiceImpl userCommandService;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        userCommandService = new UserCommandServiceImpl(userRepository, passwordEncoder);
+    }
 
     @Test
     void signUpUser_WhenEmailNotDuplicate_SavesUser() {
-        // given
         UserSignUpRequestDto dto = UserSignUpRequestDto.builder()
                 .email("new@example.com")
                 .username("username")
@@ -46,10 +49,8 @@ class UserCommandServiceImplTest {
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         when(userRepository.save(userCaptor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // when
         User savedUser = userCommandService.signUpUser(dto);
 
-        // then
         assertThat(savedUser.getEmail()).isEqualTo(dto.getEmail());
         assertThat(savedUser.getUsername()).isEqualTo(dto.getUsername());
         assertThat(savedUser.getPassword()).isEqualTo("encodedPassword");
@@ -59,14 +60,12 @@ class UserCommandServiceImplTest {
 
     @Test
     void signUpUser_WhenEmailDuplicate_ThrowsException() {
-        // given
         UserSignUpRequestDto dto = UserSignUpRequestDto.builder()
                 .email("duplicate@example.com")
                 .build();
 
         when(userRepository.findByEmail(dto.getEmail())).thenReturn(Optional.of(new User()));
 
-        // when + then
         CustomException exception = assertThrows(CustomException.class, () -> {
             userCommandService.signUpUser(dto);
         });
@@ -75,7 +74,6 @@ class UserCommandServiceImplTest {
 
     @Test
     void updateUser_WhenUserExistsAndEmailNotChanged_UpdatesUser() {
-        // given
         Long id = 1L;
         UserUpdateRequestDto dto = UserUpdateRequestDto.builder()
                 .email("existing@example.com")
@@ -91,10 +89,8 @@ class UserCommandServiceImplTest {
         when(userRepository.findById(id)).thenReturn(Optional.of(existingUser));
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // when
         User updatedUser = userCommandService.updateUser(id, dto);
 
-        // then
         assertThat(updatedUser.getId()).isEqualTo(id);
         assertThat(updatedUser.getEmail()).isEqualTo(dto.getEmail());
         assertThat(updatedUser.getUsername()).isEqualTo(dto.getUsername());
@@ -105,13 +101,11 @@ class UserCommandServiceImplTest {
 
     @Test
     void updateUser_WhenUserNotFound_ThrowsException() {
-        // given
         Long id = 1L;
         UserUpdateRequestDto dto = UserUpdateRequestDto.builder().build();
 
         when(userRepository.findById(id)).thenReturn(Optional.empty());
 
-        // when + then
         CustomException exception = assertThrows(CustomException.class, () -> {
             userCommandService.updateUser(id, dto);
         });
@@ -120,7 +114,6 @@ class UserCommandServiceImplTest {
 
     @Test
     void updateUser_WhenEmailChangedAndDuplicate_ThrowsException() {
-        // given
         Long id = 1L;
         UserUpdateRequestDto dto = UserUpdateRequestDto.builder()
                 .email("newemail@example.com")
@@ -135,7 +128,6 @@ class UserCommandServiceImplTest {
         when(userRepository.findById(id)).thenReturn(Optional.of(existingUser));
         when(userRepository.findByEmail(dto.getEmail())).thenReturn(Optional.of(new User()));
 
-        // when + then
         CustomException exception = assertThrows(CustomException.class, () -> {
             userCommandService.updateUser(id, dto);
         });
