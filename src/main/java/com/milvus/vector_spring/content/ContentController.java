@@ -30,7 +30,7 @@ public class ContentController {
     }
 
     @GetMapping("/{id}")
-    public ContentResponseDto findOneContentById(@RequestHeader(CONTENT_ID) long id) {
+    public ContentResponseDto findOneContentById(@PathVariable Long id) {
         Content content = contentQueryService.findOneContentById(id);
         return ContentResponseDto.contentResponseDto(content);
     }

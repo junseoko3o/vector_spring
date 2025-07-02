@@ -14,7 +14,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository{
     }
 
     @Override
-    public User fineOneUserWithProjects(Long userId) {
+    public User findOneUserWithProjects(Long userId) {
         QUser user = QUser.user;
         QProject project = QProject.project;
         return queryFactory

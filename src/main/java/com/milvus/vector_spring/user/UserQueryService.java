@@ -7,6 +7,6 @@ import java.util.List;
 public interface UserQueryService {
     List<User> findAllUser();
     User findOneUser(Long id);
-    UserProjectsResponseDto fineOneUserWithProjects(Long id);
+    UserProjectsResponseDto findOneUserWithProjects(Long id);
     User findOneUserByEmail(String email);
 }

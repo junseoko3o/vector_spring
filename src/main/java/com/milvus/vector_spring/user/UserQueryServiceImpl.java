@@ -25,8 +25,8 @@ public class UserQueryServiceImpl implements UserQueryService {
     }
 
     @Override
-    public UserProjectsResponseDto fineOneUserWithProjects(Long id) {
-        User user = userRepository.fineOneUserWithProjects(id);
+    public UserProjectsResponseDto findOneUserWithProjects(Long id) {
+        User user = userRepository.findOneUserWithProjects(id);
         return UserProjectsResponseDto.of(user);
     }
 

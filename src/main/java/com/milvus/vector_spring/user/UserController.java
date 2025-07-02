@@ -47,6 +47,6 @@ public class UserController {
 
     @GetMapping("/project/{id}")
     public UserProjectsResponseDto getUser(@PathVariable("id") Long id) throws CustomException {
-        return userQueryService.fineOneUserWithProjects(id);
+        return userQueryService.findOneUserWithProjects(id);
     }
 }

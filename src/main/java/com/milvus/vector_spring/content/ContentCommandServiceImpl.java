@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CommentCommandServiceImpl implements ContentCommandService {
+public class ContentCommandServiceImpl implements ContentCommandService {
 
     private final UserQueryService userQueryService;
     private final ProjectQueryService projectQueryService;
