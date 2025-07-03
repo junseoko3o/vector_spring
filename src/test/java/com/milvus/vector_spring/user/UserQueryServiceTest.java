@@ -65,12 +65,12 @@ class UserQueryServiceTest {
     @Test
     void fineOneUserWithProjects_ReturnsDto() {
         User user = new User();
-        when(userRepository.fineOneUserWithProjects(1L)).thenReturn(user);
+        when(userRepository.findOneUserWithProjects(1L)).thenReturn(user);
 
-        UserProjectsResponseDto dto = userQueryService.fineOneUserWithProjects(1L);
+        UserProjectsResponseDto dto = userQueryService.findOneUserWithProjects(1L);
 
         assertThat(dto).isNotNull();
-        verify(userRepository, times(1)).fineOneUserWithProjects(1L);
+        verify(userRepository, times(1)).findOneUserWithProjects(1L);
     }
 
     @Test

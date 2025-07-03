@@ -50,7 +50,7 @@ public class InviteServiceImpl implements InviteService {
     @Override
     public List<CombinedProjectListResponseDto> invitedProjectAndCreateProjectList(InvitedProjectMyProjectRequestDto dto) {
         User user = userQueryService.findOneUser(dto.getUserId());
-        List<ProjectResponseDto> myProjectList = userQueryService.fineOneUserWithProjects(user.getId()).getProjects();
+        List<ProjectResponseDto> myProjectList = userQueryService.findOneUserWithProjects(user.getId()).getProjects();
         List<Project> receivedProjectList = findByReceivedEmail(user.getEmail()).stream()
                 .map(Invite::getProject)
                 .toList();
