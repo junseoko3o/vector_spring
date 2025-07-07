@@ -31,7 +31,7 @@ public class ProjectQueryServiceImpl implements ProjectQueryService {
 
     @Override
     public Project findOneProjectWithContents(String key) {
-        projectRepository.findProjectByKey(key);
-        return projectRepository.findOneProjectWithContents(key);
+        return projectRepository.findOneProjectWithContents(key)
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_PROJECT));
     }
 }

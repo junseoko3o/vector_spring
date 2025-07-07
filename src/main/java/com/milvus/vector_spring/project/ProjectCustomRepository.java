@@ -1,6 +1,8 @@
 package com.milvus.vector_spring.project;
 
 
+import java.util.Optional;
+
 public interface ProjectCustomRepository {
-    Project findOneProjectWithContents(String projectKey);
+    Optional<Project> findOneProjectWithContents(String projectKey);
 }
