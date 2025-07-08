@@ -1,5 +1,6 @@
 package com.milvus.vector_spring.chat;
 
+import com.milvus.vector_spring.chat.cache.ProjectCacheService;
 import com.milvus.vector_spring.chat.dto.ChatRequestDto;
 import com.milvus.vector_spring.chat.dto.ChatResponseDto;
 import com.milvus.vector_spring.chat.dto.VectorSearchRankDto;
@@ -13,8 +14,6 @@ import com.milvus.vector_spring.openai.dto.OpenAiChatResponseDto;
 import com.milvus.vector_spring.project.Project;
 import com.milvus.vector_spring.project.ProjectCommandService;
 import com.milvus.vector_spring.project.ProjectCryptoService;
-import com.milvus.vector_spring.project.ProjectQueryService;
-import com.milvus.vector_spring.user.UserQueryService;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.completions.CompletionUsage;
 import lombok.RequiredArgsConstructor;
@@ -31,11 +30,9 @@ public class ChatServiceImpl implements ChatService {
     private String openAiKey;
 
     private final ChatOptionService chatOptionService;
-    private final UserQueryService userQueryService;
-    private final ProjectQueryService projectService;
     private final ProjectCommandService projectCommandService;
     private final ProjectCryptoService projectCryptoService;
-
+    private final ProjectCacheService projectCacheService;
     private final ContentQueryService contentQueryService;
 
     private final VectorSearchService vectorSearchService;
@@ -47,15 +44,11 @@ public class ChatServiceImpl implements ChatService {
         LocalDateTime inputDateTime = LocalDateTime.now();
 
         try {
-            userQueryService.findOneUser(chatRequestDto.getUserId());
-
-            Project project = projectService.findOneProjectByKey(chatRequestDto.getProjectKey());
+            Project project = projectCacheService.getProject(chatRequestDto.getProjectKey());
             if (project.getOpenAiKey().isEmpty() && project.getChatModel().isEmpty()) {
                 throw new CustomException(ErrorStatus.REQUIRE_OPEN_AI_INFO);
             }
-
             String secretKey = projectCryptoService.decryptOpenAiKey(project);
-
             var embeddingResponse = vectorSearchService.createEmbedding(secretKey, chatRequestDto.getText(), project.getDimensions());
             VectorSearchResponseDto searchResponse = vectorSearchService.searchVector(embeddingResponse, project.getId());
             List<VectorSearchRankDto> rankList = vectorSearchService.convertToRankList(searchResponse);
@@ -68,7 +61,6 @@ public class ChatServiceImpl implements ChatService {
                     searchResponse,
                     project.getPrompt()
             );
-
             String finalAnswer = answer.choices().get(0).message().content().orElse("");
 
             Content content = Optional.ofNullable(searchResponse.getFirstSearchId())
@@ -82,7 +74,7 @@ public class ChatServiceImpl implements ChatService {
                             .mapToLong(CompletionUsage::totalTokens)
                             .sum();
 
-            projectCommandService.plusTotalToken(project, totalToken);
+            projectCommandService.plusTotalToken(project.getKey(), totalToken);
 
             ChatResponseDto chatResponseDto = chatResponseService.buildResponse(
                     chatRequestDto,

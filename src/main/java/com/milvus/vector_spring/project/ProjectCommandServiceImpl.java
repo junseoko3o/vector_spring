@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -81,12 +82,15 @@ public class ProjectCommandServiceImpl implements ProjectCommandService {
     }
 
     @Override
-    public void plusTotalToken(Project project, long totalToken) {
-        long currentTotal = project.getTotalToken();
-        project.updateTotalToken(currentTotal + totalToken);
-        projectRepository.save(project);
+    public void plusTotalToken(String key, long totalToken) {
+        Optional<Project> project = projectRepository.findProjectByKey(key);
+        if (project.isPresent()) {
+            Project p = project.get();
+            long currentTotal = p.getTotalToken();
+            p.updateTotalToken(currentTotal + totalToken);
+            projectRepository.save(p);
+        }
     }
-
     @Override
     public void updateProjectMaster(Project project, User user) {
         project.updateByUser(user, user);

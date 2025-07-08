@@ -9,6 +9,6 @@ public interface ProjectCommandService {
     Project createProject(ProjectCreateRequestDto dto);
     Project updateProject(String key, ProjectUpdateRequestDto dto);
     String deleteProject(ProjectDeleteRequestDto dto);
-    void plusTotalToken(Project project, long totalToken);
+    void plusTotalToken(String key, long totalToken);
     void updateProjectMaster(Project project, User user);
 }
