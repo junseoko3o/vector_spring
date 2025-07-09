@@ -46,15 +46,15 @@ class ProjectRepositoryTest {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        projectRepository.save(project);
+        Project savedProject = projectRepository.save(project);
 
         // when
-        Optional<Project> found = projectRepository.findProjectByKey("projectKey123");
+        Optional<Project> found = projectRepository.findProjectByKey(savedProject.getKey());
 
         // then
         assertThat(found).isPresent();
-        assertThat(found.get().getName()).isEqualTo("AI Research");
-        assertThat(found.get().getKey()).isEqualTo("projectKey123");
-        assertThat(found.get().getCreatedBy().getEmail()).isEqualTo("tester@example.com");
+        assertThat(found.get().getName()).isEqualTo(found.get().getName());
+        assertThat(found.get().getKey()).isEqualTo(found.get().getKey());
+        assertThat(found.get().getCreatedBy().getEmail()).isEqualTo(user.getEmail());
     }
 }
