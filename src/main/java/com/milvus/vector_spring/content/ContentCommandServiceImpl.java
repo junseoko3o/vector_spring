@@ -15,6 +15,7 @@ import com.milvus.vector_spring.user.UserQueryService;
 import com.openai.models.embeddings.CreateEmbeddingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +32,7 @@ public class ContentCommandServiceImpl implements ContentCommandService {
     private final MilvusService milvusService;
 
     @Override
+    @Transactional
     public Content createContent(long userId, ContentCreateRequestDto dto) {
         User user = userQueryService.findOneUser(userId);
         Project project = projectQueryService.findOneProjectByKey(dto.getProjectKey());
@@ -60,6 +62,7 @@ public class ContentCommandServiceImpl implements ContentCommandService {
     }
 
     @Override
+    @Transactional
     public Content updateContent(long id, ContentUpdateRequestDto dto) {
         User user = userQueryService.findOneUser(dto.getUpdatedUserId());
         Content content = contentRepository.findById(id)
