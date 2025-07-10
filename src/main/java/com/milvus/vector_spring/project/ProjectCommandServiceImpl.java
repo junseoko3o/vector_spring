@@ -48,6 +48,7 @@ public class ProjectCommandServiceImpl implements ProjectCommandService {
     }
 
     @Override
+    @Transactional
     public Project updateProject(String key, ProjectUpdateRequestDto dto) {
         User user = userQueryService.findOneUser(dto.getUpdatedUserId());
         Project project = projectRepository.findProjectByKey(key)
@@ -70,6 +71,7 @@ public class ProjectCommandServiceImpl implements ProjectCommandService {
     }
 
     @Override
+    @Transactional
     public String deleteProject(ProjectDeleteRequestDto dto) {
         Project project = projectRepository.findProjectByKey(dto.getKey())
                 .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_PROJECT));
@@ -82,6 +84,7 @@ public class ProjectCommandServiceImpl implements ProjectCommandService {
     }
 
     @Override
+    @Transactional
     public void plusTotalToken(String key, long totalToken) {
         Optional<Project> project = projectRepository.findProjectByKey(key);
         if (project.isPresent()) {

@@ -7,6 +7,7 @@ import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     }
 
     @Override
+    @Transactional
     public User signUpUser(UserSignUpRequestDto userSignUpRequestDto) {
         duplicateEmailCheck(userSignUpRequestDto.getEmail());
         User user = User.builder()
@@ -33,6 +35,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     }
 
     @Override
+    @Transactional
     public User updateUser(Long id, UserUpdateRequestDto userUpdateRequestDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_USER));

@@ -2,94 +2,101 @@ package com.milvus.vector_spring.user;
 
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.user.dto.UserProjectsResponseDto;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.milvus.vector_spring.common.apipayload.status.ErrorStatus.NOT_FOUND_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional
+@ActiveProfiles("test")
 class UserQueryServiceTest {
 
-    @Mock
-    private UserRepository userRepository;
-
+    @Autowired
     private UserQueryServiceImpl userQueryService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        userQueryService = new UserQueryServiceImpl(userRepository);
-    }
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void findAllUser_ReturnsUserList() {
-        User user = new User();
-        when(userRepository.findAll()).thenReturn(List.of(user));
+        User user = User.builder()
+                .email("user1@example.com")
+                .username("user1")
+                .password("pass")
+                .build();
+        userRepository.save(user);
 
-        List<User> users = userQueryService.findAllUser();
+        var users = userQueryService.findAllUser();
 
         assertThat(users).isNotEmpty();
-        verify(userRepository, times(1)).findAll();
+        assertThat(users.get(1).getEmail()).isEqualTo("user1@example.com");
+        assertThat(users.get(0).getEmail()).isEqualTo("admin@admin.com");
     }
 
     @Test
     void findOneUser_WhenUserExists_ReturnUser() {
-        User user = new User();
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        User user = User.builder()
+                .email("user2@example.com")
+                .username("user2")
+                .password("pass")
+                .build();
+        userRepository.save(user);
 
-        User found = userQueryService.findOneUser(1L);
+        User found = userQueryService.findOneUser(user.getId());
 
         assertThat(found).isEqualTo(user);
     }
 
     @Test
     void findOneUser_WhenUserNotFound_ThrowsException() {
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
-
         CustomException exception = assertThrows(CustomException.class, () -> {
-            userQueryService.findOneUser(1L);
+            userQueryService.findOneUser(999L);
         });
+
         assertThat(exception.getBaseCode()).isEqualTo(NOT_FOUND_USER);
     }
 
     @Test
-    void fineOneUserWithProjects_ReturnsDto() {
-        User user = new User();
-        when(userRepository.findOneUserWithProjects(1L)).thenReturn(user);
-
-        UserProjectsResponseDto dto = userQueryService.findOneUserWithProjects(1L);
-
-        assertThat(dto).isNotNull();
-        verify(userRepository, times(1)).findOneUserWithProjects(1L);
-    }
-
-    @Test
     void findOneUserByEmail_WhenUserExists_ReturnUser() {
-        User user = new User();
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+        User user = User.builder()
+                .email("email3@example.com")
+                .username("user3")
+                .password("pass")
+                .build();
+        userRepository.save(user);
 
-        User found = userQueryService.findOneUserByEmail("test@example.com");
+        User found = userQueryService.findOneUserByEmail("email3@example.com");
 
         assertThat(found).isEqualTo(user);
     }
 
     @Test
     void findOneUserByEmail_WhenUserNotFound_ThrowsException() {
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
-
         CustomException exception = assertThrows(CustomException.class, () -> {
-            userQueryService.findOneUserByEmail("test@example.com");
+            userQueryService.findOneUserByEmail("none@example.com");
         });
+
         assertThat(exception.getBaseCode()).isEqualTo(NOT_FOUND_USER);
+    }
+
+    @Test
+    void findOneUserWithProjects_ReturnsDto() {
+        User user = User.builder()
+                .email("proj@example.com")
+                .username("withproject")
+                .password("pass")
+                .build();
+        userRepository.save(user);
+
+        UserProjectsResponseDto dto = userQueryService.findOneUserWithProjects(user.getId());
+
+        assertThat(dto).isNotNull();
+        assertThat(dto.getId()).isEqualTo(user.getId());
     }
 }
