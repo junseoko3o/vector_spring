@@ -8,28 +8,47 @@ import com.milvus.vector_spring.project.dto.ProjectCreateRequestDto;
 import com.milvus.vector_spring.project.dto.ProjectDeleteRequestDto;
 import com.milvus.vector_spring.project.dto.ProjectUpdateRequestDto;
 import com.milvus.vector_spring.user.User;
-import com.milvus.vector_spring.user.UserQueryService;
+import com.milvus.vector_spring.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ProjectCommandServiceImpl implements ProjectCommandService {
+public class ProjectService  {
 
     private final ProjectRepository projectRepository;
-    private final UserQueryService userQueryService;
-    private final MilvusService milvusService;
+    private final UserService userService;
     private final EncryptionService encryptionService;
+    private final MilvusService milvusService;
 
-    @Override
+    public List<Project> findAllProject() {
+        return projectRepository.findAll();
+    }
+
+    public Project findOneProject(Long id) {
+        return projectRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_PROJECT));
+    }
+
+    public Project findOneProjectByKey(String key) {
+        return projectRepository.findProjectByKey(key)
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_PROJECT));
+    }
+
+    public Project findOneProjectWithContents(String key) {
+        return projectRepository.findOneProjectWithContents(key)
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_PROJECT));
+    }
+
     @Transactional
     public Project createProject(ProjectCreateRequestDto dto) {
-        User user = userQueryService.findOneUser(dto.getCreatedUserId());
+        User user = userService.findOneUser(dto.getCreatedUserId());
         Project project = Project.builder()
                 .name(dto.getName())
                 .key(String.valueOf(UUID.randomUUID()))
@@ -47,10 +66,9 @@ public class ProjectCommandServiceImpl implements ProjectCommandService {
         return savedProject;
     }
 
-    @Override
     @Transactional
     public Project updateProject(String key, ProjectUpdateRequestDto dto) {
-        User user = userQueryService.findOneUser(dto.getUpdatedUserId());
+        User user = userService.findOneUser(dto.getUpdatedUserId());
         Project project = projectRepository.findProjectByKey(key)
                 .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_PROJECT));
         String secretKey = resolveOpenAiKey(project, dto);
@@ -70,7 +88,6 @@ public class ProjectCommandServiceImpl implements ProjectCommandService {
         return projectRepository.save(updateProject);
     }
 
-    @Override
     @Transactional
     public String deleteProject(ProjectDeleteRequestDto dto) {
         Project project = projectRepository.findProjectByKey(dto.getKey())
@@ -83,7 +100,6 @@ public class ProjectCommandServiceImpl implements ProjectCommandService {
         return "Deleted Success!";
     }
 
-    @Override
     @Transactional
     public void plusTotalToken(String key, long totalToken) {
         Optional<Project> project = projectRepository.findProjectByKey(key);
@@ -94,7 +110,6 @@ public class ProjectCommandServiceImpl implements ProjectCommandService {
             projectRepository.save(p);
         }
     }
-    @Override
     public void updateProjectMaster(Project project, User user) {
         project.updateByUser(user, user);
         projectRepository.save(project);
@@ -122,5 +137,11 @@ public class ProjectCommandServiceImpl implements ProjectCommandService {
         }
         return projectKey;
     }
-}
 
+    public String decryptOpenAiKey(Project project) {
+        if (project.getOpenAiKey() == null || project.getOpenAiKey().isEmpty()) {
+            throw new CustomException(ErrorStatus.REQUIRE_OPEN_AI_INFO);
+        }
+        return encryptionService.decryptData(project.getOpenAiKey());
+    }
+}

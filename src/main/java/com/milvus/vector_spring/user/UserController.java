@@ -6,6 +6,7 @@ import com.milvus.vector_spring.user.dto.UserProjectsResponseDto;
 import com.milvus.vector_spring.user.dto.UserResponseDto;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -13,20 +14,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
-    private final UserQueryService userQueryService;
-    private final UserCommandService userCommandService;
 
-    public UserController(UserQueryService userQueryService, UserCommandService userCommandService) {
-        this.userQueryService = userQueryService;
-        this.userCommandService = userCommandService;
-    }
+    private final UserService userService;
 
 
     @GetMapping()
     public List<UserResponseDto> findAllUser() {
-        List<User> users = userQueryService.findAllUser();
+        List<User> users = userService.findAllUser();
         return users.stream()
                 .map(UserResponseDto::userResponseDto)
                 .toList();
@@ -35,18 +32,18 @@ public class UserController {
     @PostMapping("/sign-up")
     @NoAuthRequired
     public ResponseEntity<UserResponseDto> signUpUser(@Validated @RequestBody UserSignUpRequestDto userSignUpRequestDto) throws CustomException {
-        User user = userCommandService.signUpUser(userSignUpRequestDto);
+        User user = userService.signUpUser(userSignUpRequestDto);
         return ResponseEntity.ok(UserResponseDto.userResponseDto(user));
     }
 
     @PostMapping("/update/{id}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable() Long id, @Validated @RequestBody UserUpdateRequestDto userUpdateRequestDto) throws CustomException {
-        User user = userCommandService.updateUser(id, userUpdateRequestDto);
+        User user = userService.updateUser(id, userUpdateRequestDto);
         return ResponseEntity.ok(UserResponseDto.userResponseDto(user));
     }
 
     @GetMapping("/project/{id}")
     public UserProjectsResponseDto getUser(@PathVariable("id") Long id) throws CustomException {
-        return userQueryService.findOneUserWithProjects(id);
+        return userService.findOneUserWithProjects(id);
     }
 }

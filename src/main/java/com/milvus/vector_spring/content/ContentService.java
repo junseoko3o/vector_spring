@@ -9,33 +9,46 @@ import com.milvus.vector_spring.libraryopenai.OpenAiLibraryService;
 import com.milvus.vector_spring.milvus.MilvusService;
 import com.milvus.vector_spring.milvus.dto.InsertRequestDto;
 import com.milvus.vector_spring.project.Project;
-import com.milvus.vector_spring.project.ProjectQueryService;
+import com.milvus.vector_spring.project.ProjectService;
 import com.milvus.vector_spring.user.User;
-import com.milvus.vector_spring.user.UserQueryService;
+import com.milvus.vector_spring.user.UserService;
 import com.openai.models.embeddings.CreateEmbeddingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ContentCommandServiceImpl implements ContentCommandService {
+public class ContentService {
 
-    private final UserQueryService userQueryService;
-    private final ProjectQueryService projectQueryService;
-    private final EncryptionService encryptionService;
     private final ContentRepository contentRepository;
+    private final UserService userService;
+    private final ProjectService projectService;
+    private final EncryptionService encryptionService;
     private final OpenAiLibraryService openAiLibraryService;
     private final MilvusService milvusService;
 
-    @Override
+    public List<Content> findAllContent() {
+        return contentRepository.findAll();
+    }
+
+    public Content findOneContentById(Long id) {
+        return contentRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_CONTENT));
+    }
+
+    public Optional<Content> findOneContentByContentId(Long id) {
+        return contentRepository.findById(id);
+    }
+
     @Transactional
     public Content createContent(long userId, ContentCreateRequestDto dto) {
-        User user = userQueryService.findOneUser(userId);
-        Project project = projectQueryService.findOneProjectByKey(dto.getProjectKey());
+        User user = userService.findOneUser(userId);
+        Project project = projectService.findOneProjectByKey(dto.getProjectKey());
 
         if (project.getOpenAiKey().isEmpty()) {
             throw new CustomException(ErrorStatus.REQUIRE_OPEN_AI_INFO);
@@ -61,13 +74,12 @@ public class ContentCommandServiceImpl implements ContentCommandService {
         return savedContent;
     }
 
-    @Override
     @Transactional
     public Content updateContent(long id, ContentUpdateRequestDto dto) {
-        User user = userQueryService.findOneUser(dto.getUpdatedUserId());
+        User user = userService.findOneUser(dto.getUpdatedUserId());
         Content content = contentRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorStatus.NOT_FOUND_CONTENT));
-        Project project = projectQueryService.findOneProject(content.getProject().getId());
+        Project project = projectService.findOneProject(content.getProject().getId());
 
         Content updateContent = Content.builder()
                 .id(content.getId())
@@ -105,3 +117,4 @@ public class ContentCommandServiceImpl implements ContentCommandService {
         }
     }
 }
+

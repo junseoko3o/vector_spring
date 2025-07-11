@@ -1,7 +1,7 @@
 package com.milvus.vector_spring.chat.cache;
 
 import com.milvus.vector_spring.project.Project;
-import com.milvus.vector_spring.project.ProjectQueryService;
+import com.milvus.vector_spring.project.ProjectService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 public class ProjectCacheService {
 
     private final RedisTemplate<String, ProjectCacheDto> redisTemplate;
-    private final ProjectQueryService projectQueryService;
+    private final ProjectService projectService;
 
     public ProjectCacheService(@Qualifier("projectRedisTemplate")
                                RedisTemplate<String, ProjectCacheDto> redisTemplate,
-                               ProjectQueryService projectQueryService) {
+                               ProjectService projectService) {
         this.redisTemplate = redisTemplate;
-        this.projectQueryService = projectQueryService;
+        this.projectService = projectService;
     }
 
     public Project getProject(String key) {
@@ -36,7 +36,7 @@ public class ProjectCacheService {
         }
 
         log.info("[CACHE MISS] Fetching project from DB for key: {}", key);
-        Project project = projectQueryService.findOneProjectByKey(key);
+        Project project = projectService.findOneProjectByKey(key);
 
         try {
             redisTemplate.opsForValue().set(cacheKey, ProjectCacheDto.from(project));

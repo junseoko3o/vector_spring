@@ -1,6 +1,7 @@
 package com.milvus.vector_spring.user;
 
 import com.milvus.vector_spring.common.exception.CustomException;
+import com.milvus.vector_spring.user.dto.UserProjectsResponseDto;
 import com.milvus.vector_spring.user.dto.UserSignUpRequestDto;
 import com.milvus.vector_spring.user.dto.UserUpdateRequestDto;
 import org.junit.jupiter.api.Test;
@@ -18,16 +19,93 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
-class UserCommandServiceTest {
+class UserServiceTest {
 
     @Autowired
-    private UserCommandServiceImpl userCommandService;
+    private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Test
+    void findAllUser_ReturnsUserList() {
+        User user = User.builder()
+                .email("user1@example.com")
+                .username("user1")
+                .password("pass")
+                .build();
+        userRepository.save(user);
+
+        var users = userService.findAllUser();
+
+        assertThat(users).isNotEmpty();
+        assertThat(users.get(1).getEmail()).isEqualTo("user1@example.com");
+        assertThat(users.get(0).getEmail()).isEqualTo("admin@admin.com");
+    }
+
+    @Test
+    void findOneUser_WhenUserExists_ReturnUser() {
+        User user = User.builder()
+                .email("user2@example.com")
+                .username("user2")
+                .password("pass")
+                .build();
+        userRepository.save(user);
+
+        User found = userService.findOneUser(user.getId());
+
+        assertThat(found).isEqualTo(user);
+    }
+
+    @Test
+    void findOneUser_WhenUserNotFound_ThrowsException() {
+        CustomException exception = assertThrows(CustomException.class, () -> {
+            userService.findOneUser(999L);
+        });
+
+        assertThat(exception.getBaseCode()).isEqualTo(NOT_FOUND_USER);
+    }
+
+    @Test
+    void findOneUserByEmail_WhenUserExists_ReturnUser() {
+        User user = User.builder()
+                .email("email3@example.com")
+                .username("user3")
+                .password("pass")
+                .build();
+        userRepository.save(user);
+
+        User found = userService.findOneUserByEmail("email3@example.com");
+
+        assertThat(found).isEqualTo(user);
+    }
+
+    @Test
+    void findOneUserByEmail_WhenUserNotFound_ThrowsException() {
+        CustomException exception = assertThrows(CustomException.class, () -> {
+            userService.findOneUserByEmail("none@example.com");
+        });
+
+        assertThat(exception.getBaseCode()).isEqualTo(NOT_FOUND_USER);
+    }
+
+    @Test
+    void findOneUserWithProjects_ReturnsDto() {
+        User user = User.builder()
+                .email("proj@example.com")
+                .username("withproject")
+                .password("pass")
+                .build();
+        userRepository.save(user);
+
+        UserProjectsResponseDto dto = userService.findOneUserWithProjects(user.getId());
+
+        assertThat(dto).isNotNull();
+        assertThat(dto.getId()).isEqualTo(user.getId());
+    }
 
     @Test
     void signUpUser_WhenEmailNotDuplicate_SavesUser() {
@@ -37,7 +115,7 @@ class UserCommandServiceTest {
                 .password("password")
                 .build();
 
-        User savedUser = userCommandService.signUpUser(dto);
+        User savedUser = userService.signUpUser(dto);
 
         assertThat(savedUser.getId()).isNotNull();
         assertThat(savedUser.getEmail()).isEqualTo(dto.getEmail());
@@ -59,7 +137,7 @@ class UserCommandServiceTest {
                 .build();
 
         CustomException exception = assertThrows(CustomException.class, () -> {
-            userCommandService.signUpUser(dto);
+            userService.signUpUser(dto);
         });
 
         assertThat(exception.getBaseCode()).isEqualTo(DUPLICATE_USER_EMAIL);
@@ -79,7 +157,7 @@ class UserCommandServiceTest {
                 .username("after")
                 .build();
 
-        User updated = userCommandService.updateUser(user.getId(), dto);
+        User updated = userService.updateUser(user.getId(), dto);
 
         assertThat(updated.getUsername()).isEqualTo("after");
     }
@@ -91,7 +169,7 @@ class UserCommandServiceTest {
                 .build();
 
         CustomException exception = assertThrows(CustomException.class, () -> {
-            userCommandService.updateUser(999L, dto);
+            userService.updateUser(999L, dto);
         });
 
         assertThat(exception.getBaseCode()).isEqualTo(NOT_FOUND_USER);
@@ -116,7 +194,7 @@ class UserCommandServiceTest {
                 .build();
 
         CustomException exception = assertThrows(CustomException.class, () -> {
-            userCommandService.updateUser(existing.getId(), dto);
+            userService.updateUser(existing.getId(), dto);
         });
 
         assertThat(exception.getBaseCode()).isEqualTo(DUPLICATE_USER_EMAIL);

@@ -18,12 +18,11 @@ import static com.milvus.vector_spring.common.Const.USER_ID;
 @RequestMapping("/content")
 public class ContentController {
 
-    private final ContentQueryService contentQueryService;
-    private final ContentCommandService contentCommandService;
+    private final ContentService contentService;
 
     @GetMapping()
     public List<ContentResponseDto> findAllContent() {
-        List<Content> contentList = contentQueryService.findAllContent();
+        List<Content> contentList = contentService.findAllContent();
         return contentList.stream()
                 .map(ContentResponseDto::contentResponseDto)
                 .toList();
@@ -31,7 +30,7 @@ public class ContentController {
 
     @GetMapping("/{id}")
     public ContentResponseDto findOneContentById(@PathVariable Long id) {
-        Content content = contentQueryService.findOneContentById(id);
+        Content content = contentService.findOneContentById(id);
         return ContentResponseDto.contentResponseDto(content);
     }
 
@@ -40,7 +39,7 @@ public class ContentController {
             @RequestHeader(USER_ID) long userId,
             @Validated @RequestBody ContentCreateRequestDto contentCreateRequestDto
             ) {
-        Content content = contentCommandService.createContent(userId, contentCreateRequestDto);
+        Content content = contentService.createContent(userId, contentCreateRequestDto);
         return ResponseEntity.ok(ContentResponseDto.contentResponseDto(content));
     }
 
@@ -49,7 +48,7 @@ public class ContentController {
             @RequestHeader(CONTENT_ID) long id,
             @Validated @RequestBody ContentUpdateRequestDto contentUpdateRequestDto
             ) {
-        Content content = contentCommandService.updateContent(id, contentUpdateRequestDto);
+        Content content = contentService.updateContent(id, contentUpdateRequestDto);
         return ResponseEntity.ok(ContentResponseDto.contentResponseDto(content));
     }
 }
