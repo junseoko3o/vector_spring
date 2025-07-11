@@ -7,7 +7,7 @@ import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.common.service.RedisService;
 import com.milvus.vector_spring.config.jwt.JwtTokenProvider;
 import com.milvus.vector_spring.user.User;
-import com.milvus.vector_spring.user.UserDetailService;
+import com.milvus.vector_spring.user.UserDetailServiceImpl;
 import com.milvus.vector_spring.user.UserRepository;
 import com.milvus.vector_spring.user.UserService;
 import io.jsonwebtoken.Claims;
@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserDetailService userDetailService;
+    private final UserDetailServiceImpl userDetailServiceImpl;
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -33,7 +33,7 @@ public class AuthService {
     private final HttpServletRequest request;
 
     public UserLoginResponseDto login(UserLoginRequestDto userLoginRequestDto) {
-        User user = userDetailService.loadUserByUsername(userLoginRequestDto.getEmail());
+        User user = userDetailServiceImpl.loadUserByUsername(userLoginRequestDto.getEmail());
         if (!bCryptPasswordEncoder.matches(userLoginRequestDto.getPassword(), user.getPassword())) {
             throw new CustomException(ErrorStatus.NOT_PASSWORD_MATCHES);
         };

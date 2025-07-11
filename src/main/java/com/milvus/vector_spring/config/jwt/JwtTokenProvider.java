@@ -4,7 +4,7 @@ import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.common.service.RedisService;
 import com.milvus.vector_spring.user.User;
-import com.milvus.vector_spring.user.UserDetailService;
+import com.milvus.vector_spring.user.UserDetailServiceImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -34,7 +34,7 @@ public class JwtTokenProvider {
     private int refreshTokenExpiration;
 
     private final RedisService redisService;
-    private final UserDetailService userDetailService;
+    private final UserDetailServiceImpl userDetailServiceImpl;
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
@@ -109,7 +109,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
 
-        UserDetails userDetails = userDetailService.loadUserByUsername(claims.get("email", String.class));
+        UserDetails userDetails = userDetailServiceImpl.loadUserByUsername(claims.get("email", String.class));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 

@@ -3,7 +3,7 @@ package com.milvus.vector_spring.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.milvus.vector_spring.config.jwt.JwtTokenProvider;
 import com.milvus.vector_spring.config.jwt.TokenAuthenticationFilter;
-import com.milvus.vector_spring.user.UserDetailService;
+import com.milvus.vector_spring.user.UserDetailServiceImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +28,7 @@ import java.util.Map;
 public class WebSecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserDetailService userDetailService;
+    private final UserDetailServiceImpl userDetailServiceImpl;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -48,7 +48,7 @@ public class WebSecurityConfig {
                     .anyRequest().authenticated()
             )
             .addFilterBefore(
-                    new TokenAuthenticationFilter(jwtTokenProvider, userDetailService),
+                    new TokenAuthenticationFilter(jwtTokenProvider, userDetailServiceImpl),
                     UsernamePasswordAuthenticationFilter.class
             );
 
@@ -74,7 +74,7 @@ public class WebSecurityConfig {
 
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
-        return new TokenAuthenticationFilter(jwtTokenProvider, userDetailService);
+        return new TokenAuthenticationFilter(jwtTokenProvider, userDetailServiceImpl);
     }
 
     @Bean

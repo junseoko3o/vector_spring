@@ -3,7 +3,7 @@ package com.milvus.vector_spring.config.jwt;
 import com.milvus.vector_spring.common.apipayload.status.ErrorStatus;
 import com.milvus.vector_spring.common.exception.CustomException;
 import com.milvus.vector_spring.user.User;
-import com.milvus.vector_spring.user.UserDetailService;
+import com.milvus.vector_spring.user.UserDetailServiceImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,7 +20,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserDetailService userDetailService;
+    private final UserDetailServiceImpl userDetailServiceImpl;
     private final static String HEADER_AUTHORIZATION = "Authorization";
     private final static String TOKEN_PREFIX = "Bearer";
     private final static String NEW_ACCESS_TOKEN = "newAccessToken";
@@ -63,7 +63,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             String token = getAccessToken(request.getHeader(HEADER_AUTHORIZATION));
             Claims claims = jwtTokenProvider.expiredTokenGetPayload(token);
             String email = claims.get("email", String.class);
-            User user = userDetailService.loadUserByUsername(email);
+            User user = userDetailServiceImpl.loadUserByUsername(email);
             if (!jwtTokenProvider.validateRefreshToken(user)) {
                 throw new CustomException(ErrorStatus.EXPIRED_REFRESH_TOKEN);
             }
