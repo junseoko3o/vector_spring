@@ -18,6 +18,7 @@ import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.completions.CompletionUsage;
 import io.milvus.v2.service.vector.response.SearchResp;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatService {
 
     @Value("${open.ai.key}")
@@ -100,7 +102,8 @@ public class ChatService {
             return chatResponseDto;
 
         } catch (Exception e) {
-            throw new CustomException(ErrorStatus.OPEN_AI_ERROR);
+            log.error(e.getMessage(), e);
+            throw e;
         }
     }
 

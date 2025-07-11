@@ -32,13 +32,6 @@ public class OpenAiLibraryServiceImpl implements OpenAiLibraryService {
         };
     }
 
-    private EmbeddingModel findEmbedModel(String model) {
-        return switch (model) {
-            case "GPT_EMBED_LARGE" -> EmbeddingModel.TEXT_EMBEDDING_3_LARGE;
-            case "GPT_EMBED_SMALL" -> EmbeddingModel.TEXT_EMBEDDING_3_SMALL;
-            default -> throw new CustomException(ErrorStatus.UNKNOWING_MODEL);
-        };
-    }
 
     @Override
     public ChatCompletion chat(OpenAiChatLibraryRequestDto openAiChatLibraryRequestDto) {
