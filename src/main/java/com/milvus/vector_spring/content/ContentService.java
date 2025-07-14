@@ -68,6 +68,9 @@ public class ContentService {
                 .build();
 
         CreateEmbeddingResponse embedResponseDto = openAiLibraryService.embedding(key, content.getAnswer(), project.getDimensions());
+        if (embedResponseDto == null || embedResponseDto.data().isEmpty()) {
+            throw new CustomException(ErrorStatus.MILVUS_DATABASE_ERROR);
+        }
         Content savedContent = contentRepository.save(content);
         insertIntoMilvus(savedContent, embedResponseDto, project.getId());
 
