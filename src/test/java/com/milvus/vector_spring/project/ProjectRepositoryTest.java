@@ -30,7 +30,7 @@ class ProjectRepositoryTest {
 
     @Test
     @DisplayName("프로젝트 키로 프로젝트를 조회할 수 있다")
-    void findProjectByKey_success() {
+    void find_by_project_key_success() {
         // given
         User user = User.builder()
                 .email("tester@example.com")

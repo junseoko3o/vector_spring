@@ -31,7 +31,7 @@ class UserServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @Test
-    void findAllUser_ReturnsUserList() {
+    void find_all_user()  {
         User user = User.builder()
                 .email("user1@example.com")
                 .username("user1")
@@ -47,7 +47,7 @@ class UserServiceTest {
     }
 
     @Test
-    void findOneUser_WhenUserExists_ReturnUser() {
+    void find_user_by_id_success() {
         User user = User.builder()
                 .email("user2@example.com")
                 .username("user2")
@@ -61,7 +61,7 @@ class UserServiceTest {
     }
 
     @Test
-    void findOneUser_WhenUserNotFound_ThrowsException() {
+    void find_user_by_id_fail() {
         CustomException exception = assertThrows(CustomException.class, () -> {
             userService.findOneUser(999L);
         });
@@ -70,7 +70,7 @@ class UserServiceTest {
     }
 
     @Test
-    void findOneUserByEmail_WhenUserExists_ReturnUser() {
+    void find_user_by_email_success() {
         User user = User.builder()
                 .email("email3@example.com")
                 .username("user3")
@@ -84,7 +84,7 @@ class UserServiceTest {
     }
 
     @Test
-    void findOneUserByEmail_WhenUserNotFound_ThrowsException() {
+    void find_user_by_email_fail() {
         CustomException exception = assertThrows(CustomException.class, () -> {
             userService.findOneUserByEmail("none@example.com");
         });
@@ -93,7 +93,7 @@ class UserServiceTest {
     }
 
     @Test
-    void findOneUserWithProjects_ReturnsDto() {
+    void find_user_with_projects() {
         User user = User.builder()
                 .email("proj@example.com")
                 .username("withproject")
@@ -108,7 +108,7 @@ class UserServiceTest {
     }
 
     @Test
-    void signUpUser_WhenEmailNotDuplicate_SavesUser() {
+    void sign_up_success() {
         UserSignUpRequestDto dto = UserSignUpRequestDto.builder()
                 .email("new@example.com")
                 .username("username")
@@ -124,7 +124,7 @@ class UserServiceTest {
     }
 
     @Test
-    void signUpUser_WhenEmailDuplicate_ThrowsException() {
+    void sign_up_duplicate_email_fail() {
         User user = User.builder()
                 .email("duplicate@example.com")
                 .password("encoded")
@@ -144,7 +144,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateUser_WhenUserExistsAndEmailNotChanged_UpdatesUser() {
+    void update_user_success_same_email() {
         User user = User.builder()
                 .email("user@example.com")
                 .password("pass")
@@ -163,7 +163,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateUser_WhenUserNotFound_ThrowsException() {
+    void update_user_fail_user_not_found() {
         UserUpdateRequestDto dto = UserUpdateRequestDto.builder()
                 .email("notfound@example.com")
                 .build();
@@ -176,7 +176,7 @@ class UserServiceTest {
     }
 
     @Test
-    void updateUser_WhenEmailChangedAndDuplicate_ThrowsException() {
+    void update_user_fail_duplicate_email() {
         User existing = userRepository.save(User.builder()
                 .email("existing@example.com")
                 .username("user1")

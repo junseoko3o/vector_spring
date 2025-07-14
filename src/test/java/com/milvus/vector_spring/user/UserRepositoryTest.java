@@ -18,7 +18,7 @@ public class UserRepositoryTest {
     private UserRepository userRepository;
 
     @Test
-    void testFindByEmail() {
+    void find_by_email_success() {
         User user = User.builder()
                 .email("test@example.com")
                 .username("testuser")

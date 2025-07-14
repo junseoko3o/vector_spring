@@ -49,7 +49,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    void createProject_Success() {
+    void create_project_success() {
         ProjectCreateRequestDto dto = ProjectCreateRequestDto.builder()
                 .name("Test Project")
                 .createdUserId(user.getId())
@@ -71,7 +71,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    void updateProject_Success() {
+    void update_project_success()  {
         Project saved = projectService.createProject(ProjectCreateRequestDto.builder()
                 .name("Old Project")
                 .createdUserId(user.getId())
@@ -98,7 +98,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    void deleteProject_Success() {
+    void delete_project_success() {
         Project project = projectService.createProject(ProjectCreateRequestDto.builder()
                 .name("Project to Delete")
                 .createdUserId(user.getId())
@@ -119,7 +119,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    void deleteProject_Fail_NotOwner() {
+    void delete_project_fail_not_owner() {
         Project project = projectService.createProject(ProjectCreateRequestDto.builder()
                 .name("Project Unauthorized Delete")
                 .createdUserId(user.getId())
@@ -146,7 +146,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    void plusTotalToken_Success() {
+    void plus_total_token_success() {
         Project project = projectService.createProject(ProjectCreateRequestDto.builder()
                 .name("Token Project")
                 .createdUserId(user.getId())
@@ -164,7 +164,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    void decryptOpenAiKey_Success() {
+    void decrypt_open_ai_key_success() {
         Project project = projectService.createProject(ProjectCreateRequestDto.builder()
                 .name("Decrypt Test")
                 .createdUserId(user.getId())
@@ -182,7 +182,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    void decryptOpenAiKey_Fail_NoKey() {
+    void decrypt_open_ai_key_fail_no_key() {
         Project project = projectService.createProject(ProjectCreateRequestDto.builder()
                 .name("No Key Project")
                 .createdUserId(user.getId())
